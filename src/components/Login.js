@@ -19,7 +19,6 @@ const Login = () => {
     setError("");
     try {
       await logIn(email, password);
-      navigate("/home");
     } catch (err) {
       setError(err.message);
     }
@@ -46,95 +45,96 @@ const Login = () => {
     setPasswordType("password");
   };
 
-  if (user) {
-    console.log("User logged in, redirected from Login page");
-    return <Navigate to="/home" />;
-  }
+  if (user != null) {
+    if (Object.keys(user).length !== 0) {
+      console.log("message from login: user logged in");
 
-  return (
-    <Container className="login-container">
-      <div className="card p-4 box mt-4">
-        <h2 className="mb-3 text-body">DuckyEvents Login</h2>
-        {error && (
-          <Alert variant="danger">
-            Authentication Failed, please check email and password
-          </Alert>
-        )}
-        <Form onSubmit={handleSubmit}>
-          <Form.Group className="mb-3" controlId="formBasicEmail">
-            <Form.Control
-              type="email"
-              placeholder="Email address"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="formBasicPassword">
-            <InputGroup className="mb-3">
+      if (localStorage.getItem("user") === null) {
+        localStorage.setItem("user", JSON.stringify(user));
+      }
+      return <Navigate to="/home" />;
+    }
+  } else {
+    return (
+      <Container className="login-container">
+        <div className="card p-4 box mt-4">
+          <h2 className="mb-3 text-body">DuckyEvents Login</h2>
+          {error && (
+            <Alert variant="danger">
+              Authentication Failed, please check email and password
+            </Alert>
+          )}
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3" controlId="formBasicEmail">
               <Form.Control
-                type={passwordType}
-                placeholder="Password"
-                onChange={handlePasswordChange}
-                value={password}
-                name="password"
-                className="form-control"
+                type="email"
+                placeholder="Email address"
+                onChange={(e) => setEmail(e.target.value)}
               />
-              <Button
-                variant="outline-secondary"
-                id="button-addon2"
-                onClick={togglePassword}
-              >
-                {passwordType === "password" ? (
-                  <i>
-                    <EyeFill />
-                  </i>
-                ) : (
-                  <i>
-                    <EyeSlashFill />
-                  </i>
-                )}
-              </Button>
-            </InputGroup>
-          </Form.Group>
+            </Form.Group>
 
-          <div className="d-flex justify-content-center">
-            <Button className="login-buttons" variant="primary" type="Submit">
-              Log In
-            </Button>
+            <Form.Group className="mb-3" controlId="formBasicPassword">
+              <InputGroup className="mb-3">
+                <Form.Control
+                  type={passwordType}
+                  placeholder="Password"
+                  onChange={handlePasswordChange}
+                  value={password}
+                  name="password"
+                  className="form-control"
+                />
+                <Button
+                  variant="outline-secondary"
+                  id="button-addon2"
+                  onClick={togglePassword}
+                >
+                  {passwordType === "password" ? (
+                    <i>
+                      <EyeFill />
+                    </i>
+                  ) : (
+                    <i>
+                      <EyeSlashFill />
+                    </i>
+                  )}
+                </Button>
+              </InputGroup>
+            </Form.Group>
+
+            <div className="d-flex justify-content-center">
+              <Button className="login-buttons" variant="primary" type="Submit">
+                Log In
+              </Button>
+            </div>
+          </Form>
+          <hr />
+          <div>
+            <div className="d-flex justify-content-center">
+              <Button
+                className="login-buttons"
+                type="dark"
+                variant="primary"
+                onClick={handleGoogleSignIn}
+              >
+                <Row className="justify-content-md-center">
+                  <Col md="auto">Sign in with Google</Col>
+                  <Col xs={2}>
+                    <i>
+                      {" "}
+                      <Google />
+                    </i>
+                  </Col>
+                </Row>
+              </Button>
+            </div>
           </div>
-        </Form>
-        <hr />
-        <div>
-          <div className="d-flex justify-content-center">
-            <Button
-              className="login-buttons"
-              type="dark"
-              variant="primary"
-              onClick={handleGoogleSignIn}
-            >
-              <Row className="justify-content-md-center">
-                <Col md="auto">Sign in with Google</Col>
-                <Col xs={2}>
-                  <i>
-                    {" "}
-                    <Google />
-                  </i>
-                </Col>
-              </Row>
-            </Button>
-          </div>
-          {/* <GoogleButton
-            className="g-btn"
-            type="dark"
-            onClick={handleGoogleSignIn}
-          /> */}
         </div>
-      </div>
-      <div className="card p-1 box mt-3 text-center text-muted">
-        Don't have an account? <Link to="/signup">Sign up</Link>
-      </div>
-    </Container>
-  );
+        <div className="card p-1 box mt-3 text-center text-muted">
+          Don't have an account? <Link to="/signup">Sign up</Link>
+        </div>
+      </Container>
+    );
+  }
 };
 
 export default Login;

@@ -9,14 +9,8 @@ const LandingPage = (props) => {
 
   const handleNavigation = () => {
     if (user) {
-      console.log("Navigating to home page");
-      console.log(user);
-      console.log("-------------------------");
       navigate("/home");
     } else {
-      console.log("Navigating to login page");
-      console.log(user);
-      console.log("-------------------------");
       navigate("/login");
     }
   };
@@ -30,15 +24,16 @@ const LandingPage = (props) => {
   }
 
   function GreetUser() {
+    const currentUser = JSON.parse(localStorage.getItem("user")).email;
     return (
       <div>
         <Button onClick={handleNavigation}>Home Page</Button>
+        <p>Welcome    {currentUser}</p>
       </div>
     );
   }
 
-  if (user) {
-    console.log(user);
+  if (localStorage.getItem("user") != null) {
     return <GreetUser />;
   } else {
     return <GreetGuest />;
