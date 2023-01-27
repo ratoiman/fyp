@@ -6,8 +6,10 @@ import {
   collection,
   getDocs,
   addDoc,
+  deleteDoc,
   updateDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 
@@ -30,15 +32,18 @@ const LandingPage = () => {
     }
   };
 
-  useEffect(() => {
-    const getUsers = async () => {
-      try {
+  const getUsers = () => {
+    try {
+      onSnapshot(usersRef, async () => {
         const data = await getDocs(usersRef);
         setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      } catch (e) {
-        console.log(e);
-      }
-    };
+      });
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  useEffect(() => {
     getUsers();
   }, []);
 
@@ -64,27 +69,31 @@ const LandingPage = () => {
     await addDoc(usersRef, { name: newName, surname: newSurname, age: newAge });
   };
 
+  const deleteUser = async (id) => {
+    const userDoc = doc(db, "users", id);
+    await deleteDoc(userDoc);
+  };
+
   const updateUser = async (id, updatedAge) => {
     const userDoc = doc(db, "users", id);
     const NewFields = { age: updatedAge };
     await updateDoc(userDoc, NewFields);
   };
 
-  if (localStorage.getItem("user") != null) {
+  if (localStorage.getItem("user") === null) {
     return (
       <>
         {users.map((user) => {
           return (
             <Container className="card p-4 box mt-4 text-white bg-black w-50 ">
               <div>
-                <h1>Name: {user.name}</h1>
-                <h1>Surname: {user.surname}</h1>
-                <h1>Age: {user.age}</h1>
+                <h1>Email: {user.email}</h1>
+                <h1>Username: {user.username}</h1>
               </div>
             </Container>
           );
         })}
-        <GreetUser />
+        <GreetGuest />
       </>
     );
   } else {
@@ -114,25 +123,39 @@ const LandingPage = () => {
           return (
             <Container className="card p-4 box mt-4 text-white bg-black w-50 ">
               <div>
-                <h1>Name: {user.name}</h1>
-                <h1>Surname: {user.surname}</h1>
-                <h1>Age: {user.age}</h1>
-                <input placeholder="Change age" 
-                onChange={(event) => {
-                  setUpdatedAge(event.target.value);
-                }}/>
-                <button
+                <h1>Email: {user.email}</h1>
+                <h1>Username: {user.username}</h1>
+                <input
+                  placeholder="Change age"
+                  onChange={(event) => {
+                    setUpdatedAge(event.target.value);
+                  }}
+                />
+                <Button
                   onClick={() => {
                     updateUser(user.id, updatedAge);
                   }}
                 >
                   submit
-                </button>
+                </Button>
+              </div>
+              <div>
+                <Button
+                  size="sm"
+                  variant="outline-danger"
+                  className="fw-bold"
+                  onClick={() => {
+                    deleteUser(user.id);
+                  }}
+                >
+                  {" "}
+                  Delete user
+                </Button>
               </div>
             </Container>
           );
         })}
-        <GreetGuest />
+        <GreetUser />
       </>
     );
   }

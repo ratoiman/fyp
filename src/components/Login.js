@@ -47,7 +47,7 @@ const Login = () => {
 
   if (user != null) {
     if (Object.keys(user).length !== 0) {
-      console.log("message from login: user logged in");
+      console.log("message from login: ",user, " logged in");
 
       if (localStorage.getItem("user") === null) {
         localStorage.setItem("user", JSON.stringify(user));

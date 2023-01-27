@@ -7,9 +7,12 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { auth, db } from "../utils/firebase";
+import { addDoc, collection, doc, setDoc } from "firebase/firestore";
 
 const userAuthContext = createContext();
+// const users = collection(db, "users");
+// const usernameList = collection(db,"usernames")
 
 export function UserAuthContextProvider({ children }) {
   const [user, setUser] = useState({});
@@ -17,8 +20,16 @@ export function UserAuthContextProvider({ children }) {
   function logIn(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
   }
-  function signUp(email, password) {
-    return createUserWithEmailAndPassword(auth, email, password);
+  function signUp(email, password, username) {
+    return createUserWithEmailAndPassword(auth, email, password).then(
+      async (userCredential) => {
+        console.log("UID: ", userCredential.user.uid);
+        await setDoc(doc(db, "users", userCredential.user.uid), {email: email, username: username})
+        await setDoc(doc(db, "usernames", username), {})
+      }
+    );
+
+    // addDoc(collection(db, "users"), { email: email, username: username})
   }
   function logOut() {
     return signOut(auth);
