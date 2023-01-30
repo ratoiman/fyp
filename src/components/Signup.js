@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { Form, Alert, InputGroup, Container } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { useUserAuth } from "../context/UserAuthContext";
 import { EyeFill, EyeSlashFill } from "react-bootstrap-icons";
-import { collection, getDocs, addDoc, onSnapshot } from "firebase/firestore";
-import { db } from "../utils/firebase";
-
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
@@ -15,46 +12,18 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [confirmPasswordType, setConfirmPasswordType] = useState("password");
   const { signUp } = useUserAuth();
-  const [userlist, setUserlist] = useState([]);
-  const [username, setUsername] = useState("");
-  const [userValid, setUserValid] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
-  const { user } = useUserAuth();
 
-  const usernamesRef = collection(db, "usernames");
   let navigate = useNavigate();
-
-  const getUsernames = () => {
-    try {
-      onSnapshot(usernamesRef, async () => {
-        const data = await getDocs(usernamesRef);
-        setUserlist(data.docs.map((doc) => ({ id: doc.id })));
-      });
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  useEffect(() => {
-    getUsernames();
-  }, []);
-  useEffect(() => {
-    checkUsername(username);
-  }, [username]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      checkUsername(username);
-      if (password === confirmPassword && userValid) {
-        await signUp(email, password, username);
-        navigate("/login");
+      if (password === confirmPassword) {
+        await signUp(email, password);
+        navigate("/userdetails");
       } else {
-        if (!userValid) {
-          setError("Username already exists");
-        } else {
-          setError("Passwords don't match");
-        }
+        setError("Passwords don't match");
         setShowAlert(true);
       }
     } catch (err) {
@@ -87,11 +56,6 @@ const Signup = () => {
     setConfirmPasswordType("password");
   };
 
-  const checkUsername = (username) => {
-    const found = userlist.some((el) => el.id === username);
-    setUserValid(!found);
-  };
-
   if (localStorage.getItem("user") != null) {
     console.log("User logged in, redirected from Signup page");
     return <Navigate to="/home" />;
@@ -118,22 +82,9 @@ const Signup = () => {
               <Form.Control
                 type="email"
                 placeholder="Email address"
+                value={email}
                 onChange={(e) => {
-                  setEmail(e.target.value.trim());
-                }}
-              />
-
-              {/* Username field */}
-              {/* @TODO: Add a way to cycle through the input fields using enter */}
-            </Form.Group>
-            <Form.Group className="mb-3">
-              <Form.Control
-                type="text"
-                placeholder="username"
-                onChange={(e) => {
-                  setUsername(e.target.value);
-
-                  checkUsername(username);
+                  setEmail(e.target.value.trim().toLowerCase());
                 }}
               />
             </Form.Group>

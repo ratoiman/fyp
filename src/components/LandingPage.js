@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Container } from "react-bootstrap";
 import { useNavigate } from "react-router";
-import { useUserAuth } from "../context/UserAuthContext";
 import {
   collection,
   getDocs,
@@ -12,6 +11,7 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
+import { useUserAuth } from "../context/UserAuthContext";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -20,9 +20,9 @@ const LandingPage = () => {
   const [newSurname, setNewSurname] = useState("");
   const [newAge, setAge] = useState(0);
   const [updatedAge, setUpdatedAge] = useState(0);
-  const usersRef = collection(db, "users");
+  const usersRef = collection(db, "usernames");
 
-  // let { user } = useUserAuth();
+  let { user } = useUserAuth();
 
   const handleNavigation = () => {
     if (JSON.parse(localStorage.getItem("user")) != null) {
@@ -36,6 +36,7 @@ const LandingPage = () => {
     try {
       onSnapshot(usersRef, async () => {
         const data = await getDocs(usersRef);
+        console.log(data.docs);
         setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
       });
     } catch (e) {
@@ -50,6 +51,7 @@ const LandingPage = () => {
   function GreetGuest() {
     return (
       <div>
+        Hi guest
         <Button onClick={handleNavigation}>Log in</Button>
       </div>
     );
@@ -87,8 +89,7 @@ const LandingPage = () => {
           return (
             <Container className="card p-4 box mt-4 text-white bg-black w-50 ">
               <div>
-                <h1>Email: {user.email}</h1>
-                <h1>Username: {user.username}</h1>
+                <h1>{user.id}</h1>
               </div>
             </Container>
           );
@@ -97,6 +98,7 @@ const LandingPage = () => {
       </>
     );
   } else {
+    console.log("Users", users);
     return (
       <>
         <input
@@ -123,7 +125,7 @@ const LandingPage = () => {
           return (
             <Container className="card p-4 box mt-4 text-white bg-black w-50 ">
               <div>
-                <h1>Email: {user.email}</h1>
+                <h1>Email: {user.user_profile.user_details.email}</h1>
                 <h1>Username: {user.username}</h1>
                 <input
                   placeholder="Change age"

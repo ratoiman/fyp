@@ -7,13 +7,11 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import { UserAuthContextProvider } from "./context/UserAuthContext";
 import { Route, Routes } from "react-router-dom";
 import Signup from "./components/Signup";
+import UserSetup from "./components/UserSetup";
 
 function App() {
   return (
-    <Container
-      className="p-4 wrapper"
-      fluid
-    >
+    <Container className="p-4 wrapper" fluid>
       <Row className="row">
         <Col>
           <UserAuthContextProvider>
@@ -26,6 +24,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <Home />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/userdetails"
+                element={
+                  <ProtectedRoute>
+                    <UserSetup />
                   </ProtectedRoute>
                 }
               />

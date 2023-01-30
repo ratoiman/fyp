@@ -28,7 +28,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await googleSignIn();
-      navigate("/home");
+      // navigate("/home");
     } catch (error) {
       console.log(error.message);
     }

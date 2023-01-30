@@ -14,18 +14,44 @@ const userAuthContext = createContext();
 // const users = collection(db, "users");
 // const usernameList = collection(db,"usernames")
 
+const setUserEmail = async (userCredential) => {
+
+}
+
 export function UserAuthContextProvider({ children }) {
   const [user, setUser] = useState({});
 
   function logIn(email, password) {
     return signInWithEmailAndPassword(auth, email, password);
   }
-  function signUp(email, password, username) {
+
+  function signUp(email, password) {
     return createUserWithEmailAndPassword(auth, email, password).then(
       async (userCredential) => {
         console.log("UID: ", userCredential.user.uid);
-        await setDoc(doc(db, "users", userCredential.user.uid), {email: email, username: username})
-        await setDoc(doc(db, "usernames", username), {})
+        const detailsRef = doc(
+          db,
+          "users",
+          userCredential.user.uid,
+          "user_profile",
+          "user_details"
+        );
+        const stateRef = doc(
+          db,
+          "users",
+          userCredential.user.uid,
+          "user_profile",
+          "user_states"
+        );
+        await setDoc(detailsRef, {
+          email: email,
+        });
+
+        await setDoc(stateRef, {
+          userSetUp: false,
+        });
+
+        // await setDoc(doc(db, "usernames", username), {});
       }
     );
 
