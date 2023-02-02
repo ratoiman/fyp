@@ -1,13 +1,14 @@
 import { Col, Container, Row } from "react-bootstrap";
 import "./App.css";
-import LandingPage from "./components/LandingPage";
-import Login from "./components/Login";
-import Home from "./components/Home";
+import LandingPage from "./pages/LandingPage";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { UserAuthContextProvider } from "./context/UserAuthContext";
 import { Route, Routes } from "react-router-dom";
-import Signup from "./components/Signup";
-import UserSetup from "./components/UserSetup";
+import Signup from "./pages/Signup";
+import UserSetup from "./pages/UserSetup";
+import CreateEvent from "./components/CreateEvent";
 
 function App() {
   return (
@@ -32,6 +33,14 @@ function App() {
                 element={
                   <ProtectedRoute>
                     <UserSetup />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/newevent"
+                element={
+                  <ProtectedRoute>
+                    <CreateEvent />
                   </ProtectedRoute>
                 }
               />

@@ -24,12 +24,15 @@ const Home = () => {
     navigate("/");
   };
 
+  const handleCreateEvent = () => {
+    navigate("/newevent")
+  };
+
   return (
     <>
       <div className="p-4 box mt-3 text-center">
         Welcome <br />
         {/* {user && user.email} */}
-        
         {currentUser}
       </div>
       <Container className="login-container">
@@ -39,6 +42,10 @@ const Home = () => {
           </Button>
           <Button variant="primary" onClick={handleLanding}>
             Landing Page
+          </Button>
+
+          <Button variant="primary" onClick={handleCreateEvent}>
+            Create Event
           </Button>
         </div>
       </Container>

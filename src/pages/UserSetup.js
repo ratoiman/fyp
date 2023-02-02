@@ -7,6 +7,7 @@ import { useUserAuth } from "../context/UserAuthContext";
 import {
   collection,
   getDocs,
+  addDoc,
   setDoc,
   doc,
   onSnapshot,
@@ -82,9 +83,9 @@ const UserSetup = () => {
         db,
         "users",
         userCredential.uid,
-        "user_profile",
-        "user_details"
       );
+
+
 
       const stateRef = doc(
         db,
@@ -97,16 +98,20 @@ const UserSetup = () => {
       const usernamesRef = doc(db, "usernames", username);
 
       await setDoc(detailsRef, {
+        email: userCredential.email,
         name: name,
         surname: surname,
         username: username,
+        type: "guest"
       });
 
       await setDoc(stateRef, {
         userSetUp: true,
       });
 
-      await setDoc(usernamesRef, {});
+      await setDoc(usernamesRef, {
+        uid: userCredential.uid,
+      });
 
       if (localStorage.getItem("user") === null) {
         localStorage.setItem("user", JSON.stringify(user));
@@ -245,6 +250,7 @@ const UserSetup = () => {
               </Row>
               <Form.Control placeholder="Profile picture" type="file" />
             </Form.Group>
+            
             <div className="d-flex justify-content-center">
               <Button className="login-buttons" variant="primary" type="Submit">
                 Confirm
