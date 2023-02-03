@@ -121,6 +121,7 @@ const CreateEvent = () => {
           end_time: endTime,
           description: description,
           author: user.uid,
+          author_username: user.displayName,
         });
         await setDoc(eventRef, { status: "admin" });
         await setDoc(userRef, { status: "admin" });

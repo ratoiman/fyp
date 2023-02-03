@@ -149,7 +149,7 @@ const LandingPage = () => {
   //   const eventDetails = getDoc(eventRef);
   // });
 
-  // console.log("User events ",userEventsDetails)
+  console.log("Username ",user.displayName)
 
   return (
     <>
@@ -177,6 +177,7 @@ const LandingPage = () => {
             end_date={eventDetails.end_date}
             end_time={eventDetails.end_time}
             description={eventDetails.description}
+            author={eventDetails.author_username}
           />
         );
         // console.log("Event",event.id)

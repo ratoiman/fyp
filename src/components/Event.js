@@ -10,6 +10,7 @@ const Event = ({
   end_date,
   end_time,
   description,
+  author,
 }) => {
   const [viewStartTime, setViewStartTime] = useState("d-none");
   const [viewEndDate, setViewEndDate] = useState("d-none");
@@ -46,9 +47,10 @@ const Event = ({
         </Row>
       </div>
       <div>
-        <p>Description:</p>
+        <h3 className="mt-3">Description:</h3>
       </div>
       <div>{description}</div>
+      <div className="mt-3 text-secondary">Event created by: {author}</div>
     </Container>
   );
 };
