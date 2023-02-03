@@ -4,6 +4,7 @@ import { useNavigate } from "react-router";
 import {
   collection,
   getDocs,
+  getDoc,
   addDoc,
   deleteDoc,
   updateDoc,
@@ -16,37 +17,60 @@ import Event from "../components/Event";
 
 const LandingPage = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
+  const [userEvents, setUserEvents] = useState([]);
+  const [userEventsDetails, setUserEventsDetails] = useState([]);
   const [newName, setNewName] = useState("");
   const [newSurname, setNewSurname] = useState("");
   const [newAge, setAge] = useState(0);
   const [updatedAge, setUpdatedAge] = useState(0);
-  const usersRef = collection(db, "users");
-
-  let { user } = useUserAuth();
+  const { user } = useUserAuth();
 
   const handleNavigation = () => {
-    if (JSON.parse(localStorage.getItem("user")) != null) {
+    if (Object.keys(user).length !== 0) {
       navigate("/home");
     } else {
       navigate("/login");
     }
   };
 
-  const getUsers = () => {
+  const getUserEvents = () => {
     try {
-      onSnapshot(usersRef, async () => {
-        const data = await getDocs(usersRef);
-        setUsers(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-      });
+      if (user !== null) {
+        if (Object.keys(user).length !== 0) {
+          const usersRef = collection(db, "users", user.uid, "events");
+          onSnapshot(usersRef, async () => {
+            const data = await getDocs(usersRef);
+            setUserEvents(
+              data.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+            );
+          });
+        }
+      }
     } catch (e) {
       console.log(e);
     }
   };
 
+  const getEventsDetails = () => {
+    userEvents.map(async (event) => {
+      console.log("user events set map");
+      const eventRef = doc(db, "events", event.id, "data", "event_details");
+      const eventDetailsDoc = await getDoc(eventRef);
+      console.log("eventDetailsDoc ", eventDetailsDoc.data());
+      setUserEventsDetails((eventDetails) => [
+        ...eventDetails,
+        eventDetailsDoc.data(),
+      ]);
+    });
+  };
+
   useEffect(() => {
-    getUsers();
-  }, []);
+    getUserEvents();
+  }, [user]);
+
+  useEffect(() => {
+    getEventsDetails();
+  }, [userEvents]);
 
   function GreetGuest() {
     return (
@@ -66,21 +90,6 @@ const LandingPage = () => {
       </div>
     );
   }
-
-  const createUser = async () => {
-    await addDoc(usersRef, { name: newName, surname: newSurname, age: newAge });
-  };
-
-  const deleteUser = async (id) => {
-    const userDoc = doc(db, "users", id);
-    await deleteDoc(userDoc);
-  };
-
-  const updateUser = async (id, updatedAge) => {
-    const userDoc = doc(db, "users", id);
-    const NewFields = { age: updatedAge };
-    await updateDoc(userDoc, NewFields);
-  };
 
   // if (localStorage.getItem("user") === null) {
   //   return (
@@ -131,10 +140,47 @@ const LandingPage = () => {
   //   );
   // }
 
+  const handleNav = (nav) => {
+    navigate(nav);
+  };
+
+  // const listEvents = userEvents.map((event) => {
+  //   const eventRef = doc(db, "events", event.id, "data", "event_details");
+  //   const eventDetails = getDoc(eventRef);
+  // });
+
+  // console.log("User events ",userEventsDetails)
+
   return (
     <>
-      {" "}
-      <Event />{" "}
+      <Button
+        onClick={() => {
+          handleNav("/home");
+        }}
+      >
+        Home
+      </Button>
+      <Button
+        onClick={() => {
+          handleNav("/login");
+        }}
+      >
+        Login
+      </Button>{" "}
+      {userEventsDetails.map((eventDetails) => {
+        return (
+          <Event
+            title={eventDetails.title}
+            subtitle={eventDetails.subtitle}
+            start_date={eventDetails.start_date}
+            start_time={eventDetails.start_time}
+            end_date={eventDetails.end_date}
+            end_time={eventDetails.end_time}
+            description={eventDetails.description}
+          />
+        );
+        // console.log("Event",event.id)
+      })}
     </>
   );
 };

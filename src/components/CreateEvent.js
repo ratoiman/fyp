@@ -64,15 +64,16 @@ const CreateEvent = () => {
   const checkDate = (date, setter) => {};
 
   const checkFields = () => {
-    if (title.length !== 0 && subtitle.length !== 0) {
+    if (title.length !== 0 && description.length !== 0) {
       setEventIsValid(true);
     } else {
       if (title.length === 0) {
         setError("Title can't be empty");
         setEventIsValid(false);
       }
-      if (subtitle.length === 0) {
-        setError("Subtitle can't be empty");
+
+      if (description.length === 0) {
+        setError("Description can't be empty");
         setEventIsValid(false);
       }
     }
@@ -80,6 +81,7 @@ const CreateEvent = () => {
 
   useEffect(() => {
     handleInput(title, setShowTitle);
+    checkFields();
   }, [title]);
 
   useEffect(() => {
@@ -88,14 +90,17 @@ const CreateEvent = () => {
 
   useEffect(() => {
     handleInput(description, setShowDescription);
+    checkFields();
   }, [description]);
 
   const handleSubmit = async () => {
     checkFields();
+    console.log("Checked fields, eventIsValid", eventIsValid);
     if (eventIsValid) {
       await addDoc(eventsRef, {
         title: title,
         subtitle: subtitle,
+        author: user.uid,
       }).then(async function (docRef) {
         console.log("Document written with ID: ", docRef.id);
         const userRef = doc(db, "users", user.uid, "events", docRef.id);
@@ -108,13 +113,14 @@ const CreateEvent = () => {
           "event_details"
         );
         await setDoc(eventDetailsRef, {
+          title: title,
+          subtitle: subtitle,
           start_date: startDate,
           start_time: startTime,
           end_date: endDate,
           end_time: endTime,
           description: description,
           author: user.uid,
-          
         });
         await setDoc(eventRef, { status: "admin" });
         await setDoc(userRef, { status: "admin" });
@@ -305,7 +311,7 @@ const CreateEvent = () => {
                   // const time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
                   // console.log(Date.parse(endDate) === Date.parse(startDate));
                   // console.log(endDate > 0);
-
+                  console.log("Clicked confirm");
                   handleSubmit();
                 }}
               >

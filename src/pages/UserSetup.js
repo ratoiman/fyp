@@ -4,9 +4,11 @@ import { Form, Alert, Container, Row } from "react-bootstrap";
 import { Button } from "react-bootstrap";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
+import  {updateProfile}  from "firebase/auth";
 import {
   collection,
   getDocs,
+  getDoc,
   addDoc,
   setDoc,
   doc,
@@ -79,13 +81,7 @@ const UserSetup = () => {
   const handleSubmit = async (e) => {
     const setUserDetails = async (userCredential) => {
       console.log("UID: ", userCredential.uid);
-      const detailsRef = doc(
-        db,
-        "users",
-        userCredential.uid,
-      );
-
-
+      const detailsRef = doc(db, "users", userCredential.uid);
 
       const stateRef = doc(
         db,
@@ -102,7 +98,7 @@ const UserSetup = () => {
         name: name,
         surname: surname,
         username: username,
-        type: "guest"
+        type: "guest",
       });
 
       await setDoc(stateRef, {
@@ -111,6 +107,10 @@ const UserSetup = () => {
 
       await setDoc(usernamesRef, {
         uid: userCredential.uid,
+      });
+
+      await updateProfile(userCredential ,{
+        displayName: username,
       });
 
       if (localStorage.getItem("user") === null) {
@@ -250,7 +250,7 @@ const UserSetup = () => {
               </Row>
               <Form.Control placeholder="Profile picture" type="file" />
             </Form.Group>
-            
+
             <div className="d-flex justify-content-center">
               <Button className="login-buttons" variant="primary" type="Submit">
                 Confirm
