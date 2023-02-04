@@ -26,10 +26,10 @@ const Event = ({
     setVisible(start_time, setViewStartTime);
     setVisible(end_date, setViewEndDate);
     setVisible(end_time, setViewEndTime);
-  }, [subtitle, start_time, end_time, end_date]);
+  }, [start_time, end_time, end_date]);
 
   return (
-    <Container className="card p-4 box mt-4 text-white bg-black w-70 h-70 ">
+    <Container className="card p-4 box mt-4 text-white bg-black w-50  ">
       <div>
         <h1>{title}</h1>
       </div>

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
 import { Button, Col, Container, Row, Form, Alert } from "react-bootstrap";
@@ -23,20 +23,33 @@ const CreateEvent = () => {
   const [showDescription, setShowDescription] = useState("d-none");
   const [showEndDate, setShowEndDate] = useState("d-none");
   const [expandDate, setExpandDate] = useState("");
+  const [currentDate, setCurrentDate] = useState("");
+  const [currentTime, setCurrentTime] = useState("");
   const [startDate, setStartDate] = useState("");
-  const [isStartDateValid, setIsStartDateValid] = useState(false);
+  const [startDateFormatted, setStartDateFormatted] = useState("");
+  const [endDateFormatted, setEndDateFormatted] = useState("");
+  const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isEndDateValid, setIsEndDateValid] = useState(false);
   const [endTime, setEndTime] = useState("");
   const { user } = useUserAuth();
-
-  const currentDate = new Date();
+  const today = new Date();
 
   // Backend references
   const eventsRef = collection(db, "events");
 
   const navigate = useNavigate();
+
+  const formatDate = (date, setter) => {
+    if (date !== "") {
+      const datePart = date.match(/\d+/g);
+      const year = datePart[0].substring(0, 4);
+      const month = datePart[1];
+      const day = datePart[2];
+      setter(day + "-" + month + "-" + year);
+    }
+  };
 
   const handleHome = () => {
     navigate("/home");
@@ -60,12 +73,72 @@ const CreateEvent = () => {
     }
   };
 
-  // TODO implement date and time validity checks
-  const checkDate = (date, setter) => {};
+  const checkDateAndTime = () => {
+    const getCurrentDate = () => {
+      const year = today.getFullYear();
+      const month = (today.getMonth() + 1).toString();
+      const day = today.getDate().toString();
+      const hours = today.getHours().toString();
+      const minutes = today.getMinutes().toString();
+
+      setCurrentDate(
+        year + "-" + month.padStart(2, "0") + "-" + day.padStart(2, "0")
+      );
+      setCurrentTime(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+    };
+    getCurrentDate();
+    setIsDateAndTimeValid(true);
+    if (startDate === "") {
+      setIsDateAndTimeValid(false);
+      setError("Please select a start date");
+    }
+    if (startDate < currentDate) {
+      setIsDateAndTimeValid(false);
+      setError("Start date can't be in the past");
+    }
+    if (startTime !== "") {
+      if (startTime < currentTime && startDate == currentDate) {
+        setIsDateAndTimeValid(false);
+        setError("Start time can't be in the past");
+      }
+    }
+    if (endDate !== "") {
+      if (endDate < startDate) {
+        setIsDateAndTimeValid(false);
+        setError("End date can't be before start date");
+      }
+    }
+    if (endDate === "" && endTime !== "") {
+      setIsDateAndTimeValid(false);
+      setError("Please, select a valid end date");
+    }
+    if (
+      endDate === startDate &&
+      startTime !== "" &&
+      endTime !== "" &&
+      endTime < startTime
+    ) {
+      setIsDateAndTimeValid(false);
+      setError("End time can't be before start time");
+    }
+
+    if (isDateAndTimeValid) {
+      setError("");
+      formatDate(startDate, setStartDateFormatted);
+      formatDate(endDate, setEndDateFormatted);
+    } else {
+      setEventIsValid(false);
+    }
+  };
 
   const checkFields = () => {
-    if (title.length !== 0 && description.length !== 0) {
+    if (
+      title.length !== 0 &&
+      description.length !== 0 &&
+      isDateAndTimeValid === true
+    ) {
       setEventIsValid(true);
+      setError("");
     } else {
       if (title.length === 0) {
         setError("Title can't be empty");
@@ -93,7 +166,12 @@ const CreateEvent = () => {
     checkFields();
   }, [description]);
 
+  useEffect(() => {
+    checkDateAndTime();
+  }, [startDate, startTime, endDate, endTime]);
+
   const handleSubmit = async () => {
+    checkDateAndTime();
     checkFields();
     console.log("Checked fields, eventIsValid", eventIsValid);
     if (eventIsValid) {
@@ -115,9 +193,9 @@ const CreateEvent = () => {
         await setDoc(eventDetailsRef, {
           title: title,
           subtitle: subtitle,
-          start_date: startDate,
+          start_date: startDateFormatted,
           start_time: startTime,
-          end_date: endDate,
+          end_date: endDateFormatted,
           end_time: endTime,
           description: description,
           author: user.uid,
@@ -127,7 +205,6 @@ const CreateEvent = () => {
         await setDoc(userRef, { status: "admin" });
         console.log("Event created with ID:", docRef.id);
       });
-      //   console.log("Event created with id: ", eventsRef.id);
       navigate("/home");
     } else {
       setShowAlert(true);
@@ -158,7 +235,7 @@ const CreateEvent = () => {
         )}
         <Container className="mt-4 d-flex flex-column justify-content-center">
           <Form>
-            {/* Title */}
+            {/* Event Title */}
             <Form.Group>
               {/* <Row> */}
               <Form.Label
@@ -183,7 +260,7 @@ const CreateEvent = () => {
               </p>
             </Form.Group>
 
-            {/* Subtitle */}
+            {/* Event Subtitle */}
             <Form.Group>
               <Row>
                 <Form.Label
@@ -219,6 +296,7 @@ const CreateEvent = () => {
                     placeholder="Start Date"
                     onChange={(e) => {
                       setStartDate(e.target.value);
+                      checkDateAndTime();
                     }}
                   />
                 </Form.Group>
@@ -231,6 +309,7 @@ const CreateEvent = () => {
                     placeholder="Start time"
                     onChange={(e) => {
                       setStartTime(e.target.value);
+                      checkDateAndTime();
                     }}
                   />
                 </Form.Group>
@@ -246,6 +325,7 @@ const CreateEvent = () => {
                     placeholder="End Date"
                     onChange={(e) => {
                       setEndDate(e.target.value);
+                      checkDateAndTime();
                     }}
                   />
                 </Form.Group>
@@ -258,6 +338,7 @@ const CreateEvent = () => {
                     placeholder="Start Date"
                     onChange={(e) => {
                       setEndTime(e.target.value);
+                      checkDateAndTime();
                     }}
                   />
                 </Form.Group>
@@ -308,11 +389,9 @@ const CreateEvent = () => {
               <Button
                 className="text-black mt-4"
                 variant="primary"
-                onClick={() => {
-                  // const time = date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds()
-                  // console.log(Date.parse(endDate) === Date.parse(startDate));
-                  // console.log(endDate > 0);
-                  console.log("Clicked confirm");
+                onClick={async () => {
+                  checkDateAndTime();
+                  checkFields();
                   handleSubmit();
                 }}
               >

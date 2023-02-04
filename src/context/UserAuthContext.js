@@ -8,11 +8,11 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth, db } from "../utils/firebase";
-import { addDoc, collection, doc, setDoc } from "firebase/firestore";
+import { addDoc, collection, doc, getDoc, setDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 const userAuthContext = createContext();
-// const users = collection(db, "users");
-// const usernameList = collection(db,"usernames")
 
 const setUserEmail = async (userCredential) => {};
 
@@ -47,9 +47,36 @@ export function UserAuthContextProvider({ children }) {
   function logOut() {
     return signOut(auth);
   }
+  const navigate = useNavigate();
+
   function googleSignIn() {
     const googleAuthProvider = new GoogleAuthProvider();
-    return signInWithPopup(auth, googleAuthProvider);
+    return signInWithPopup(auth, googleAuthProvider).then(
+      async (userCredential) => {
+        console.log("UID: ", userCredential.user.uid);
+        const userRef = doc(db, "users", userCredential.user.uid);
+        const userDoc = await getDoc(userRef);
+
+        if (userDoc.data() === undefined) {
+          const stateRef = doc(
+            db,
+            "users",
+            userCredential.user.uid,
+            "user_profile",
+            "user_states"
+          );
+          await setDoc(stateRef, {
+            userSetUp: false,
+          });
+          console.log("after setDoc");
+          navigate("userdetails");
+
+          console.log("after navigate");
+        } else {
+          console.log("User Doc", userDoc.data());
+        }
+      }
+    );
   }
 
   useEffect(() => {
