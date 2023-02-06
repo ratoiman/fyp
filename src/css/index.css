@@ -18,7 +18,7 @@ code {
 }
 
 #root {
-  height: 100vh;
+  min-height: 100vh;
   flex-grow: 1;
   display: flex;
   justify-content: center;
@@ -29,11 +29,18 @@ code {
   padding-right: 10%; */
 }
 
+.create_event_links{
+  color: white;
+}
+.create_event_links:hover{
+ color:gray;
+}
+
 .wrapper {
   animation: scroll 125s linear infinite;
   background: url("https://images.unsplash.com/photo-1465146633011-14f8e0781093?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=3450&q=80"), #111111;
   color: #eee;
-  height: 100%;
+  min-height: 100%;
   min-width: 360px;
   width: 100%;
   display: flex;

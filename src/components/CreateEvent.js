@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
 import { Button, Col, Container, Row, Form, Alert } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import AddNewActivity from "./AddNewActivity";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { DesktopTimePicker } from "@mui/x-date-pickers/DesktopTimePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -31,7 +32,7 @@ const CreateEvent = () => {
   const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
   const [startTime, setStartTime] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [isEndDateValid, setIsEndDateValid] = useState(false);
+  const [newActivityPopout, setNewActivityPopout] = useState(false);
   const [endTime, setEndTime] = useState("");
   const { user } = useUserAuth();
   const today = new Date();
@@ -97,7 +98,7 @@ const CreateEvent = () => {
       setError("Start date can't be in the past");
     }
     if (startTime !== "") {
-      if (startTime < currentTime && startDate == currentDate) {
+      if (startTime < currentTime && startDate === currentDate) {
         setIsDateAndTimeValid(false);
         setError("Start time can't be in the past");
       }
@@ -150,6 +151,11 @@ const CreateEvent = () => {
         setEventIsValid(false);
       }
     }
+  };
+
+  const newActivity = () => {
+    setNewActivityPopout(!newActivityPopout);
+    console.log(newActivityPopout);
   };
 
   useEffect(() => {
@@ -216,10 +222,10 @@ const CreateEvent = () => {
       <Button onClick={handleHome}>Home</Button>
       <Container
         className="card p-4 box mt-4 bg-black square rounded-9 border border-2"
-        style={{ width: "50%" }}
+        style={{ minWidth: "50%", maxWidth: "60%" }}
       >
         <Row>
-          <h1 className="d-flex mb-3 text-light justify-content-center">
+          <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
             Create new event
           </h1>{" "}
         </Row>
@@ -237,7 +243,6 @@ const CreateEvent = () => {
           <Form>
             {/* Event Title */}
             <Form.Group>
-              {/* <Row> */}
               <Form.Label
                 className={`fs-6 fw-normal d-flex mb-3 text-light  ms-1 mt-1 ${showTitle}`}
               >
@@ -246,7 +251,6 @@ const CreateEvent = () => {
                   (required)
                 </text>
               </Form.Label>
-              {/* </Row> */}
               <Form.Control
                 maxLength={50}
                 type="text"
@@ -259,7 +263,6 @@ const CreateEvent = () => {
                 *max 50 characters
               </p>
             </Form.Group>
-
             {/* Event Subtitle */}
             <Form.Group>
               <Row>
@@ -284,9 +287,7 @@ const CreateEvent = () => {
                 *max 50 characters
               </p>
             </Form.Group>
-
             {/* Date and time picker */}
-
             <Row className="mb-4">
               <Col>
                 <Form.Group>
@@ -315,7 +316,6 @@ const CreateEvent = () => {
                 </Form.Group>
               </Col>
             </Row>
-
             <Row className={`mb-3 ${showEndDate}`}>
               <Col>
                 <Form.Group>
@@ -345,22 +345,56 @@ const CreateEvent = () => {
               </Col>
             </Row>
 
-            <Button
-              className="bg-transparent outline-none mb-3"
-              variant="dark"
+            <Link
+              className="d-flex  justify-content-left mb-4 create_event_links"
+              style={{ textDecoration: "none" }}
               onClick={showDate}
             >
-              <Row className="d-flex flex-row">
-                <Col xs={2}>
+              <Row className="">
+                <Col md="auto">
                   <i>
                     {" "}
                     <PlusCircleDotted className={`${expandDate}`} />
                     <DashCircleDotted className={`${showEndDate}`} />
                   </i>
                 </Col>
-                <Col md="auto">End date and time</Col>
+                <Col>End date and time</Col>
               </Row>
-            </Button>
+            </Link>
+
+            {/* //TODO add event location (add option to select if event is in person or virtual) */}
+
+            {/* Add new activity */}
+            <Row className="d-flex flex-column mb-3">
+              <Col
+                className="d-flex mb-3 fs-2 fw-normal justify-content-center"
+                onClick={() => {
+                  console.log("ON click");
+                }}
+              >
+                Activities
+              </Col>
+              <Col className="mb-3 d-flex justify-content-left">
+                <Link
+                  className="create_event_links"
+                  variant="dark"
+                  style={{ textDecoration: "none" }}
+                  onClick={newActivity}
+                >
+                  <Row className="">
+                    <Col>
+                      <i>
+                        {" "}
+                        <PlusCircleDotted />
+                      </i>
+                    </Col>
+                    <Col md="auto" className="">
+                      Add new activity
+                    </Col>
+                  </Row>
+                </Link>
+              </Col>
+            </Row>
 
             {/* Description */}
             <Form.Group>
@@ -383,7 +417,6 @@ const CreateEvent = () => {
                 }}
               />
             </Form.Group>
-
             {/* Confirm */}
             <div className="d-flex justify-content-center">
               <Button
@@ -399,6 +432,14 @@ const CreateEvent = () => {
               </Button>
             </div>
           </Form>
+          <AddNewActivity
+            trigger={newActivityPopout}
+            setTrigger={setNewActivityPopout}
+            eventStartDate={startDate}
+            eventStartTime = {startTime}
+            eventEndDate = {endDate}
+            eventEndTime = {endTime}
+          />
         </Container>
       </Container>
     </>

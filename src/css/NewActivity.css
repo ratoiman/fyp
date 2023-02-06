@@ -1,0 +1,22 @@
+.popup{
+    position:absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 98%;
+    background-color:rgba(235, 228, 228, 1);
+    /* opacity: 60%; */
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-inner{
+    position: absolute;
+    padding: 1%;
+    top: 0;
+    width: 100%;
+    border-style: solid;
+    background-color: blueviolet;
+} 
