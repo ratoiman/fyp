@@ -1,56 +1,46 @@
 import React, { useEffect, useState } from "react";
 import dayjs from "dayjs";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
-import { Button, Col, Container, Row, Form, Alert } from "react-bootstrap";
+import { Col, Container, Row, Form, Alert } from "react-bootstrap";
+// import Button from "@mui/material-next/Button";
+import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
 import AddNewActivity from "./AddNewActivity";
 import { LocalizationProvider } from "@mui/x-date-pickers";
-import { DesktopTimePicker } from "@mui/x-date-pickers/DesktopTimePicker";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import TextField from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import { StyledTextField } from "../ui_styles/MuiStyles";
+import { hover } from "@testing-library/user-event/dist/hover";
 
 const CreateEvent = () => {
+  const today = new Date();
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [eventIsValid, setEventIsValid] = useState(false);
-  const [showTitle, setShowTitle] = useState("d-none");
-  const [showSubtitle, setShowSubtitle] = useState("d-none");
-  const [showDescription, setShowDescription] = useState("d-none");
   const [showEndDate, setShowEndDate] = useState("d-none");
   const [expandDate, setExpandDate] = useState("");
   const [currentDate, setCurrentDate] = useState("");
   const [currentTime, setCurrentTime] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [startDateFormatted, setStartDateFormatted] = useState("");
-  const [endDateFormatted, setEndDateFormatted] = useState("");
+  const [startDate, setStartDate] = useState(null);
   const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [newActivityPopout, setNewActivityPopout] = useState(false);
-  const [endTime, setEndTime] = useState("");
+  const [endTime, setEndTime] = useState(null);
   const { user } = useUserAuth();
-  const today = new Date();
 
   // Backend references
   const eventsRef = collection(db, "events");
 
   const navigate = useNavigate();
-
-  const formatDate = (date, setter) => {
-    if (date !== "") {
-      const datePart = date.match(/\d+/g);
-      const year = datePart[0].substring(0, 4);
-      const month = datePart[1];
-      const day = datePart[2];
-      setter(day + "-" + month + "-" + year);
-    }
-  };
 
   const handleHome = () => {
     navigate("/home");
@@ -125,8 +115,6 @@ const CreateEvent = () => {
 
     if (isDateAndTimeValid) {
       setError("");
-      formatDate(startDate, setStartDateFormatted);
-      formatDate(endDate, setEndDateFormatted);
     } else {
       setEventIsValid(false);
     }
@@ -159,18 +147,8 @@ const CreateEvent = () => {
   };
 
   useEffect(() => {
-    handleInput(title, setShowTitle);
     checkFields();
-  }, [title]);
-
-  useEffect(() => {
-    handleInput(subtitle, setShowSubtitle);
-  }, [subtitle]);
-
-  useEffect(() => {
-    handleInput(description, setShowDescription);
-    checkFields();
-  }, [description]);
+  }, [title, description]);
 
   useEffect(() => {
     checkDateAndTime();
@@ -196,13 +174,44 @@ const CreateEvent = () => {
           "data",
           "event_details"
         );
+        let formattedStartTime = "";
+        let formattedEndDate = "";
+        let formattedEndTime = "";
+
+        const formattedStartDate =
+          startDate.toDate().getDate().toString().padStart(2, "0") +
+          "/" +
+          (startDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
+          "/" +
+          startDate.toDate().getFullYear().toString();
+
+        if (startTime) {
+          formattedStartTime =
+            startTime.toDate().getHours().toString() +
+            ":" +
+            startTime.toDate().getMinutes().toString().padStart(2, "0");
+        }
+        if (endDate) {
+          formattedEndDate =
+            endDate.toDate().getDate().toString().padStart(2, "0") +
+            "/" +
+            (endDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
+            "/" +
+            endDate.toDate().getFullYear().toString();
+        }
+        if (endTime) {
+          formattedEndTime =
+            startTime.toDate().getHours().toString() +
+            ":" +
+            startTime.toDate().getMinutes().toString().padStart(2, "0");
+        }
         await setDoc(eventDetailsRef, {
           title: title,
           subtitle: subtitle,
-          start_date: startDateFormatted,
-          start_time: startTime,
-          end_date: endDateFormatted,
-          end_time: endTime,
+          start_date: formattedStartDate,
+          start_time: formattedStartTime,
+          end_date: formattedEndDate,
+          end_time: formattedEndTime,
           description: description,
           author: user.uid,
           author_username: user.displayName,
@@ -221,12 +230,12 @@ const CreateEvent = () => {
     <>
       <Button onClick={handleHome}>Home</Button>
       <Container
-        className="card p-4 box mt-4 bg-black square rounded-9 border border-2"
+        className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
         style={{ minWidth: "50%", maxWidth: "60%" }}
       >
         <Row>
           <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
-            Create new event
+            Create new event MUI
           </h1>{" "}
         </Row>
         {error && (
@@ -240,110 +249,88 @@ const CreateEvent = () => {
           </Alert>
         )}
         <Container className="mt-4 d-flex flex-column justify-content-center">
-          <Form>
-            {/* Event Title */}
-            <Form.Group>
-              <Form.Label
-                className={`fs-6 fw-normal d-flex mb-3 text-light  ms-1 mt-1 ${showTitle}`}
-              >
-                Event Title
-                <text className="fs-6 fw-normal text-secondary ms-2">
-                  (required)
-                </text>
-              </Form.Label>
-              <Form.Control
-                maxLength={50}
-                type="text"
-                placeholder="Event title (required)"
-                onChange={(e) => {
-                  setTitle(e.target.value);
-                }}
-              />
-              <p className="fs-6 fw-normal text-secondary">
-                *max 50 characters
-              </p>
-            </Form.Group>
+          <Box>
+            {/* //TODO find how to set max chars for input  */}
+            <StyledTextField
+              className="mt-3 mb-3 w-100 text-light"
+              required
+              variant="outlined"
+              id="outline-required"
+              label="Event Title"
+              defaultValue=""
+              onChange={(e) => {
+                setTitle(e.target.value);
+              }}
+            />
+
             {/* Event Subtitle */}
-            <Form.Group>
-              <Row>
-                <Form.Label
-                  className={`fs-6 fw-normal d-flex mb-3 text-light ms-1 mt-1 ${showSubtitle}`}
-                >
-                  Event Subtitle
-                  <text className="fs-6 fw-normal text-secondary ms-2 d-flex">
-                    (optional)
-                  </text>
-                </Form.Label>
-              </Row>
-              <Form.Control
-                maxLength={50}
-                type="text"
-                placeholder="Event Subtitle"
-                onChange={(e) => {
-                  setSubtitle(e.target.value);
-                }}
-              />
-              <p className="fs-6 fw-normal text-secondary">
-                *max 50 characters
-              </p>
-            </Form.Group>
+            <StyledTextField
+              className="mt-3 mb-3 w-100 text-light"
+              variant="outlined"
+              id="outline-basic"
+              label="Event Subitle"
+              defaultValue=""
+              onChange={(e) => {
+                setSubtitle(e.target.value);
+              }}
+            />
+
             {/* Date and time picker */}
-            <Row className="mb-4">
-              <Col>
-                <Form.Group>
-                  <Form.Label>Start date</Form.Label>
-                  <Form.Control
-                    type="date"
-                    placeholder="Start Date"
-                    onChange={(e) => {
-                      setStartDate(e.target.value);
-                      checkDateAndTime();
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <Row className="mt-2 mb-3">
+                <Col>
+                  <DatePicker
+                    className="w-100"
+                    label="Start date"
+                    openTo="day"
+                    views={["month", "year", "day"]}
+                    inputFormat="DD/MM/YYYY"
+                    value={startDate}
+                    onChange={(newValue) => {
+                      setStartDate(newValue);
                     }}
+                    renderInput={(params) => <StyledTextField {...params} />}
                   />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>Start time</Form.Label>
-                  <Form.Control
-                    type="time"
-                    placeholder="Start time"
-                    onChange={(e) => {
-                      setStartTime(e.target.value);
-                      checkDateAndTime();
+                </Col>
+
+                <Col>
+                  <TimePicker
+                    className="w-100"
+                    label="Start time"
+                    value={startTime}
+                    onChange={setStartTime}
+                    renderInput={(params) => <StyledTextField {...params} />}
+                  />
+                </Col>
+              </Row>
+
+              <Row className={`mt-3 mb-3 ${showEndDate}`}>
+                <Col>
+                  <DatePicker
+                    className="w-100"
+                    label="End date"
+                    openTo="day"
+                    views={["month", "year", "day"]}
+                    inputFormat="DD/MM/YYYY"
+                    value={endDate}
+                    onChange={(newValue) => {
+                      setEndDate(newValue);
                     }}
+                    renderInput={(params) => <StyledTextField {...params} />}
                   />
-                </Form.Group>
-              </Col>
-            </Row>
-            <Row className={`mb-3 ${showEndDate}`}>
-              <Col>
-                <Form.Group>
-                  <Form.Label>End date</Form.Label>
-                  <Form.Control
-                    type="date"
-                    placeholder="End Date"
-                    onChange={(e) => {
-                      setEndDate(e.target.value);
-                      checkDateAndTime();
-                    }}
+                </Col>
+
+                <Col>
+                  <TimePicker
+                    className="w-100"
+                    label="End time"
+                    value={endTime}
+                    onChange={setEndTime}
+                    renderInput={(params) => <StyledTextField {...params} />}
                   />
-                </Form.Group>
-              </Col>
-              <Col>
-                <Form.Group>
-                  <Form.Label>End time</Form.Label>
-                  <Form.Control
-                    type="time"
-                    placeholder="Start Date"
-                    onChange={(e) => {
-                      setEndTime(e.target.value);
-                      checkDateAndTime();
-                    }}
-                  />
-                </Form.Group>
-              </Col>
-            </Row>
+                </Col>
+              </Row>
+            </LocalizationProvider>
 
             <Link
               className="d-flex  justify-content-left mb-4 create_event_links"
@@ -397,32 +384,27 @@ const CreateEvent = () => {
             </Row>
 
             {/* Description */}
-            <Form.Group>
-              <Row>
-                <Form.Label
-                  className={`fs-6 fw-normal d-flex mb-3 text-light ms-1 mt-1 ${showDescription}`}
-                >
-                  Event Description
-                  <text className="fs-6 fw-normal text-secondary ms-2 d-flex">
-                    (required)
-                  </text>
-                </Form.Label>
-              </Row>
-              <Form.Control
-                as="textarea"
-                type="text"
-                placeholder="Event Description"
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
-              />
-            </Form.Group>
+            <StyledTextField
+              className="mt-3 mb-3 w-100 text-light"
+              required
+              multiline
+              id="outline-basic"
+              label="Event Description"
+              defaultValue=""
+              onChange={(e) => {
+                setDescription(e.target.value);
+              }}
+            />
 
             {/* Confirm */}
             <div className="d-flex justify-content-center">
               <Button
-                className="text-black mt-4"
-                variant="primary"
+                sx={{
+                  color: "#DAA520",
+                  outline: "#DAA520",
+                }}
+                className="mt-4"
+                variant="outlined"
                 onClick={async () => {
                   checkDateAndTime();
                   checkFields();
@@ -432,7 +414,7 @@ const CreateEvent = () => {
                 Confirm
               </Button>
             </div>
-          </Form>
+          </Box>
           <AddNewActivity
             trigger={newActivityPopout}
             setTrigger={setNewActivityPopout}

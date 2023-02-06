@@ -8,7 +8,7 @@ import { UserAuthContextProvider } from "./context/UserAuthContext";
 import { Route, Routes } from "react-router-dom";
 import Signup from "./pages/Signup";
 import UserSetup from "./pages/UserSetup";
-import CreateEvent from "./components/CreateEvent";
+import CreateEventMUI from "./components/CreateEventMUI";
 
 function App() {
   return (
@@ -40,7 +40,7 @@ function App() {
                 path="/newevent"
                 element={
                   <ProtectedRoute>
-                    <CreateEvent />
+                    <CreateEventMUI />
                   </ProtectedRoute>
                 }
               />
