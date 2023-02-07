@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import dayjs from "dayjs";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
 import { Col, Container, Row, Form, Alert } from "react-bootstrap";
 // import Button from "@mui/material-next/Button";
@@ -14,11 +13,16 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Box from "@mui/material/Box";
-import { StyledTextField } from "../ui_styles/MuiStyles";
-import { hover } from "@testing-library/user-event/dist/hover";
+import {
+  StyledTextField,
+  pickerStyle,
+  popupStyle,
+} from "../ui_styles/MuiStyles";
+import Modal from "@mui/material/Modal";
+import Typography from "@mui/material/Typography";
 
+// TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
-  const today = new Date();
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
@@ -35,7 +39,31 @@ const CreateEvent = () => {
   const [endDate, setEndDate] = useState(null);
   const [newActivityPopout, setNewActivityPopout] = useState(false);
   const [endTime, setEndTime] = useState(null);
+  const [formattedStartTime, setFormattedStartTime] = useState(null);
+  const [formattedStartDate, setFormattedStartDate] = useState(null);
+  const [formattedEndTime, setFormattedEndTime] = useState(null);
+  const [formattedEndDate, setFormattedEndDate] = useState(null);
+
+  // store data from the latest new activity (in case user didn't finish editing, so nothing will be lost)
+  const [activityTitle, setActivityTitle] = useState(null);
+  const [activityStartDate, setActivityStartDate] = useState(null);
+  const [activityStartTime, setActivityStartTime] = useState(null);
+  const [activityEndDate, setActivityEndDate] = useState(null);
+  const [activityEndTime, setActivityEndTime] = useState(null);
+  const [activityDescription, setActivityDescription] = useState(null);
+  const [activities, setActivities] = useState([]);
+
+  // error and validation handling
+
+  const [titleError, setTitleError] = useState(false);
+  const [startDateErrorMessage, setStartDateErrorMessage] = useState(null);
+  const [startDateError, setStartDateError] = useState(null);
+  const [startTimeError, setStartTimeError] = useState(false);
+  const [endDateError, setEndDateError] = useState(false);
+  const [endTimeError, setEndTimeError] = useState(false);
+
   const { user } = useUserAuth();
+  const today = new Date();
 
   // Backend references
   const eventsRef = collection(db, "events");
@@ -46,11 +74,46 @@ const CreateEvent = () => {
     navigate("/home");
   };
 
-  const handleInput = (input, setter) => {
-    if (input === "") {
-      setter("d-none");
+  const formatDatesAndTime = () => {
+    if (startDate) {
+      setFormattedStartDate(
+        startDate.toDate().getDate().toString().padStart(2, "0") +
+          "-" +
+          (startDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
+          "-" +
+          startDate.toDate().getFullYear().toString()
+      );
     } else {
-      setter("");
+      setFormattedStartDate(null);
+    }
+    if (startTime) {
+      setFormattedStartTime(
+        startTime.toDate().getHours().toString() +
+          ":" +
+          startTime.toDate().getMinutes().toString().padStart(2, "0")
+      );
+    } else {
+      setFormattedStartTime(null);
+    }
+    if (endDate) {
+      setFormattedEndDate(
+        endDate.toDate().getDate().toString().padStart(2, "0") +
+          "/" +
+          (endDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
+          "/" +
+          endDate.toDate().getFullYear().toString()
+      );
+    } else {
+      setFormattedEndDate(null);
+    }
+    if (endTime) {
+      setFormattedEndTime(
+        startTime.toDate().getHours().toString() +
+          ":" +
+          startTime.toDate().getMinutes().toString().padStart(2, "0")
+      );
+    } else {
+      setFormattedEndTime(null);
     }
   };
 
@@ -73,41 +136,44 @@ const CreateEvent = () => {
       const minutes = today.getMinutes().toString();
 
       setCurrentDate(
-        year + "-" + month.padStart(2, "0") + "-" + day.padStart(2, "0")
+        day.padStart(2, "0") + "-" + month.padStart(2, "0") + "-" + year
       );
       setCurrentTime(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
     };
     getCurrentDate();
     setIsDateAndTimeValid(true);
-    if (startDate === "") {
+    if (formattedStartDate === "") {
       setIsDateAndTimeValid(false);
       setError("Please select a start date");
     }
-    if (startDate < currentDate) {
+    if (formattedStartDate < currentDate) {
       setIsDateAndTimeValid(false);
       setError("Start date can't be in the past");
     }
-    if (startTime !== "") {
-      if (startTime < currentTime && startDate === currentDate) {
+    if (formattedStartTime !== "") {
+      if (
+        formattedStartTime < currentTime &&
+        formattedStartDate === currentDate
+      ) {
         setIsDateAndTimeValid(false);
         setError("Start time can't be in the past");
       }
     }
-    if (endDate !== "") {
-      if (endDate < startDate) {
+    if (formattedEndDate !== "") {
+      if (formattedEndDate < formattedStartDate) {
         setIsDateAndTimeValid(false);
         setError("End date can't be before start date");
       }
     }
-    if (endDate === "" && endTime !== "") {
+    if (formattedEndDate === "" && formattedEndTime !== "") {
       setIsDateAndTimeValid(false);
       setError("Please, select a valid end date");
     }
     if (
-      endDate === startDate &&
+      formattedEndDate === formattedStartDate &&
       startTime !== "" &&
-      endTime !== "" &&
-      endTime < startTime
+      formattedStartTime !== "" &&
+      formattedEndTime < formattedStartTime
     ) {
       setIsDateAndTimeValid(false);
       setError("End time can't be before start time");
@@ -143,7 +209,10 @@ const CreateEvent = () => {
 
   const newActivity = () => {
     setNewActivityPopout(!newActivityPopout);
-    console.log(newActivityPopout);
+  };
+
+  const saveActivity = (activity) => {
+    setActivities([...activities, activity]);
   };
 
   useEffect(() => {
@@ -151,8 +220,17 @@ const CreateEvent = () => {
   }, [title, description]);
 
   useEffect(() => {
+    formatDatesAndTime();
+  }, [startTime, startDate, endTime, endDate]);
+
+  useEffect(() => {
     checkDateAndTime();
-  }, [startDate, startTime, endDate, endTime]);
+  }, [
+    formattedStartDate,
+    formattedStartTime,
+    formattedEndDate,
+    formattedEndTime,
+  ]);
 
   const handleSubmit = async () => {
     checkDateAndTime();
@@ -174,37 +252,6 @@ const CreateEvent = () => {
           "data",
           "event_details"
         );
-        let formattedStartTime = "";
-        let formattedEndDate = "";
-        let formattedEndTime = "";
-
-        const formattedStartDate =
-          startDate.toDate().getDate().toString().padStart(2, "0") +
-          "/" +
-          (startDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
-          "/" +
-          startDate.toDate().getFullYear().toString();
-
-        if (startTime) {
-          formattedStartTime =
-            startTime.toDate().getHours().toString() +
-            ":" +
-            startTime.toDate().getMinutes().toString().padStart(2, "0");
-        }
-        if (endDate) {
-          formattedEndDate =
-            endDate.toDate().getDate().toString().padStart(2, "0") +
-            "/" +
-            (endDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
-            "/" +
-            endDate.toDate().getFullYear().toString();
-        }
-        if (endTime) {
-          formattedEndTime =
-            startTime.toDate().getHours().toString() +
-            ":" +
-            startTime.toDate().getMinutes().toString().padStart(2, "0");
-        }
         await setDoc(eventDetailsRef, {
           title: title,
           subtitle: subtitle,
@@ -225,7 +272,6 @@ const CreateEvent = () => {
       setShowAlert(true);
     }
   };
-
   return (
     <>
       <Button onClick={handleHome}>Home</Button>
@@ -289,7 +335,9 @@ const CreateEvent = () => {
                     onChange={(newValue) => {
                       setStartDate(newValue);
                     }}
-                    renderInput={(params) => <StyledTextField {...params} />}
+                    renderInput={(params) => (
+                      <StyledTextField required sx={pickerStyle} {...params} />
+                    )}
                   />
                 </Col>
 
@@ -299,7 +347,9 @@ const CreateEvent = () => {
                     label="Start time"
                     value={startTime}
                     onChange={setStartTime}
-                    renderInput={(params) => <StyledTextField {...params} />}
+                    renderInput={(params) => (
+                      <StyledTextField sx={pickerStyle} {...params} />
+                    )}
                   />
                 </Col>
               </Row>
@@ -316,7 +366,9 @@ const CreateEvent = () => {
                     onChange={(newValue) => {
                       setEndDate(newValue);
                     }}
-                    renderInput={(params) => <StyledTextField {...params} />}
+                    renderInput={(params) => (
+                      <StyledTextField sx={pickerStyle} {...params} />
+                    )}
                   />
                 </Col>
 
@@ -326,12 +378,15 @@ const CreateEvent = () => {
                     label="End time"
                     value={endTime}
                     onChange={setEndTime}
-                    renderInput={(params) => <StyledTextField {...params} />}
+                    renderInput={(params) => (
+                      <StyledTextField sx={pickerStyle} {...params} />
+                    )}
                   />
                 </Col>
               </Row>
             </LocalizationProvider>
 
+            {/* End date and time */}
             <Link
               className="d-flex  justify-content-left mb-4 create_event_links"
               style={{ textDecoration: "none" }}
@@ -353,20 +408,23 @@ const CreateEvent = () => {
 
             {/* Add new activity */}
             <Row className="d-flex flex-column mb-3">
-              <Col
-                className="d-flex mb-3 fs-2 fw-normal justify-content-center"
-                onClick={() => {
-                  console.log("ON click");
-                }}
-              >
+              <Col className="d-flex mb-3 fs-2 fw-normal justify-content-center">
                 Activities
               </Col>
               <Col className="mb-3 d-flex justify-content-left">
+                <Row>
+                  {activities.map((activity) => {
+                    return <div> Ttile: {activity.title}</div>;
+                  })}
+                </Row>
                 <Link
                   className="create_event_links"
                   variant="dark"
                   style={{ textDecoration: "none" }}
-                  onClick={newActivity}
+                  onClick={() => {
+                    formatDatesAndTime();
+                    newActivity();
+                  }}
                 >
                   <Row className="">
                     <Col>
@@ -400,29 +458,63 @@ const CreateEvent = () => {
             <div className="d-flex justify-content-center">
               <Button
                 sx={{
-                  color: "#DAA520",
+                  color: "white",
                   outline: "#DAA520",
                 }}
                 className="mt-4"
                 variant="outlined"
                 onClick={async () => {
+                  formatDatesAndTime();
                   checkDateAndTime();
                   checkFields();
-                  handleSubmit();
+                  // handleSubmit();
+                  // console.log(error, isDateAndTimeValid);
+                  // console.log("start date", formattedStartDate);
+
+                  // console.log(formattedStartTime);
+
+                  // console.log(formattedEndDate);
+
+                  console.log("activities: ", activities);
+                  // setActivities([])
                 }}
               >
                 Confirm
               </Button>
             </div>
           </Box>
-          <AddNewActivity
-            trigger={newActivityPopout}
-            setTrigger={setNewActivityPopout}
-            eventStartDate={startDate}
-            eventStartTime={startTime}
-            eventEndDate={endDate}
-            eventEndTime={endTime}
-          />
+          <Modal
+            sx={{ overflow: "auto" }}
+            open={newActivityPopout}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={popupStyle}>
+              <AddNewActivity
+                trigger={newActivityPopout}
+                setTrigger={newActivity}
+                // all setters and getters for activity reffer to the current
+                // activity that is being created
+                setActivityTitle={setActivityTitle}
+                setActivityStartDate={setActivityStartDate}
+                setActivityStartTime={setActivityStartTime}
+                setActivityEndDate={setActivityEndDate}
+                setActivityEndTime={setActivityEndTime}
+                setActivityDescription={setActivityDescription}
+                activityTitle={activityTitle}
+                activityStartDate={activityStartDate}
+                activityStartTime={activityStartTime}
+                activityEndDate={activityEndDate}
+                activityEndTime={activityEndTime}
+                activityDescription={activityDescription}
+                saveActivity={saveActivity}
+                eventStartDate={formattedStartDate}
+                eventStartTime={startTime}
+                eventEndDate={formattedEndDate}
+                eventEndTime={endTime}
+              />
+            </Box>
+          </Modal>
         </Container>
       </Container>
     </>
