@@ -22,7 +22,7 @@ import Typography from "@mui/material/Typography";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
-  const [error, setError] = useState("");
+  // const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,7 +34,7 @@ const CreateEvent = () => {
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
   const [startDate, setStartDate] = useState(null);
-  const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
+  // const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [newActivityPopout, setNewActivityPopout] = useState(false);
@@ -57,12 +57,27 @@ const CreateEvent = () => {
 
   // error and validation handling
 
+  const [showError, setShowError] = useState(false);
+
   const [titleError, setTitleError] = useState(false);
-  const [startDateErrorMessage, setStartDateErrorMessage] = useState(null);
-  const [startDateError, setStartDateError] = useState(null);
+  const titleErrorMessage = "Title can't be empty";
+
+  const [descriptionError, setDescriptionError] = useState(false);
+  const descriptionErrorMessage = "Description can't be empty";
+
+  const [startDateError, setStartDateError] = useState(false);
+  const [startDateErrorMessage, setStartDateErrorMessage] = useState("");
+
   const [startTimeError, setStartTimeError] = useState(false);
+  const [startTimeErrorMessage, setStartTimeErrorMessage] = useState(false);
+
   const [endDateError, setEndDateError] = useState(false);
+  const [endDateErrorMessage, setEndDateErrorMessage] = useState("");
+
   const [endTimeError, setEndTimeError] = useState(false);
+  const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
+
+  let isDateAndTimeValid = false;
 
   const { user } = useUserAuth();
   const today = new Date();
@@ -132,71 +147,125 @@ const CreateEvent = () => {
     }
   };
 
+  // const checkDateAndTime = () => {
+  //   getCurrentDate();
+  //   setIsDateAndTimeValid(true);
+  //   if (!formattedStartDate) {
+  //     setIsDateAndTimeValid(false);
+  //     setError("Please select a start date");
+  //   }
+  //   if (formattedStartDate < currentDate) {
+  //     setIsDateAndTimeValid(false);
+  //     setError("Start date can't be in the past");
+  //   }
+  //   if (formattedStartTime) {
+  //     if (
+  //       formattedStartTime < currentTime &&
+  //       formattedStartDate === currentDate
+  //     ) {
+  //       setIsDateAndTimeValid(false);
+  //       setError("Start time can't be in the past");
+  //     }
+  //   }
+  //   if (formattedEndDate) {
+  //     if (formattedEndDate < formattedStartDate) {
+  //       setIsDateAndTimeValid(false);
+  //       setError("End date can't be before start date");
+  //     }
+  //   }
+  //   if (!formattedEndDate && formattedEndTime) {
+  //     setIsDateAndTimeValid(false);
+  //     setError("Please, select a valid end date");
+  //   }
+  //   if (
+  //     formattedEndDate === formattedStartDate &&
+  //     formattedStartTime &&
+  //     formattedEndTime &&
+  //     formattedEndTime < formattedStartTime
+  //   ) {
+  //     setIsDateAndTimeValid(false);
+  //     setError("End time can't be before start time");
+  //   }
+
+  //   if (isDateAndTimeValid) {
+  //     setError("");
+  //   } else {
+  //     setEventIsValid(false);
+  //   }
+  // };
+
   const checkDateAndTime = () => {
-    getCurrentDate();
-    setIsDateAndTimeValid(true);
-    if (!formattedStartDate) {
-      setIsDateAndTimeValid(false);
-      setError("Please select a start date");
+    isDateAndTimeValid = true;
+
+    if (startDate === null || startDate === "") {
+      isDateAndTimeValid = false;
+      console.log("set now ", startDate);
+      setStartDateError(true);
+      setStartDateErrorMessage("Please select a start date");
     }
+
     if (formattedStartDate < currentDate) {
-      setIsDateAndTimeValid(false);
-      setError("Start date can't be in the past");
+      isDateAndTimeValid = false;
+      setStartDateError(true);
+      setStartDateErrorMessage("Start date can't be in the past");
     }
+
     if (formattedStartTime) {
       if (
         formattedStartTime < currentTime &&
         formattedStartDate === currentDate
       ) {
-        setIsDateAndTimeValid(false);
-        setError("Start time can't be in the past");
+        isDateAndTimeValid = false;
+        setStartTimeError(true);
+        setStartTimeErrorMessage("Start time can't be in the past");
       }
     }
+
     if (formattedEndDate) {
       if (formattedEndDate < formattedStartDate) {
-        setIsDateAndTimeValid(false);
-        setError("End date can't be before start date");
+        isDateAndTimeValid = false;
+        setEndDateError(true);
+        setEndDateErrorMessage("End date can't be before start date");
       }
     }
+
     if (!formattedEndDate && formattedEndTime) {
-      setIsDateAndTimeValid(false);
-      setError("Please, select a valid end date");
+      isDateAndTimeValid = false;
+      setEndDateError(true);
+      setEndDateErrorMessage("Please, select a valid end date");
     }
+
     if (
       formattedEndDate === formattedStartDate &&
       formattedStartTime &&
       formattedEndTime &&
       formattedEndTime < formattedStartTime
     ) {
-      setIsDateAndTimeValid(false);
-      setError("End time can't be before start time");
+      isDateAndTimeValid = false;
+      setEndTimeError(true);
+      setEndTimeErrorMessage("End time can't be before start time");
     }
 
+    console.log("before ", isDateAndTimeValid);
     if (isDateAndTimeValid) {
-      setError("");
+      setStartDateErrorMessage("");
+      setStartTimeErrorMessage("");
+      setEndDateErrorMessage("");
+      setEndTimeErrorMessage("");
+      setStartDateError(false);
+      setEndTimeError(false);
+      setEndDateError(false);
+      setEndTimeError(false);
     } else {
-      setEventIsValid(false);
+      isDateAndTimeValid = false;
     }
   };
 
-  const checkFields = () => {
-    if (
-      title.length !== 0 &&
-      description.length !== 0 &&
-      isDateAndTimeValid === true
-    ) {
-      setEventIsValid(true);
-      setError("");
+  const checkField = (field, errorSetter) => {
+    if (field === null || field === "") {
+      errorSetter(true);
     } else {
-      if (title.length === 0) {
-        setError("Title can't be empty");
-        setEventIsValid(false);
-      }
-
-      if (description.length === 0) {
-        setError("Description can't be empty");
-        setEventIsValid(false);
-      }
+      errorSetter(false);
     }
   };
 
@@ -209,8 +278,13 @@ const CreateEvent = () => {
   };
 
   useEffect(() => {
-    checkFields();
-  }, [title, description]);
+    checkField(title, setTitleError);
+  }, [title]);
+
+  useEffect(() => {
+    checkField(description, setDescriptionError);
+  }, [description]);
+
   useEffect(() => {
     formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
   }, [startDate]);
@@ -233,8 +307,11 @@ const CreateEvent = () => {
   ]);
 
   const handleSubmit = async () => {
+    getCurrentDate();
     checkDateAndTime();
-    checkFields();
+    checkField(title, setTitleError);
+    checkField(description, setDescriptionError);
+
     console.log("Checked fields, eventIsValid", eventIsValid);
     if (eventIsValid) {
       await addDoc(eventsRef, {
@@ -269,11 +346,13 @@ const CreateEvent = () => {
       });
       navigate("/home");
     } else {
-      setShowAlert(true);
+      setShowError(true);
     }
   };
 
-  {console.log(activities)}
+  {
+    console.log(activities);
+  }
 
   return (
     <>
@@ -287,21 +366,16 @@ const CreateEvent = () => {
             Create new event MUI
           </h1>{" "}
         </Row>
-        {error && (
-          <Alert
-            show={showAlert}
-            variant="danger"
-            onClick={() => setShowAlert(false)}
-            dismissible
-          >
-            {error}
-          </Alert>
-        )}
         <Container className="mt-4 d-flex flex-column justify-content-center">
           <Box>
-
             {/* Event title */}
             <StyledTextField
+              error={showError === true ? titleError : false}
+              helperText={
+                titleError === true && showError === true
+                  ? titleErrorMessage
+                  : ""
+              }
               className="mt-3 mb-3 w-100 text-light"
               required
               variant="outlined"
@@ -309,7 +383,7 @@ const CreateEvent = () => {
               label="Event Title"
               defaultValue=""
               inputProps={{ maxLength: 50 }}
-              helperText={"*max 50 characters"}
+              // helperText={"*max 50 characters"}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
@@ -345,7 +419,17 @@ const CreateEvent = () => {
                       setStartDate(newValue);
                     }}
                     renderInput={(params) => (
-                      <StyledTextField required sx={pickerStyle} {...params} />
+                      <StyledTextField
+                        required
+                        sx={pickerStyle}
+                        {...params}
+                        error={showError === true ? startDateError : false}
+                        helperText={
+                          startDateError === true && showError === true
+                            ? startDateErrorMessage
+                            : ""
+                        }
+                      />
                     )}
                   />
                 </Col>
@@ -357,7 +441,16 @@ const CreateEvent = () => {
                     value={startTime}
                     onChange={setStartTime}
                     renderInput={(params) => (
-                      <StyledTextField sx={pickerStyle} {...params} />
+                      <StyledTextField
+                        sx={pickerStyle}
+                        {...params}
+                        error={showError === true ? startTimeError : false}
+                        helperText={
+                          startTimeError === true && showError === true
+                            ? startTimeErrorMessage
+                            : ""
+                        }
+                      />
                     )}
                   />
                 </Col>
@@ -376,7 +469,16 @@ const CreateEvent = () => {
                       setEndDate(newValue);
                     }}
                     renderInput={(params) => (
-                      <StyledTextField sx={pickerStyle} {...params} />
+                      <StyledTextField
+                        sx={pickerStyle}
+                        {...params}
+                        error={showError === true ? endDateError : false}
+                        helperText={
+                          endDateError === true && showError === true
+                            ? endDateErrorMessage
+                            : ""
+                        }
+                      />
                     )}
                   />
                 </Col>
@@ -388,7 +490,16 @@ const CreateEvent = () => {
                     value={endTime}
                     onChange={setEndTime}
                     renderInput={(params) => (
-                      <StyledTextField sx={pickerStyle} {...params} />
+                      <StyledTextField
+                        sx={pickerStyle}
+                        {...params}
+                        error={showError === true ? endTimeError : false}
+                        helperText={
+                          endTimeError === true && showError === true
+                            ? endTimeErrorMessage
+                            : ""
+                        }
+                      />
                     )}
                   />
                 </Col>
@@ -474,6 +585,12 @@ const CreateEvent = () => {
               id="outline-basic"
               label="Event Description"
               defaultValue=""
+              error={showError === true ? descriptionError : false}
+              helperText={
+                descriptionError === true && showError === true
+                  ? descriptionErrorMessage
+                  : ""
+              }
               onChange={(e) => {
                 setDescription(e.target.value);
               }}
@@ -490,7 +607,6 @@ const CreateEvent = () => {
                 variant="outlined"
                 onClick={async () => {
                   checkDateAndTime();
-                  checkFields();
                   handleSubmit();
                 }}
               >
