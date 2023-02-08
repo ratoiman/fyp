@@ -50,7 +50,6 @@ const LandingPage = () => {
       console.log("user events set map");
       const eventRef = doc(db, "events", event.id, "data", "event_details");
       const eventDetailsDoc = await getDoc(eventRef);
-      console.log("eventDetailsDoc ", eventDetailsDoc.data());
       setUserEventsDetails((eventDetails) => [
         ...eventDetails,
         eventDetailsDoc.data(),
@@ -106,7 +105,7 @@ const LandingPage = () => {
         >
           Login
         </Button>{" "}
-        {console.log(
+        {/* {console.log(
           userEventsDetails.sort((a, b) =>
             a.start_date > b.start_date
               ? 1
@@ -118,8 +117,9 @@ const LandingPage = () => {
               ? -1
               : 0
           )
-        )}
+        )} */}
         {userEventsDetails.map((eventDetails) => {
+          console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
           return (
             <Event
               title={eventDetails.title}

@@ -43,55 +43,252 @@ const AddNewActivity = (props) => {
   }
 
   const [title, setTitle] = useState(props.activityTitle);
-  const [startDate, setStartDate] = useState(eventStartDate);
-  const [startTime, setStartTime] = useState(props.activityStartTime);
-  const [endDate, setEndDate] = useState(props.activityEndDate);
-  const [endTime, setEndTime] = useState(props.activityEndTime);
-  const [expandDate, setExpandDate] = useState("");
   const [description, setDescription] = useState(props.activityDescription);
-  const [showEndDate, setShowEndDate] = useState("d-none");
+
+  const [startDate, setStartDate] = useState(props.activityStartDate);
+  const [formattedStartDate, setFormattedStartDate] = useState(null);
+
+  const [startTime, setStartTime] = useState(props.activityStartTime);
+  const [formattedStartTime, setFormattedStartTime] = useState(null);
+
+  const [endDate, setEndDate] = useState(props.activityEndDate);
+  const [formattedEndDate, setFormattedEndDate] = useState(null);
+
+  const [endTime, setEndTime] = useState(props.activityEndTime);
+  const [formattedEndTime, setFormattedEndTime] = useState(null);
+
+  const [expandDate, setExpandDate] = useState(props.activityExpandDate);
+  const [showEndDate, setShowEndDate] = useState(props.activityShowEndDate);
+
+  // error and validation handling
+  const [showError, setShowError] = useState(false);
+
+  const [titleError, setTitleError] = useState(false);
+  const titleErrorMessage = "Title can't be empty";
+
+  const [descriptionError, setDescriptionError] = useState(false);
+  const descriptionErrorMessage = "Description can't be empty";
+
+  const [startDateError, setStartDateError] = useState(false);
+  const [startDateErrorMessage, setStartDateErrorMessage] = useState("");
+
+  const [startTimeError, setStartTimeError] = useState(false);
+  const [startTimeErrorMessage, setStartTimeErrorMessage] = useState(false);
+
+  const [endDateError, setEndDateError] = useState(false);
+  const [endDateErrorMessage, setEndDateErrorMessage] = useState("");
+
+  const [endTimeError, setEndTimeError] = useState(false);
+  const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
+
+  // const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
+
+  let isDateAndTimeValid = false;
+
   let activityDetails = new Object();
+
+  const formatDate = (date, setter, format) => {
+    let formatted = null;
+    if (date) {
+      const day = date.toDate().getDate().toString();
+      const month = (date.toDate().getMonth() + 1).toString();
+      const year = date.toDate().getFullYear().toString();
+
+      if (format === "DD/MM/YYYY") {
+        formatted =
+          day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+      }
+
+      if (format === "MM/DD/YYYY") {
+        formatted =
+          month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+      }
+    }
+
+    setter(formatted);
+  };
+
+  const formatTime = (time, setter) => {
+    if (time) {
+      const hours = time.toDate().getHours().toString();
+      const minutes = time.toDate().getMinutes().toString();
+
+      setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+    }
+  };
 
   const showDate = () => {
     if (showEndDate === "") {
       setShowEndDate("d-none");
+      props.setActivityShowEndDate("d-none");
       setExpandDate("");
+      props.setActivityExpandDate("");
     } else {
       setShowEndDate("");
+      props.setActivityShowEndDate("");
       setExpandDate("d-none");
+      props.setActivityExpandDate("d-none");
+    }
+  };
+
+  const checkDateAndTime = () => {
+    isDateAndTimeValid = true;
+
+    if (startDate === null || startDate === "") {
+      isDateAndTimeValid = false;
+      console.log("set now ", startDate);
+      setStartDateError(true);
+      setStartDateErrorMessage("Please select a start date");
+    }
+
+    if (formattedStartDate < props.currentDate) {
+      isDateAndTimeValid = false;
+      setStartDateError(true);
+      setStartDateErrorMessage("Start date can't be in the past");
+    }
+
+    if (formattedStartTime) {
+      if (
+        formattedStartTime < props.currentTime &&
+        formattedStartDate === props.currentDate
+      ) {
+        isDateAndTimeValid = false;
+        setStartTimeError(true);
+        setStartTimeErrorMessage("Start time can't be in the past");
+      }
+    }
+
+    if (formattedEndDate) {
+      if (formattedEndDate < formattedStartDate) {
+        isDateAndTimeValid = false;
+        setEndDateError(true);
+        setEndDateErrorMessage("End date can't be before start date");
+      }
+    }
+
+    if (!formattedEndDate && formattedEndTime) {
+      isDateAndTimeValid = false;
+      setEndDateError(true);
+      setEndDateErrorMessage("Please, select a valid end date");
+    }
+
+    if (
+      formattedEndDate === formattedStartDate &&
+      formattedStartTime &&
+      formattedEndTime &&
+      formattedEndTime < formattedStartTime
+    ) {
+      isDateAndTimeValid = false;
+      setEndTimeError(true);
+      setEndTimeErrorMessage("End time can't be before start time");
+    }
+
+    console.log("before ", isDateAndTimeValid);
+    if (isDateAndTimeValid) {
+      setStartDateErrorMessage("");
+      setStartTimeErrorMessage("");
+      setEndDateErrorMessage("");
+      setEndTimeErrorMessage("");
+      setStartDateError(false);
+      setEndTimeError(false);
+      setEndDateError(false);
+      setEndTimeError(false);
+    } else {
+      isDateAndTimeValid = false;
+    }
+  };
+
+  const checkField = (field, errorSetter) => {
+    if (field === null || field === "") {
+      errorSetter(true);
+    } else {
+      errorSetter(false);
     }
   };
 
   const saveActivity = () => {
+    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
+    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+    formatTime(startTime, setFormattedStartTime);
+    formatTime(endTime, setFormattedEndTime);
     activityDetails.title = title;
     // TODO format dates and time
     // TODO create a prop in Create New Event to remember the state of End date and time button
-    activityDetails.startDate = startDate;
-    activityDetails.startTime = startTime;
-    activityDetails.endDate = endDate;
-    activityDetails.endTime = endTime;
+    activityDetails.startDate = formattedStartDate;
+    activityDetails.startTime = formattedStartTime;
+    activityDetails.endDate = formattedEndDate;
+    activityDetails.endTime = formattedEndTime;
     activityDetails.description = description;
-    // console.log(activityDetails);
   };
 
-  const handleSubmit = () => {
-    saveActivity();
-    props.saveActivity(activityDetails);
+  useEffect(() => {
+    checkField(title, setTitleError);
+  }, [title]);
 
-    // Cleanup activity states from CreateEvent
-
-    props.setActivityTitle("");
-    props.setActivityStartDate(null);
-    props.setActivityStartTime(null);
-    props.setActivityEndDate(null);
-    props.setActivityEndTime(null);
-    props.setActivityDescription("");
-    props.setTrigger(false);
-  };
+  useEffect(() => {
+    checkField(description, setDescriptionError);
+  }, [description]);
 
   useEffect(() => {
     saveActivity();
   }, [title, startDate, endDate, startTime, endTime, description]);
+
+  useEffect(() => {
+    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
+  }, [startDate]);
+
+  useEffect(() => {
+    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+  }, [endDate]);
+
+  useEffect(() => {
+    formatTime(startTime, setFormattedStartTime);
+  }, [startTime]);
+
+  useEffect(() => {
+    formatTime(endTime, setFormattedEndTime);
+  }, [endTime]);
+
+  useEffect(() => {
+    checkDateAndTime();
+  }, [
+    formattedStartDate,
+    formattedStartTime,
+    formattedEndDate,
+    formattedEndTime,
+  ]);
+
+  const handleSubmit = () => {
+    saveActivity();
+
+    checkField(title, setTitleError);
+    checkField(description, setDescriptionError);
+    checkDateAndTime();
+    if (
+      titleError === true ||
+      descriptionError === true ||
+      isDateAndTimeValid === false
+    ) {
+      console.log(isDateAndTimeValid);
+      console.log(startDateError);
+      console.log(startTimeError);
+      console.log(endDateError);
+      console.log(endTimeError);
+      setShowError(true);
+    } else {
+      props.saveActivity(activityDetails);
+
+      // Cleanup activity states from CreateEvent
+
+      props.setActivityTitle("");
+      props.setActivityStartDate(null);
+      props.setActivityStartTime(null);
+      props.setActivityEndDate(null);
+      props.setActivityEndTime(null);
+      props.setActivityDescription("");
+      props.setTrigger(false);
+    }
+  };
 
   return props.trigger ? (
     <>
@@ -100,6 +297,10 @@ const AddNewActivity = (props) => {
           <h1 style={{ color: "#DAA520" }}>Add New Activity</h1>
 
           <StyledTextField
+            error={showError === true ? titleError : false}
+            helperText={
+              titleError === true && showError === true ? titleErrorMessage : ""
+            }
             className="mt-3 mb-3 w-100 text-light"
             required
             variant="outlined"
@@ -107,6 +308,7 @@ const AddNewActivity = (props) => {
             label="Event Title"
             defaultValue={title}
             onChange={(e) => {
+              checkField(title, setTitleError);
               props.setActivityTitle(e.target.value);
               setTitle(e.target.value);
             }}
@@ -129,7 +331,17 @@ const AddNewActivity = (props) => {
                     setStartDate(newValue);
                   }}
                   renderInput={(params) => (
-                    <StyledTextField sx={pickerStyle} {...params} />
+                    <StyledTextField
+                      required
+                      sx={pickerStyle}
+                      {...params}
+                      error={showError === true ? startDateError : false}
+                      helperText={
+                        startDateError === true && showError === true
+                          ? startDateErrorMessage
+                          : ""
+                      }
+                    />
                   )}
                 />
               </Col>
@@ -145,7 +357,16 @@ const AddNewActivity = (props) => {
                     setStartTime(newValue);
                   }}
                   renderInput={(params) => (
-                    <StyledTextField sx={pickerStyle} {...params} />
+                    <StyledTextField
+                      sx={pickerStyle}
+                      {...params}
+                      error={showError === true ? startTimeError : false}
+                      helperText={
+                        startTimeError === true && showError === true
+                          ? startTimeErrorMessage
+                          : ""
+                      }
+                    />
                   )}
                 />
               </Col>
@@ -155,6 +376,7 @@ const AddNewActivity = (props) => {
             <Row className={`mt-3 mb-3 ${showEndDate}`}>
               <Col>
                 <DatePicker
+                  maxDate={eventEndDate}
                   className="w-100"
                   label="End date"
                   openTo="day"
@@ -166,7 +388,16 @@ const AddNewActivity = (props) => {
                     setEndDate(newValue);
                   }}
                   renderInput={(params) => (
-                    <StyledTextField sx={pickerStyle} {...params} />
+                    <StyledTextField
+                      sx={pickerStyle}
+                      {...params}
+                      error={showError === true ? endDateError : false}
+                      helperText={
+                        endDateError === true && showError === true
+                          ? endDateErrorMessage
+                          : ""
+                      }
+                    />
                   )}
                 />
               </Col>
@@ -182,7 +413,16 @@ const AddNewActivity = (props) => {
                     setEndTime(newValue);
                   }}
                   renderInput={(params) => (
-                    <StyledTextField sx={pickerStyle} {...params} />
+                    <StyledTextField
+                      sx={pickerStyle}
+                      {...params}
+                      error={showError === true ? endTimeError : false}
+                      helperText={
+                        endTimeError === true && showError === true
+                          ? endTimeErrorMessage
+                          : ""
+                      }
+                    />
                   )}
                 />
               </Col>
@@ -215,6 +455,12 @@ const AddNewActivity = (props) => {
             id="outline-basic"
             label="Event Description"
             defaultValue={description}
+            error={showError === true ? descriptionError : false}
+            helperText={
+              descriptionError === true && showError === true
+                ? descriptionErrorMessage
+                : ""
+            }
             onChange={(e) => {
               props.setActivityDescription(e.target.value);
               setDescription(e.target.value);

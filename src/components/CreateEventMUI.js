@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
 import { Col, Container, Row, Form, Alert } from "react-bootstrap";
-// import Button from "@mui/material-next/Button";
 import Button from "@mui/material/Button";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
@@ -32,6 +31,7 @@ const CreateEvent = () => {
   const [showEndDate, setShowEndDate] = useState("d-none");
   const [expandDate, setExpandDate] = useState("");
   const [currentDate, setCurrentDate] = useState("");
+  const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
@@ -52,6 +52,8 @@ const CreateEvent = () => {
   const [activityEndTime, setActivityEndTime] = useState(null);
   const [activityDescription, setActivityDescription] = useState(null);
   const [activities, setActivities] = useState([]);
+  const [activityExpandDate, setActivityExpandDate] = useState("");
+  const [activityShowEndDate, setActivityShowEndDate] = useState("d-none");
 
   // error and validation handling
 
@@ -74,47 +76,50 @@ const CreateEvent = () => {
     navigate("/home");
   };
 
-  const formatDatesAndTime = () => {
-    if (startDate) {
-      setFormattedStartDate(
-        startDate.toDate().getDate().toString().padStart(2, "0") +
-          "-" +
-          (startDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
-          "-" +
-          startDate.toDate().getFullYear().toString()
-      );
-    } else {
-      setFormattedStartDate(null);
+  const formatDate = (date, setter, format) => {
+    let formatted = null;
+    if (date) {
+      const day = date.toDate().getDate().toString();
+      const month = (date.toDate().getMonth() + 1).toString();
+      const year = date.toDate().getFullYear().toString();
+
+      if (format === "DD/MM/YYYY") {
+        formatted =
+          day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+      }
+
+      if (format === "MM/DD/YYYY") {
+        formatted =
+          month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+      }
     }
-    if (startTime) {
-      setFormattedStartTime(
-        startTime.toDate().getHours().toString() +
-          ":" +
-          startTime.toDate().getMinutes().toString().padStart(2, "0")
-      );
-    } else {
-      setFormattedStartTime(null);
+
+    setter(formatted);
+  };
+
+  const formatTime = (time, setter) => {
+    if (time) {
+      const hours = time.toDate().getHours().toString();
+      const minutes = time.toDate().getMinutes().toString();
+
+      setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
     }
-    if (endDate) {
-      setFormattedEndDate(
-        endDate.toDate().getDate().toString().padStart(2, "0") +
-          "/" +
-          (endDate.toDate().getMonth() + 1).toString().padStart(2, "0") +
-          "/" +
-          endDate.toDate().getFullYear().toString()
-      );
-    } else {
-      setFormattedEndDate(null);
-    }
-    if (endTime) {
-      setFormattedEndTime(
-        startTime.toDate().getHours().toString() +
-          ":" +
-          startTime.toDate().getMinutes().toString().padStart(2, "0")
-      );
-    } else {
-      setFormattedEndTime(null);
-    }
+  };
+
+  const getCurrentDate = () => {
+    const year = today.getFullYear().toString();
+    const month = (today.getMonth() + 1).toString();
+    const day = today.getDate().toString();
+    const hours = today.getHours().toString();
+    const minutes = today.getMinutes().toString();
+
+    setCurrentDate(
+      day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year
+    );
+    setInversedCurrentDate(
+      month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year
+    );
+    setCurrentTime(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
   };
 
   const showDate = () => {
@@ -128,21 +133,9 @@ const CreateEvent = () => {
   };
 
   const checkDateAndTime = () => {
-    const getCurrentDate = () => {
-      const year = today.getFullYear();
-      const month = (today.getMonth() + 1).toString();
-      const day = today.getDate().toString();
-      const hours = today.getHours().toString();
-      const minutes = today.getMinutes().toString();
-
-      setCurrentDate(
-        day.padStart(2, "0") + "-" + month.padStart(2, "0") + "-" + year
-      );
-      setCurrentTime(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
-    };
     getCurrentDate();
     setIsDateAndTimeValid(true);
-    if (formattedStartDate === "") {
+    if (!formattedStartDate) {
       setIsDateAndTimeValid(false);
       setError("Please select a start date");
     }
@@ -150,7 +143,7 @@ const CreateEvent = () => {
       setIsDateAndTimeValid(false);
       setError("Start date can't be in the past");
     }
-    if (formattedStartTime !== "") {
+    if (formattedStartTime) {
       if (
         formattedStartTime < currentTime &&
         formattedStartDate === currentDate
@@ -159,20 +152,20 @@ const CreateEvent = () => {
         setError("Start time can't be in the past");
       }
     }
-    if (formattedEndDate !== "") {
+    if (formattedEndDate) {
       if (formattedEndDate < formattedStartDate) {
         setIsDateAndTimeValid(false);
         setError("End date can't be before start date");
       }
     }
-    if (formattedEndDate === "" && formattedEndTime !== "") {
+    if (!formattedEndDate && formattedEndTime) {
       setIsDateAndTimeValid(false);
       setError("Please, select a valid end date");
     }
     if (
       formattedEndDate === formattedStartDate &&
-      startTime !== "" &&
-      formattedStartTime !== "" &&
+      formattedStartTime &&
+      formattedEndTime &&
       formattedEndTime < formattedStartTime
     ) {
       setIsDateAndTimeValid(false);
@@ -218,11 +211,18 @@ const CreateEvent = () => {
   useEffect(() => {
     checkFields();
   }, [title, description]);
-
   useEffect(() => {
-    formatDatesAndTime();
-  }, [startTime, startDate, endTime, endDate]);
-
+    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
+  }, [startDate]);
+  useEffect(() => {
+    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+  }, [endDate]);
+  useEffect(() => {
+    formatTime(startTime, setFormattedStartTime);
+  }, [startTime]);
+  useEffect(() => {
+    formatTime(endTime, setFormattedEndTime);
+  }, [endTime]);
   useEffect(() => {
     checkDateAndTime();
   }, [
@@ -272,6 +272,9 @@ const CreateEvent = () => {
       setShowAlert(true);
     }
   };
+
+  {console.log(activities)}
+
   return (
     <>
       <Button onClick={handleHome}>Home</Button>
@@ -296,7 +299,8 @@ const CreateEvent = () => {
         )}
         <Container className="mt-4 d-flex flex-column justify-content-center">
           <Box>
-            {/* //TODO find how to set max chars for input  */}
+
+            {/* Event title */}
             <StyledTextField
               className="mt-3 mb-3 w-100 text-light"
               required
@@ -304,6 +308,8 @@ const CreateEvent = () => {
               id="outline-required"
               label="Event Title"
               defaultValue=""
+              inputProps={{ maxLength: 50 }}
+              helperText={"*max 50 characters"}
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
@@ -316,6 +322,8 @@ const CreateEvent = () => {
               id="outline-basic"
               label="Event Subitle"
               defaultValue=""
+              inputProps={{ maxLength: 50 }}
+              helperText={"*max 50 characters"}
               onChange={(e) => {
                 setSubtitle(e.target.value);
               }}
@@ -326,6 +334,7 @@ const CreateEvent = () => {
               <Row className="mt-2 mb-3">
                 <Col>
                   <DatePicker
+                    minDate={inversedCurrentDate}
                     className="w-100"
                     label="Start date"
                     openTo="day"
@@ -412,32 +421,48 @@ const CreateEvent = () => {
                 Activities
               </Col>
               <Col className="mb-3 d-flex justify-content-left">
-                <Row>
-                  {activities.map((activity) => {
-                    return <div> Ttile: {activity.title}</div>;
-                  })}
+                {/* Display activities */}
+                <Row className="d-flex flex-column">
+                  <Col>
+                    {activities.map((activity) => {
+                      return (
+                        <Row className="d-flex flex-row">
+                          <Col>Ttile: {activity.title}</Col>
+                          <Col>
+                            {/* Display just day and month */}
+                            Start Date:{" "}
+                            {activity.startDate.split("/")[0] +
+                              "/" +
+                              activity.startDate.split("/")[1]}
+                          </Col>
+                          <Col>Start Time: {activity.startTime}</Col>
+                        </Row>
+                      );
+                    })}
+                  </Col>
+                  <Col>
+                    {/* <Row className="d-flex flex-row"> */}
+                    <Link
+                      className="create_event_links d-flex"
+                      variant="dark"
+                      style={{ textDecoration: "none" }}
+                      onClick={() => {
+                        newActivity();
+                      }}
+                    >
+                      <Row className="mt-4">
+                        <Col md="auto">
+                          <i>
+                            {" "}
+                            <PlusCircleDotted />
+                          </i>
+                        </Col>
+                        <Col>Add new activity</Col>
+                      </Row>
+                    </Link>
+                    {/* </Row> */}
+                  </Col>
                 </Row>
-                <Link
-                  className="create_event_links"
-                  variant="dark"
-                  style={{ textDecoration: "none" }}
-                  onClick={() => {
-                    formatDatesAndTime();
-                    newActivity();
-                  }}
-                >
-                  <Row className="">
-                    <Col>
-                      <i>
-                        {" "}
-                        <PlusCircleDotted />
-                      </i>
-                    </Col>
-                    <Col md="auto" className="">
-                      Add new activity
-                    </Col>
-                  </Row>
-                </Link>
               </Col>
             </Row>
 
@@ -464,25 +489,16 @@ const CreateEvent = () => {
                 className="mt-4"
                 variant="outlined"
                 onClick={async () => {
-                  formatDatesAndTime();
                   checkDateAndTime();
                   checkFields();
-                  // handleSubmit();
-                  // console.log(error, isDateAndTimeValid);
-                  // console.log("start date", formattedStartDate);
-
-                  // console.log(formattedStartTime);
-
-                  // console.log(formattedEndDate);
-
-                  console.log("activities: ", activities);
-                  // setActivities([])
+                  handleSubmit();
                 }}
               >
                 Confirm
               </Button>
             </div>
           </Box>
+
           <Modal
             sx={{ overflow: "auto" }}
             open={newActivityPopout}
@@ -501,17 +517,24 @@ const CreateEvent = () => {
                 setActivityEndDate={setActivityEndDate}
                 setActivityEndTime={setActivityEndTime}
                 setActivityDescription={setActivityDescription}
+                setActivityExpandDate={setActivityExpandDate}
+                setActivityShowEndDate={setActivityShowEndDate}
                 activityTitle={activityTitle}
                 activityStartDate={activityStartDate}
                 activityStartTime={activityStartTime}
                 activityEndDate={activityEndDate}
                 activityEndTime={activityEndTime}
                 activityDescription={activityDescription}
+                activityExpandDate={activityExpandDate}
+                activityShowEndDate={activityShowEndDate}
                 saveActivity={saveActivity}
                 eventStartDate={formattedStartDate}
                 eventStartTime={startTime}
                 eventEndDate={formattedEndDate}
                 eventEndTime={endTime}
+                currentDate={currentDate}
+                currentTime={currentTime}
+                inversedCurrentDate={inversedCurrentDate}
               />
             </Box>
           </Modal>

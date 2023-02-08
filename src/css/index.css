@@ -26,6 +26,10 @@ code {
   padding-right: 10%; */
 }
 
+.MuiFormHelperText-root {
+  color: red !important;
+}
+
 .create_event_links{
   color: white;
 }
