@@ -11,6 +11,7 @@ const Event = ({
   end_time,
   description,
   author,
+  activities,
 }) => {
   const [viewStartTime, setViewStartTime] = useState("d-none");
   const [viewEndDate, setViewEndDate] = useState("d-none");
@@ -32,18 +33,8 @@ const Event = ({
     setVisible(end_time, setViewEndTime);
   }, [end_time]);
 
-  {
-    console.log(
-      "EVENT Title: ",
-      title,
-      "EVENT end date: ",
-      end_date,
-      "View end date: ",
-      viewEndDate
-    );
-  }
   return (
-    <Container className="card p-4 box mt-4 text-white bg-black w-50  ">
+    <Container className="card p-4 box mt-4 text-white bg-black">
       <div>
         <h1>{title}</h1>
       </div>
@@ -60,6 +51,22 @@ const Event = ({
           <Col className={`${viewEndTime}`}>End time:{end_time}</Col>
         </Row>
       </div>
+
+      <div>
+        <h3 className="mt-3">Activities</h3>
+        {activities.map((activity) => {
+          return (
+            <Row>
+              <Col>Title: {activity.title}</Col>
+              <Col>SD: {activity.start_date}</Col>
+              <Col>ST: {activity.start_time} </Col>
+              <Col>ED: {activity.end_date}</Col>
+              <Col>ET: {activity.end_time}</Col>
+            </Row>
+          );
+        })}
+      </div>
+
       <div>
         <h3 className="mt-3">Description:</h3>
       </div>

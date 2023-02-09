@@ -296,17 +296,18 @@ const AddNewActivity = (props) => {
         <div className="">
           <h1 style={{ color: "#DAA520" }}>Add New Activity</h1>
 
+          {/* Activity title */}
           <StyledTextField
-            error={showError === true ? titleError : false}
-            helperText={
-              titleError === true && showError === true ? titleErrorMessage : ""
-            }
             className="mt-3 mb-3 w-100 text-light"
             required
             variant="outlined"
             id="outline-required"
             label="Event Title"
             defaultValue={title}
+            error={showError === true ? titleError : false}
+            helperText={
+              titleError === true && showError === true ? titleErrorMessage : ""
+            }
             onChange={(e) => {
               checkField(title, setTitleError);
               props.setActivityTitle(e.target.value);
@@ -377,6 +378,7 @@ const AddNewActivity = (props) => {
               <Col>
                 <DatePicker
                   maxDate={eventEndDate}
+                  minDate={eventStartDate}
                   className="w-100"
                   label="End date"
                   openTo="day"

@@ -121,6 +121,7 @@ const CreateEvent = () => {
     }
   };
 
+  // Get current date and time for date range validation
   const getCurrentDate = () => {
     const year = today.getFullYear().toString();
     const month = (today.getMonth() + 1).toString();
@@ -199,7 +200,6 @@ const CreateEvent = () => {
 
     if (startDate === null || startDate === "") {
       isDateAndTimeValid = false;
-      console.log("set now ", startDate);
       setStartDateError(true);
       setStartDateErrorMessage("Please select a start date");
     }
@@ -246,14 +246,13 @@ const CreateEvent = () => {
       setEndTimeErrorMessage("End time can't be before start time");
     }
 
-    console.log("before ", isDateAndTimeValid);
     if (isDateAndTimeValid) {
       setStartDateErrorMessage("");
       setStartTimeErrorMessage("");
       setEndDateErrorMessage("");
       setEndTimeErrorMessage("");
       setStartDateError(false);
-      setEndTimeError(false);
+      setStartTimeError(false);
       setEndDateError(false);
       setEndTimeError(false);
     } else {
@@ -288,23 +287,26 @@ const CreateEvent = () => {
   useEffect(() => {
     formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
   }, [startDate]);
+
   useEffect(() => {
     formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
   }, [endDate]);
+
   useEffect(() => {
     formatTime(startTime, setFormattedStartTime);
   }, [startTime]);
+
   useEffect(() => {
     formatTime(endTime, setFormattedEndTime);
   }, [endTime]);
+
   useEffect(() => {
     checkDateAndTime();
-  }, [
-    formattedStartDate,
-    formattedStartTime,
-    formattedEndDate,
-    formattedEndTime,
-  ]);
+  }, [startDate, startTime, endDate, endTime]);
+
+  useEffect(() => {
+    getCurrentDate();
+  }, [startDate, startTime, endDate, endTime]);
 
   const handleSubmit = async () => {
     getCurrentDate();
@@ -313,7 +315,8 @@ const CreateEvent = () => {
     checkField(description, setDescriptionError);
 
     console.log("Checked fields, eventIsValid", eventIsValid);
-    if (eventIsValid) {
+
+    if (!titleError && !descriptionError && isDateAndTimeValid) {
       await addDoc(eventsRef, {
         title: title,
         subtitle: subtitle,
@@ -321,7 +324,7 @@ const CreateEvent = () => {
       }).then(async function (docRef) {
         console.log("Document written with ID: ", docRef.id);
         const userRef = doc(db, "users", user.uid, "events", docRef.id);
-        const eventRef = doc(db, "events", docRef.id, "users", user.uid);
+        const eventUsersRef = doc(db, "events", docRef.id, "users", user.uid);
         const eventDetailsRef = doc(
           db,
           "events",
@@ -339,27 +342,50 @@ const CreateEvent = () => {
           description: description,
           author: user.uid,
           author_username: user.displayName,
+        }).then(async function () {
+          const activitiesRef = collection(
+            db,
+            "events",
+            docRef.id,
+            "activities"
+          );
+          console.log("before map");
+          activities.map(async (activity) => {
+            console.log(
+              "title ",
+              activity.title,
+              " desc ",
+              activity.description
+            );
+            await addDoc(activitiesRef, {
+              title: activity.title,
+              start_date: activity.startDate,
+              start_time: activity.startTime,
+              end_date: activity.endDate,
+              end_time: activity.endTime,
+              description: activity.description,
+            });
+          });
         });
-        await setDoc(eventRef, { status: "admin" });
+
+        await setDoc(eventUsersRef, { status: "admin" });
         await setDoc(userRef, { status: "admin" });
         console.log("Event created with ID:", docRef.id);
+        console.log(activities);
       });
       navigate("/home");
+      console.log("SUCCESS");
     } else {
       setShowError(true);
     }
   };
-
-  {
-    console.log(activities);
-  }
 
   return (
     <>
       <Button onClick={handleHome}>Home</Button>
       <Container
         className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
-        style={{ minWidth: "50%", maxWidth: "60%" }}
+        style={{ minWidth: "50%", maxWidth: "80%" }}
       >
         <Row>
           <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
@@ -370,12 +396,6 @@ const CreateEvent = () => {
           <Box>
             {/* Event title */}
             <StyledTextField
-              error={showError === true ? titleError : false}
-              helperText={
-                titleError === true && showError === true
-                  ? titleErrorMessage
-                  : ""
-              }
               className="mt-3 mb-3 w-100 text-light"
               required
               variant="outlined"
@@ -383,7 +403,12 @@ const CreateEvent = () => {
               label="Event Title"
               defaultValue=""
               inputProps={{ maxLength: 50 }}
-              // helperText={"*max 50 characters"}
+              error={showError === true ? titleError : false}
+              helperText={
+                titleError === true && showError === true
+                  ? titleErrorMessage
+                  : ""
+              }
               onChange={(e) => {
                 setTitle(e.target.value);
               }}
@@ -397,7 +422,6 @@ const CreateEvent = () => {
               label="Event Subitle"
               defaultValue=""
               inputProps={{ maxLength: 50 }}
-              helperText={"*max 50 characters"}
               onChange={(e) => {
                 setSubtitle(e.target.value);
               }}
@@ -459,6 +483,7 @@ const CreateEvent = () => {
               <Row className={`mt-3 mb-3 ${showEndDate}`}>
                 <Col>
                   <DatePicker
+                    minDate={inversedCurrentDate}
                     className="w-100"
                     label="End date"
                     openTo="day"
@@ -538,7 +563,7 @@ const CreateEvent = () => {
                     {activities.map((activity) => {
                       return (
                         <Row className="d-flex flex-row">
-                          <Col>Ttile: {activity.title}</Col>
+                          <Col>{activity.title}</Col>
                           <Col>
                             {/* Display just day and month */}
                             Start Date:{" "}

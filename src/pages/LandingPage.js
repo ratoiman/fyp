@@ -7,6 +7,8 @@ import {
   getDoc,
   doc,
   onSnapshot,
+  query,
+  orderBy,
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
@@ -47,13 +49,25 @@ const LandingPage = () => {
 
   const getEventsDetails = () => {
     userEvents.map(async (event) => {
-      console.log("user events set map");
+      let eventObj = new Object();
+      let activities = [];
       const eventRef = doc(db, "events", event.id, "data", "event_details");
+      const activitiesRef = collection(db, "events", event.id, "activities");
       const eventDetailsDoc = await getDoc(eventRef);
-      setUserEventsDetails((eventDetails) => [
-        ...eventDetails,
-        eventDetailsDoc.data(),
-      ]);
+      const activitiesDocs = await getDocs(
+        query(activitiesRef, orderBy("start_date"), orderBy("start_time"), orderBy("end_date"), orderBy("end_time"))
+      );
+      eventObj["activities"] = {};
+
+      activitiesDocs.docs.map((activity) => {
+        let act = new Object(activity.data());
+        act["id"] = activity.id;
+        activities.push(act);
+      });
+
+      eventObj["details"] = eventDetailsDoc.data();
+      eventObj["activities"] = activities;
+      setUserEventsDetails((eventDetails) => [...eventDetails, eventObj]);
     });
   };
 
@@ -107,29 +121,31 @@ const LandingPage = () => {
         </Button>{" "}
         {/* {console.log(
           userEventsDetails.sort((a, b) =>
-            a.start_date > b.start_date
+            a["activities"].start_date > b["activities"].start_date
               ? 1
-              : b.start_date > a.start_date
+              : b["activities"].start_date > a["activities"].start_date
               ? -1
-              : a.start_time > b.start_time
+              : a["activities"].start_time > b["activities"].start_time
               ? 1
-              : b.start_time > a.start_time
+              : b["activities"].start_time > a["activities"].start_time
               ? -1
               : 0
           )
         )} */}
         {userEventsDetails.map((eventDetails) => {
-          console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
+          // console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
+          // console.log("Event details ",eventDetails["activities"])
           return (
             <Event
-              title={eventDetails.title}
-              subtitle={eventDetails.subtitle}
-              start_date={eventDetails.start_date}
-              start_time={eventDetails.start_time}
-              end_date={eventDetails.end_date}
-              end_time={eventDetails.end_time}
-              description={eventDetails.description}
-              author={eventDetails.author_username}
+              title={eventDetails["details"].title}
+              subtitle={eventDetails["details"].subtitle}
+              start_date={eventDetails["details"].start_date}
+              start_time={eventDetails["details"].start_time}
+              end_date={eventDetails["details"].end_date}
+              end_time={eventDetails["details"].end_time}
+              description={eventDetails["details"].description}
+              author={eventDetails["details"].author_username}
+              activities={eventDetails["activities"]}
             />
           );
         })}
