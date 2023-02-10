@@ -1,24 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
-import { Col, Container, Row, Form, Alert } from "react-bootstrap";
-import Button from "@mui/material/Button";
+import { Col, Container, Row } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
-import AddNewActivity from "./AddNewActivity";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import Box from "@mui/material/Box";
 import {
   StyledTextField,
   pickerStyle,
   popupStyle,
 } from "../ui_styles/MuiStyles";
+import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
-import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import AddNewActivity from "./AddNewActivity";
+import EventActivityCard from "./EventActivityCard";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
@@ -37,7 +37,6 @@ const CreateEvent = () => {
   // const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endDate, setEndDate] = useState(null);
-  const [newActivityPopout, setNewActivityPopout] = useState(false);
   const [endTime, setEndTime] = useState(null);
   const [formattedStartTime, setFormattedStartTime] = useState(null);
   const [formattedStartDate, setFormattedStartDate] = useState(null);
@@ -45,15 +44,31 @@ const CreateEvent = () => {
   const [formattedEndDate, setFormattedEndDate] = useState(null);
 
   // store data from the latest new activity (in case user didn't finish editing, so nothing will be lost)
+  const [newActivityPopout, setNewActivityPopout] = useState(false);
+  const [activityID, setActivityID] = useState(null);
   const [activityTitle, setActivityTitle] = useState(null);
   const [activityStartDate, setActivityStartDate] = useState(null);
   const [activityStartTime, setActivityStartTime] = useState(null);
   const [activityEndDate, setActivityEndDate] = useState(null);
   const [activityEndTime, setActivityEndTime] = useState(null);
   const [activityDescription, setActivityDescription] = useState(null);
-  const [activities, setActivities] = useState([]);
   const [activityExpandDate, setActivityExpandDate] = useState("");
   const [activityShowEndDate, setActivityShowEndDate] = useState("d-none");
+
+  const [activities, setActivities] = useState([]);
+
+  // States to use when editing an activity, to avoid overwritting an unfinished activity
+  const [editActivityPopout, setEditActivityPopout] = useState(false);
+  const [editActivityID, setEditActivityID] = useState(null);
+  const [editActivityTitle, setEditActivityTitle] = useState(null);
+  const [editActivityStartDate, setEditActivityStartDate] = useState(null);
+  const [editActivityStartTime, setEditActivityStartTime] = useState(null);
+  const [editActivityEndDate, setEditActivityEndDate] = useState(null);
+  const [editActivityEndTime, setEditActivityEndTime] = useState(null);
+  const [editActivityDescription, setEditActivityDescription] = useState(null);
+  const [editActivityExpandDate, setEditActivityExpandDate] = useState("");
+  const [editActivityShowEndDate, setEditActivityShowEndDate] =
+    useState("d-none");
 
   // error and validation handling
 
@@ -148,53 +163,6 @@ const CreateEvent = () => {
     }
   };
 
-  // const checkDateAndTime = () => {
-  //   getCurrentDate();
-  //   setIsDateAndTimeValid(true);
-  //   if (!formattedStartDate) {
-  //     setIsDateAndTimeValid(false);
-  //     setError("Please select a start date");
-  //   }
-  //   if (formattedStartDate < currentDate) {
-  //     setIsDateAndTimeValid(false);
-  //     setError("Start date can't be in the past");
-  //   }
-  //   if (formattedStartTime) {
-  //     if (
-  //       formattedStartTime < currentTime &&
-  //       formattedStartDate === currentDate
-  //     ) {
-  //       setIsDateAndTimeValid(false);
-  //       setError("Start time can't be in the past");
-  //     }
-  //   }
-  //   if (formattedEndDate) {
-  //     if (formattedEndDate < formattedStartDate) {
-  //       setIsDateAndTimeValid(false);
-  //       setError("End date can't be before start date");
-  //     }
-  //   }
-  //   if (!formattedEndDate && formattedEndTime) {
-  //     setIsDateAndTimeValid(false);
-  //     setError("Please, select a valid end date");
-  //   }
-  //   if (
-  //     formattedEndDate === formattedStartDate &&
-  //     formattedStartTime &&
-  //     formattedEndTime &&
-  //     formattedEndTime < formattedStartTime
-  //   ) {
-  //     setIsDateAndTimeValid(false);
-  //     setError("End time can't be before start time");
-  //   }
-
-  //   if (isDateAndTimeValid) {
-  //     setError("");
-  //   } else {
-  //     setEventIsValid(false);
-  //   }
-  // };
-
   const checkDateAndTime = () => {
     isDateAndTimeValid = true;
 
@@ -272,8 +240,17 @@ const CreateEvent = () => {
     setNewActivityPopout(!newActivityPopout);
   };
 
+  const editActivity = () => {
+    setEditActivityPopout(!editActivityPopout);
+  };
+
   const saveActivity = (activity) => {
-    setActivities([...activities, activity]);
+    const temp = activities.filter(function (obj) {
+      return obj.id !== activity.id;
+    });
+
+    console.log("TEMP ",temp)
+    setActivities([...temp, activity]);
   };
 
   useEffect(() => {
@@ -317,69 +294,70 @@ const CreateEvent = () => {
     console.log("Checked fields, eventIsValid", eventIsValid);
 
     if (!titleError && !descriptionError && isDateAndTimeValid) {
-      await addDoc(eventsRef, {
-        title: title,
-        subtitle: subtitle,
-        author: user.uid,
-      }).then(async function (docRef) {
-        console.log("Document written with ID: ", docRef.id);
-        const userRef = doc(db, "users", user.uid, "events", docRef.id);
-        const eventUsersRef = doc(db, "events", docRef.id, "users", user.uid);
-        const eventDetailsRef = doc(
-          db,
-          "events",
-          docRef.id,
-          "data",
-          "event_details"
-        );
-        await setDoc(eventDetailsRef, {
-          title: title,
-          subtitle: subtitle,
-          start_date: formattedStartDate,
-          start_time: formattedStartTime,
-          end_date: formattedEndDate,
-          end_time: formattedEndTime,
-          description: description,
-          author: user.uid,
-          author_username: user.displayName,
-        }).then(async function () {
-          const activitiesRef = collection(
-            db,
-            "events",
-            docRef.id,
-            "activities"
-          );
-          console.log("before map");
-          activities.map(async (activity) => {
-            console.log(
-              "title ",
-              activity.title,
-              " desc ",
-              activity.description
-            );
-            await addDoc(activitiesRef, {
-              title: activity.title,
-              start_date: activity.startDate,
-              start_time: activity.startTime,
-              end_date: activity.endDate,
-              end_time: activity.endTime,
-              description: activity.description,
-            });
-          });
-        });
+      console.log("VALID EVENT");
+      // await addDoc(eventsRef, {
+      //   title: title,
+      //   subtitle: subtitle,
+      //   author: user.uid,
+      // }).then(async function (docRef) {
+      //   console.log("Document written with ID: ", docRef.id);
+      //   const userRef = doc(db, "users", user.uid, "events", docRef.id);
+      //   const eventUsersRef = doc(db, "events", docRef.id, "users", user.uid);
+      //   const eventDetailsRef = doc(
+      //     db,
+      //     "events",
+      //     docRef.id,
+      //     "data",
+      //     "event_details"
+      //   );
+      //   await setDoc(eventDetailsRef, {
+      //     title: title,
+      //     subtitle: subtitle,
+      //     start_date: formattedStartDate,
+      //     start_time: formattedStartTime,
+      //     end_date: formattedEndDate,
+      //     end_time: formattedEndTime,
+      //     description: description,
+      //     author: user.uid,
+      //     author_username: user.displayName,
+      //   }).then(async function () {
+      //     const activitiesRef = collection(
+      //       db,
+      //       "events",
+      //       docRef.id,
+      //       "activities"
+      //     );
+      //     console.log("before map");
+      //     activities.map(async (activity) => {
+      //       console.log(
+      //         "title ",
+      //         activity.title,
+      //         " desc ",
+      //         activity.description
+      //       );
+      //       await addDoc(activitiesRef, {
+      //         title: activity.title,
+      //         start_date: activity.startDate,
+      //         start_time: activity.startTime,
+      //         end_date: activity.endDate,
+      //         end_time: activity.endTime,
+      //         description: activity.description,
+      //       });
+      //     });
+      //   });
 
-        await setDoc(eventUsersRef, { status: "admin" });
-        await setDoc(userRef, { status: "admin" });
-        console.log("Event created with ID:", docRef.id);
-        console.log(activities);
-      });
-      navigate("/home");
+      //   await setDoc(eventUsersRef, { status: "admin" });
+      //   await setDoc(userRef, { status: "admin" });
+      //   console.log("Event created with ID:", docRef.id);
+      //   console.log(activities);
+      // });
+      // navigate("/home");
       console.log("SUCCESS");
     } else {
       setShowError(true);
     }
   };
-
+console.log("ASC ",activities)
   return (
     <>
       <Button onClick={handleHome}>Home</Button>
@@ -560,21 +538,22 @@ const CreateEvent = () => {
                 {/* Display activities */}
                 <Row className="d-flex flex-column">
                   <Col>
-                    {activities.map((activity) => {
-                      return (
-                        <Row className="d-flex flex-row">
-                          <Col>{activity.title}</Col>
-                          <Col>
-                            {/* Display just day and month */}
-                            Start Date:{" "}
-                            {activity.startDate.split("/")[0] +
-                              "/" +
-                              activity.startDate.split("/")[1]}
-                          </Col>
-                          <Col>Start Time: {activity.startTime}</Col>
-                        </Row>
-                      );
-                    })}
+                    <EventActivityCard
+                      // Passing setters for edit, so we can populate the AddNewActivity Card
+                      // when edit button for one of the activities is pressed
+                      setActivityID={setEditActivityID}
+                      setTrigger={editActivity}
+                      setActivityTitle={setEditActivityTitle}
+                      setActivityStartDate={setEditActivityStartDate}
+                      setActivityStartTime={setEditActivityStartTime}
+                      setActivityEndDate={setEditActivityEndDate}
+                      setActivityEndTime={setEditActivityEndTime}
+                      setActivityDescription={setEditActivityDescription}
+                      setActivityExpandDate={setEditActivityExpandDate}
+                      setActivityShowEndDate={setEditActivityShowEndDate}
+                      activities={activities}
+                      editActivityID={editActivityID}
+                    />
                   </Col>
                   <Col>
                     {/* <Row className="d-flex flex-row"> */}
@@ -648,6 +627,8 @@ const CreateEvent = () => {
           >
             <Box sx={popupStyle}>
               <AddNewActivity
+                type={"new"}
+                header={"Add New Activity"}
                 trigger={newActivityPopout}
                 setTrigger={newActivity}
                 // all setters and getters for activity reffer to the current
@@ -660,6 +641,7 @@ const CreateEvent = () => {
                 setActivityDescription={setActivityDescription}
                 setActivityExpandDate={setActivityExpandDate}
                 setActivityShowEndDate={setActivityShowEndDate}
+                setActivityID={setActivityID}
                 activityTitle={activityTitle}
                 activityStartDate={activityStartDate}
                 activityStartTime={activityStartTime}
@@ -668,6 +650,53 @@ const CreateEvent = () => {
                 activityDescription={activityDescription}
                 activityExpandDate={activityExpandDate}
                 activityShowEndDate={activityShowEndDate}
+                activityID={activityID}
+                saveActivity={saveActivity}
+                eventStartDate={formattedStartDate}
+                eventStartTime={startTime}
+                eventEndDate={formattedEndDate}
+                eventEndTime={endTime}
+                currentDate={currentDate}
+                currentTime={currentTime}
+                inversedCurrentDate={inversedCurrentDate}
+              />
+            </Box>
+          </Modal>
+
+          {/* Edit activity (using the same card and props as add activity, just different values) */}
+          <Modal
+            sx={{ overflow: "auto" }}
+            open={editActivityPopout}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box sx={popupStyle}>
+              <AddNewActivity
+                //prop to identify if popup is edit or new activity
+                type={"edit"}
+                header={"Edit Activity"}
+                trigger={editActivityPopout}
+                setTrigger={editActivity}
+                // all setters and getters for activity reffer to the current
+                // activity that is being edited
+                setActivityTitle={setEditActivityTitle}
+                setActivityStartDate={setEditActivityStartDate}
+                setActivityStartTime={setEditActivityStartTime}
+                setActivityEndDate={setEditActivityEndDate}
+                setActivityEndTime={setEditActivityEndTime}
+                setActivityDescription={setEditActivityDescription}
+                setActivityExpandDate={setEditActivityExpandDate}
+                setActivityShowEndDate={setEditActivityShowEndDate}
+                setActivityID={setEditActivityID}
+                activityTitle={editActivityTitle}
+                activityStartDate={editActivityStartDate}
+                activityStartTime={editActivityStartTime}
+                activityEndDate={editActivityEndDate}
+                activityEndTime={editActivityEndTime}
+                activityDescription={editActivityDescription}
+                activityExpandDate={editActivityExpandDate}
+                activityShowEndDate={editActivityShowEndDate}
+                activityID={editActivityID}
                 saveActivity={saveActivity}
                 eventStartDate={formattedStartDate}
                 eventStartTime={startTime}

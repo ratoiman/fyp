@@ -36,10 +36,12 @@ export const StyledTextField = styled(TextField)({
   },
 });
 
+// Date and time picker style (svg = icon)
 export const pickerStyle = {
   svg: { color: "#DAA520" },
 };
 
+// Add new activity popup style
 export const popupStyle = {
   position: "absolute",
   top: "9%",
@@ -49,4 +51,16 @@ export const popupStyle = {
   border: "2px solid #DAA520",
   boxShadow: 24,
   p: 4,
+};
+
+// style for displaying activity inside Create New event
+export const eventActivityCardStyle = {
+  bgcolor: "transparent",
+  border: "1px solid #DAA520",
+  color: "white",
+  fontWeight: 600,
+};
+
+export const editButtonStyle = {
+  color: "#DAA520",
 };

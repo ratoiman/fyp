@@ -9,6 +9,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { StyledTextField, pickerStyle } from "../ui_styles/MuiStyles";
+import { v4 as uuid } from "uuid";
 
 const AddNewActivity = (props) => {
   // Format event dates to MM/DD/YYYY so they can be passed to DatePicker as default values
@@ -89,19 +90,37 @@ const AddNewActivity = (props) => {
 
   const formatDate = (date, setter, format) => {
     let formatted = null;
-    if (date) {
-      const day = date.toDate().getDate().toString();
-      const month = (date.toDate().getMonth() + 1).toString();
-      const year = date.toDate().getFullYear().toString();
+    try {
+      if (date && typeof date !== Object) {
+        const day = date.toDate().getDate().toString();
+        const month = (date.toDate().getMonth() + 1).toString();
+        const year = date.toDate().getFullYear().toString();
 
-      if (format === "DD/MM/YYYY") {
-        formatted =
-          day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+        if (format === "DD/MM/YYYY") {
+          formatted =
+            day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+        }
+
+        if (format === "MM/DD/YYYY") {
+          formatted =
+            month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+        }
       }
+    } catch (e) {
+      if (date) {
+        const day = date.getDate().toString();
+        const month = (date.getMonth() + 1).toString();
+        const year = date.getFullYear().toString();
 
-      if (format === "MM/DD/YYYY") {
-        formatted =
-          month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+        if (format === "DD/MM/YYYY") {
+          formatted =
+            day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+        }
+
+        if (format === "MM/DD/YYYY") {
+          formatted =
+            month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+        }
       }
     }
 
@@ -109,11 +128,20 @@ const AddNewActivity = (props) => {
   };
 
   const formatTime = (time, setter) => {
-    if (time) {
-      const hours = time.toDate().getHours().toString();
-      const minutes = time.toDate().getMinutes().toString();
+    try {
+      if (time) {
+        const hours = time.toDate().getHours().toString();
+        const minutes = time.toDate().getMinutes().toString();
 
-      setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+        setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+      }
+    } catch (e) {
+      if (time) {
+        const hours = time.getHours().toString();
+        const minutes = time.getMinutes().toString();
+
+        setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+      }
     }
   };
 
@@ -136,7 +164,6 @@ const AddNewActivity = (props) => {
 
     if (startDate === null || startDate === "") {
       isDateAndTimeValid = false;
-      console.log("set now ", startDate);
       setStartDateError(true);
       setStartDateErrorMessage("Please select a start date");
     }
@@ -183,7 +210,6 @@ const AddNewActivity = (props) => {
       setEndTimeErrorMessage("End time can't be before start time");
     }
 
-    console.log("before ", isDateAndTimeValid);
     if (isDateAndTimeValid) {
       setStartDateErrorMessage("");
       setStartTimeErrorMessage("");
@@ -219,6 +245,7 @@ const AddNewActivity = (props) => {
     activityDetails.endDate = formattedEndDate;
     activityDetails.endTime = formattedEndTime;
     activityDetails.description = description;
+    activityDetails.id = props.activityID;
   };
 
   useEffect(() => {
@@ -276,6 +303,9 @@ const AddNewActivity = (props) => {
       console.log(endTimeError);
       setShowError(true);
     } else {
+      if (props.type === "new") {
+        activityDetails.id = uuid().slice(0, 8);
+      }
       props.saveActivity(activityDetails);
 
       // Cleanup activity states from CreateEvent
@@ -290,11 +320,12 @@ const AddNewActivity = (props) => {
     }
   };
 
+  console.log("ID ", activityDetails.id);
   return props.trigger ? (
     <>
       <Container className="justify-content-center">
         <div className="">
-          <h1 style={{ color: "#DAA520" }}>Add New Activity</h1>
+          <h1 style={{ color: "#DAA520" }}>{props.header}</h1>
 
           {/* Activity title */}
           <StyledTextField
@@ -320,7 +351,11 @@ const AddNewActivity = (props) => {
             <Row className="mt-2 mb-3">
               <Col>
                 <DatePicker
-                  minDate={eventStartDate}
+                  minDate={
+                    eventStartDate === null
+                      ? props.inversedCurrentDate
+                      : eventStartDate
+                  }
                   className="w-100"
                   label="Start date"
                   openTo="day"
@@ -378,7 +413,11 @@ const AddNewActivity = (props) => {
               <Col>
                 <DatePicker
                   maxDate={eventEndDate}
-                  minDate={eventStartDate}
+                  minDate={
+                    eventStartDate === null
+                      ? props.inversedCurrentDate
+                      : eventStartDate
+                  }
                   className="w-100"
                   label="End date"
                   openTo="day"
