@@ -2,6 +2,7 @@ import { styled } from "@mui/material/styles";
 import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 import { inputLabelClasses } from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 export const StyledTextField = styled(TextField)({
   [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
@@ -50,7 +51,9 @@ export const popupStyle = {
   bgcolor: "black",
   border: "2px solid #DAA520",
   boxShadow: 24,
-  p: 4,
+  pt: 1,
+  pb: 2,
+  px: 2,
 };
 
 // style for displaying activity inside Create New event
@@ -64,3 +67,32 @@ export const eventActivityCardStyle = {
 export const editButtonStyle = {
   color: "#DAA520",
 };
+
+export const closeButtonStyle = {
+  color: "#DAA520",
+  size: "small",
+};
+
+export const deleteButtonStyle = {
+  color: "#c40808",
+  size: "small",
+  // pl:1
+};
+
+export const submitButtonTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#DAA520",
+      contrastText: "#FFF",
+    },
+    secondary: {
+      main: "#ff3333",
+      contrastText: "#FFF",
+    },
+  },
+  // typography: {
+  //   h5: {
+  //     fontSize: "10px",
+  //   },
+  // },
+});

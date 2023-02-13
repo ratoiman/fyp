@@ -14,11 +14,16 @@ import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import Event from "../components/Event";
 import GuestLandingPage from "./GuestLandingPage";
+import EventCard from "../components/EventCard";
+import EventPage from "./EventPage";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [userEvents, setUserEvents] = useState([]);
   const [userEventsDetails, setUserEventsDetails] = useState([]);
+  const [selectedEventID, setSelectedEventID] = useState(null);
+  const [eventPageLoad, setEventPageLoad] = useState(false);
+
   const { user } = useUserAuth();
 
   const handleNavigation = () => {
@@ -47,6 +52,12 @@ const LandingPage = () => {
     }
   };
 
+  const handleEventLink = (id) => {
+    // navigator("/event")
+    setSelectedEventID(id);
+    setEventPageLoad(true);
+  };
+
   const getEventsDetails = () => {
     userEvents.map(async (event) => {
       let eventObj = new Object();
@@ -55,7 +66,13 @@ const LandingPage = () => {
       const activitiesRef = collection(db, "events", event.id, "activities");
       const eventDetailsDoc = await getDoc(eventRef);
       const activitiesDocs = await getDocs(
-        query(activitiesRef, orderBy("start_date"), orderBy("start_time"), orderBy("end_date"), orderBy("end_time"))
+        query(
+          activitiesRef,
+          orderBy("start_date"),
+          orderBy("start_time"),
+          orderBy("end_date"),
+          orderBy("end_time")
+        )
       );
       eventObj["activities"] = {};
 
@@ -67,6 +84,7 @@ const LandingPage = () => {
 
       eventObj["details"] = eventDetailsDoc.data();
       eventObj["activities"] = activities;
+      eventObj["id"] = event.id;
       setUserEventsDetails((eventDetails) => [...eventDetails, eventObj]);
     });
   };
@@ -103,54 +121,67 @@ const LandingPage = () => {
   };
 
   if (user) {
-    return (
-      <>
-        <Button
-          onClick={() => {
-            handleNav("/home");
-          }}
-        >
-          Home
-        </Button>
-        <Button
-          onClick={() => {
-            handleNav("/login");
-          }}
-        >
-          Login
-        </Button>{" "}
-        {/* {console.log(
-          userEventsDetails.sort((a, b) =>
-            a["activities"].start_date > b["activities"].start_date
-              ? 1
-              : b["activities"].start_date > a["activities"].start_date
-              ? -1
-              : a["activities"].start_time > b["activities"].start_time
-              ? 1
-              : b["activities"].start_time > a["activities"].start_time
-              ? -1
-              : 0
-          )
-        )} */}
-        {userEventsDetails.map((eventDetails) => {
-          // console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
-          // console.log("Event details ",eventDetails["activities"])
-          return (
-            <Event
-              title={eventDetails["details"].title}
-              subtitle={eventDetails["details"].subtitle}
-              start_date={eventDetails["details"].start_date}
-              start_time={eventDetails["details"].start_time}
-              end_date={eventDetails["details"].end_date}
-              end_time={eventDetails["details"].end_time}
-              description={eventDetails["details"].description}
-              author={eventDetails["details"].author_username}
-              activities={eventDetails["activities"]}
-            />
-          );
-        })}
-      </>
-    );
+    if (eventPageLoad === false) {
+      return (
+        <>
+          <Button
+            onClick={() => {
+              handleNav("/home");
+            }}
+          >
+            Home
+          </Button>
+          <Button
+            onClick={() => {
+              handleNav("/login");
+            }}
+          >
+            Login
+          </Button>{" "}
+          {userEventsDetails.map((eventDetails) => {
+            // console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
+            // console.log("Event details ",eventDetails["activities"])
+            return (
+              <EventCard
+                title={eventDetails["details"].title}
+                subtitle={eventDetails["details"].subtitle}
+                start_date={eventDetails["details"].start_date}
+                start_time={eventDetails["details"].start_time}
+                end_date={eventDetails["details"].end_date}
+                end_time={eventDetails["details"].end_time}
+                description={eventDetails["details"].description}
+                author={eventDetails["details"].author_username}
+                activities={eventDetails["activities"]}
+                eventID={eventDetails.id}
+                handleEventLink={(id) => {
+                  handleEventLink(id);
+                }}
+              />
+            );
+          })}
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Button
+            onClick={() => {
+              handleNav("/home");
+            }}
+          >
+            Home
+          </Button>
+          <Button
+            onClick={() => {
+              handleNav("/login");
+            }}
+          >
+            Login
+          </Button>{" "}
+          <EventPage eventID={selectedEventID} />
+        </>
+      );
+    }
   } else {
     return <GuestLandingPage />;
   }

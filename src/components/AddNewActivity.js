@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Container, Form, Row, Col } from "react-bootstrap";
 import Button from "@mui/material/Button";
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import IconButton from "@mui/material/IconButton";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
 import { Link } from "react-router-dom";
 import "./../css/NewActivity.css";
@@ -8,7 +13,13 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { StyledTextField, pickerStyle } from "../ui_styles/MuiStyles";
+import {
+  StyledTextField,
+  pickerStyle,
+  editButtonStyle,
+  deleteButtonStyle,
+  submitButtonTheme,
+} from "../ui_styles/MuiStyles";
 import { v4 as uuid } from "uuid";
 
 const AddNewActivity = (props) => {
@@ -238,14 +249,38 @@ const AddNewActivity = (props) => {
     formatTime(startTime, setFormattedStartTime);
     formatTime(endTime, setFormattedEndTime);
     activityDetails.title = title;
-    // TODO format dates and time
-    // TODO create a prop in Create New Event to remember the state of End date and time button
     activityDetails.startDate = formattedStartDate;
     activityDetails.startTime = formattedStartTime;
     activityDetails.endDate = formattedEndDate;
     activityDetails.endTime = formattedEndTime;
     activityDetails.description = description;
     activityDetails.id = props.activityID;
+  };
+
+  const handleDelete = () => {
+    console.log("Handle delete", props.activityID)
+    if (props.activityID === undefined || props.activityID === "" || props.activityID === null) {
+      props.setActivityTitle("");
+      props.setActivityStartDate(null);
+      props.setActivityStartTime(null);
+      props.setActivityEndDate(null);
+      props.setActivityEndTime(null);
+      props.setActivityDescription("");
+      props.setActivityExpandDate("");
+      props.setActivityShowEndDate("d-none");
+      props.setTrigger(false);
+    } else {if(props.activityID.length > 1){
+      props.setActivityTitle("");
+      props.setActivityStartDate(null);
+      props.setActivityStartTime(null);
+      props.setActivityEndDate(null);
+      props.setActivityEndTime(null);
+      props.setActivityDescription("");
+      props.setActivityExpandDate("");
+      props.setActivityShowEndDate("d-none");
+      props.deleteActivity(props.activityID)
+      props.setTrigger(false);
+    }}
   };
 
   useEffect(() => {
@@ -296,11 +331,6 @@ const AddNewActivity = (props) => {
       descriptionError === true ||
       isDateAndTimeValid === false
     ) {
-      console.log(isDateAndTimeValid);
-      console.log(startDateError);
-      console.log(startTimeError);
-      console.log(endDateError);
-      console.log(endTimeError);
       setShowError(true);
     } else {
       if (props.type === "new") {
@@ -320,206 +350,231 @@ const AddNewActivity = (props) => {
     }
   };
 
-  console.log("ID ", activityDetails.id);
+  // console.log("ID ", activityDetails.id === undefined );
   return props.trigger ? (
     <>
+      <div className="close-button">
+        <IconButton
+          aria-label="close"
+          size="small"
+          onClick={() => {
+            props.setTrigger(false);
+          }}
+        >
+          {/* using same style as edit button, no need to create new style */}
+          <CloseOutlinedIcon sx={editButtonStyle} />
+        </IconButton>
+      </div>
       <Container className="justify-content-center">
-        <div className="">
-          <h1 style={{ color: "#DAA520" }}>{props.header}</h1>
+        <h1 style={{ color: "#DAA520" }}>{props.header}</h1>
 
-          {/* Activity title */}
-          <StyledTextField
-            className="mt-3 mb-3 w-100 text-light"
-            required
-            variant="outlined"
-            id="outline-required"
-            label="Event Title"
-            defaultValue={title}
-            error={showError === true ? titleError : false}
-            helperText={
-              titleError === true && showError === true ? titleErrorMessage : ""
-            }
-            onChange={(e) => {
-              checkField(title, setTitleError);
-              props.setActivityTitle(e.target.value);
-              setTitle(e.target.value);
-            }}
-          />
+        {/* Activity title */}
+        <StyledTextField
+          className="mt-3 mb-3 w-100 text-light"
+          required
+          variant="outlined"
+          id="outline-required"
+          label="Event Title"
+          defaultValue={title}
+          error={showError === true ? titleError : false}
+          helperText={
+            titleError === true && showError === true ? titleErrorMessage : ""
+          }
+          onChange={(e) => {
+            checkField(title, setTitleError);
+            props.setActivityTitle(e.target.value);
+            setTitle(e.target.value);
+          }}
+        />
 
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            {/* Start date */}
-            <Row className="mt-2 mb-3">
-              <Col>
-                <DatePicker
-                  minDate={
-                    eventStartDate === null
-                      ? props.inversedCurrentDate
-                      : eventStartDate
-                  }
-                  className="w-100"
-                  label="Start date"
-                  openTo="day"
-                  views={["month", "year", "day"]}
-                  inputFormat="DD/MM/YYYY"
-                  value={startDate}
-                  onChange={(newValue) => {
-                    props.setActivityStartDate(newValue);
-                    setStartDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <StyledTextField
-                      required
-                      sx={pickerStyle}
-                      {...params}
-                      error={showError === true ? startDateError : false}
-                      helperText={
-                        startDateError === true && showError === true
-                          ? startDateErrorMessage
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              </Col>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          {/* Start date */}
+          <Row className="mt-2 mb-3">
+            <Col>
+              <DatePicker
+                minDate={
+                  eventStartDate === null
+                    ? props.inversedCurrentDate
+                    : eventStartDate
+                }
+                className="w-100"
+                label="Start date"
+                openTo="day"
+                views={["month", "year", "day"]}
+                inputFormat="DD/MM/YYYY"
+                value={startDate}
+                onChange={(newValue) => {
+                  props.setActivityStartDate(newValue);
+                  setStartDate(newValue);
+                }}
+                renderInput={(params) => (
+                  <StyledTextField
+                    required
+                    sx={pickerStyle}
+                    {...params}
+                    error={showError === true ? startDateError : false}
+                    helperText={
+                      startDateError === true && showError === true
+                        ? startDateErrorMessage
+                        : ""
+                    }
+                  />
+                )}
+              />
+            </Col>
 
-              {/* Start time */}
-              <Col>
-                <TimePicker
-                  className="w-100"
-                  label="Start time"
-                  value={startTime}
-                  onChange={(newValue) => {
-                    props.setActivityStartTime(newValue);
-                    setStartTime(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <StyledTextField
-                      sx={pickerStyle}
-                      {...params}
-                      error={showError === true ? startTimeError : false}
-                      helperText={
-                        startTimeError === true && showError === true
-                          ? startTimeErrorMessage
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              </Col>
-            </Row>
+            {/* Start time */}
+            <Col>
+              <TimePicker
+                className="w-100"
+                label="Start time"
+                value={startTime}
+                onChange={(newValue) => {
+                  props.setActivityStartTime(newValue);
+                  setStartTime(newValue);
+                }}
+                renderInput={(params) => (
+                  <StyledTextField
+                    sx={pickerStyle}
+                    {...params}
+                    error={showError === true ? startTimeError : false}
+                    helperText={
+                      startTimeError === true && showError === true
+                        ? startTimeErrorMessage
+                        : ""
+                    }
+                  />
+                )}
+              />
+            </Col>
+          </Row>
 
-            {/* End date */}
-            <Row className={`mt-3 mb-3 ${showEndDate}`}>
-              <Col>
-                <DatePicker
-                  maxDate={eventEndDate}
-                  minDate={
-                    eventStartDate === null
-                      ? props.inversedCurrentDate
-                      : eventStartDate
-                  }
-                  className="w-100"
-                  label="End date"
-                  openTo="day"
-                  views={["month", "year", "day"]}
-                  inputFormat="DD/MM/YYYY"
-                  value={endDate}
-                  onChange={(newValue) => {
-                    props.setActivityEndDate(newValue);
-                    setEndDate(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <StyledTextField
-                      sx={pickerStyle}
-                      {...params}
-                      error={showError === true ? endDateError : false}
-                      helperText={
-                        endDateError === true && showError === true
-                          ? endDateErrorMessage
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              </Col>
+          {/* End date */}
+          <Row className={`mt-3 mb-3 ${showEndDate}`}>
+            <Col>
+              <DatePicker
+                maxDate={eventEndDate}
+                minDate={
+                  eventStartDate === null
+                    ? props.inversedCurrentDate
+                    : eventStartDate
+                }
+                className="w-100"
+                label="End date"
+                openTo="day"
+                views={["month", "year", "day"]}
+                inputFormat="DD/MM/YYYY"
+                value={endDate}
+                onChange={(newValue) => {
+                  props.setActivityEndDate(newValue);
+                  setEndDate(newValue);
+                }}
+                renderInput={(params) => (
+                  <StyledTextField
+                    sx={pickerStyle}
+                    {...params}
+                    error={showError === true ? endDateError : false}
+                    helperText={
+                      endDateError === true && showError === true
+                        ? endDateErrorMessage
+                        : ""
+                    }
+                  />
+                )}
+              />
+            </Col>
 
-              {/* End time */}
-              <Col>
-                <TimePicker
-                  className="w-100"
-                  label="End time"
-                  value={endTime}
-                  onChange={(newValue) => {
-                    props.setActivityEndTime(newValue);
-                    setEndTime(newValue);
-                  }}
-                  renderInput={(params) => (
-                    <StyledTextField
-                      sx={pickerStyle}
-                      {...params}
-                      error={showError === true ? endTimeError : false}
-                      helperText={
-                        endTimeError === true && showError === true
-                          ? endTimeErrorMessage
-                          : ""
-                      }
-                    />
-                  )}
-                />
-              </Col>
-            </Row>
-          </LocalizationProvider>
+            {/* End time */}
+            <Col>
+              <TimePicker
+                className="w-100"
+                label="End time"
+                value={endTime}
+                onChange={(newValue) => {
+                  props.setActivityEndTime(newValue);
+                  setEndTime(newValue);
+                }}
+                renderInput={(params) => (
+                  <StyledTextField
+                    sx={pickerStyle}
+                    {...params}
+                    error={showError === true ? endTimeError : false}
+                    helperText={
+                      endTimeError === true && showError === true
+                        ? endTimeErrorMessage
+                        : ""
+                    }
+                  />
+                )}
+              />
+            </Col>
+          </Row>
+        </LocalizationProvider>
 
-          {/* Expand dates button */}
-          <Link
-            className="d-flex  justify-content-left mb-4 create_event_links"
-            style={{ textDecoration: "none" }}
-            onClick={showDate}
-          >
-            <Row className="">
-              <Col md="auto">
-                <i>
-                  {" "}
-                  <PlusCircleDotted className={`${expandDate}`} />
-                  <DashCircleDotted className={`${showEndDate}`} />
-                </i>
-              </Col>
-              <Col>End date and time</Col>
-            </Row>
-          </Link>
+        {/* Expand dates button */}
+        <Link
+          className="d-flex  justify-content-left mb-4 create_event_links"
+          style={{ textDecoration: "none" }}
+          onClick={showDate}
+        >
+          <Row className="">
+            <Col md="auto">
+              <i>
+                {" "}
+                <PlusCircleDotted className={`${expandDate}`} />
+                <DashCircleDotted className={`${showEndDate}`} />
+              </i>
+            </Col>
+            <Col>End date and time</Col>
+          </Row>
+        </Link>
 
-          {/* Description */}
-          <StyledTextField
-            className="mt-3 mb-3 w-100 text-light"
-            required
-            multiline
-            id="outline-basic"
-            label="Event Description"
-            defaultValue={description}
-            error={showError === true ? descriptionError : false}
-            helperText={
-              descriptionError === true && showError === true
-                ? descriptionErrorMessage
-                : ""
-            }
-            onChange={(e) => {
-              props.setActivityDescription(e.target.value);
-              setDescription(e.target.value);
-            }}
-          />
-
-          <Button
-            variant="outlined"
-            onClick={() => {
-              props.setTrigger(false);
-            }}
-          >
-            Close
-          </Button>
-          <Button variant="outlined" onClick={handleSubmit}>
-            Submit
-          </Button>
-        </div>
+        {/* Description */}
+        <StyledTextField
+          className="mt-3 mb-3 w-100 text-light"
+          required
+          multiline
+          id="outline-basic"
+          label="Event Description"
+          defaultValue={description}
+          error={showError === true ? descriptionError : false}
+          helperText={
+            descriptionError === true && showError === true
+              ? descriptionErrorMessage
+              : ""
+          }
+          onChange={(e) => {
+            props.setActivityDescription(e.target.value);
+            setDescription(e.target.value);
+          }}
+        />
+      </Container>
+      <Container style={{ margin: "0px", paddingLeft: "3px" }}>
+        <Row>
+          <Col>
+            <IconButton
+              aria-label="delete"
+              size="small"
+              onClick={() => {
+                handleDelete();
+              }}
+            >
+              <DeleteOutlineOutlinedIcon sx={deleteButtonStyle} />
+            </IconButton>
+          </Col>
+          <Col className="save-button">
+            <ThemeProvider theme={submitButtonTheme}>
+              <Button
+                variant="outlined"
+                color="primary"
+                onClick={handleSubmit}
+                sx={{ color: "#DAA520" }}
+              >
+                Submit
+              </Button>
+            </ThemeProvider>
+          </Col>
+        </Row>
       </Container>
     </>
   ) : (

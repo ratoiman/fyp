@@ -249,8 +249,36 @@ const CreateEvent = () => {
       return obj.id !== activity.id;
     });
 
-    console.log("TEMP ",temp)
-    setActivities([...temp, activity]);
+    const temp2 = [...temp, activity];
+    // sorting in chronological order
+    temp2.sort(function (a, b) {
+      return (
+        a.startDate.localeCompare(b.startDate) ||
+        a.startTime.localeCompare(b.startTime) ||
+        a.endDate.localeCompare(b.endDate) ||
+        a.endTime.localeCompare(b.endTime)
+      );
+    });
+    setActivities(temp2);
+
+    // console.log("Temp after temp", activities);
+  };
+
+  const deleteActivity = (activity_id) => {
+    const temp = activities.filter(function (obj) {
+      return obj.id !== activity_id;
+    });
+    console.log("Temp ", temp);
+
+    // making sure everything is sorted in chronologycal order
+    temp.sort(function (a, b) {
+      console.log("sorting ", a.startDate, b.startDate, a.startDate);
+      return (
+        a.startDate.localeCompare(b.startDate) ||
+        a.startTime.localeCompare(b.startTime)
+      );
+    });
+    setActivities([...temp]);
   };
 
   useEffect(() => {
@@ -295,75 +323,71 @@ const CreateEvent = () => {
 
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
-      // await addDoc(eventsRef, {
-      //   title: title,
-      //   subtitle: subtitle,
-      //   author: user.uid,
-      // }).then(async function (docRef) {
-      //   console.log("Document written with ID: ", docRef.id);
-      //   const userRef = doc(db, "users", user.uid, "events", docRef.id);
-      //   const eventUsersRef = doc(db, "events", docRef.id, "users", user.uid);
-      //   const eventDetailsRef = doc(
-      //     db,
-      //     "events",
-      //     docRef.id,
-      //     "data",
-      //     "event_details"
-      //   );
-      //   await setDoc(eventDetailsRef, {
-      //     title: title,
-      //     subtitle: subtitle,
-      //     start_date: formattedStartDate,
-      //     start_time: formattedStartTime,
-      //     end_date: formattedEndDate,
-      //     end_time: formattedEndTime,
-      //     description: description,
-      //     author: user.uid,
-      //     author_username: user.displayName,
-      //   }).then(async function () {
-      //     const activitiesRef = collection(
-      //       db,
-      //       "events",
-      //       docRef.id,
-      //       "activities"
-      //     );
-      //     console.log("before map");
-      //     activities.map(async (activity) => {
-      //       console.log(
-      //         "title ",
-      //         activity.title,
-      //         " desc ",
-      //         activity.description
-      //       );
-      //       await addDoc(activitiesRef, {
-      //         title: activity.title,
-      //         start_date: activity.startDate,
-      //         start_time: activity.startTime,
-      //         end_date: activity.endDate,
-      //         end_time: activity.endTime,
-      //         description: activity.description,
-      //       });
-      //     });
-      //   });
+      await addDoc(eventsRef, {
+        title: title,
+        subtitle: subtitle,
+        author: user.uid,
+      }).then(async function (docRef) {
+        console.log("Document written with ID: ", docRef.id);
+        const userRef = doc(db, "users", user.uid, "events", docRef.id);
+        const eventUsersRef = doc(db, "events", docRef.id, "users", user.uid);
+        const eventDetailsRef = doc(
+          db,
+          "events",
+          docRef.id,
+          "data",
+          "event_details"
+        );
+        await setDoc(eventDetailsRef, {
+          title: title,
+          subtitle: subtitle,
+          start_date: formattedStartDate,
+          start_time: formattedStartTime,
+          end_date: formattedEndDate,
+          end_time: formattedEndTime,
+          description: description,
+          author: user.uid,
+          author_username: user.displayName,
+        }).then(async function () {
+          console.log("before map");
+          activities.map(async (activity) => {
+            const activitiesRef = doc(
+              db,
+              "events",
+              docRef.id,
+              "activities",
+              activity.id
+            );
+            await setDoc(activitiesRef, {
+              title: activity.title,
+              start_date: activity.startDate,
+              start_time: activity.startTime,
+              end_date: activity.endDate,
+              end_time: activity.endTime,
+              description: activity.description,
+              id: activity.id,
+            });
+          });
+        });
 
-      //   await setDoc(eventUsersRef, { status: "admin" });
-      //   await setDoc(userRef, { status: "admin" });
-      //   console.log("Event created with ID:", docRef.id);
-      //   console.log(activities);
-      // });
-      // navigate("/home");
+        await setDoc(eventUsersRef, { status: "admin" });
+        await setDoc(userRef, { status: "admin" });
+        console.log("Event created with ID:", docRef.id);
+        console.log(activities);
+      });
+      navigate("/home");
       console.log("SUCCESS");
     } else {
       setShowError(true);
     }
   };
-console.log("ASC ",activities)
   return (
     <>
       <Button onClick={handleHome}>Home</Button>
       <Container
         className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
-        style={{ minWidth: "50%", maxWidth: "80%" }}
+        // style={{ minWidth: "50%", maxWidth: "80%" }}
+        style={{width:"100%"}}
       >
         <Row>
           <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
@@ -612,6 +636,7 @@ console.log("ASC ",activities)
                 onClick={async () => {
                   checkDateAndTime();
                   handleSubmit();
+                  console.log("After delete ", activities);
                 }}
               >
                 Confirm
@@ -698,6 +723,7 @@ console.log("ASC ",activities)
                 activityShowEndDate={editActivityShowEndDate}
                 activityID={editActivityID}
                 saveActivity={saveActivity}
+                deleteActivity={deleteActivity}
                 eventStartDate={formattedStartDate}
                 eventStartTime={startTime}
                 eventEndDate={formattedEndDate}

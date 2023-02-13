@@ -9,6 +9,7 @@ import { Route, Routes } from "react-router-dom";
 import Signup from "./pages/Signup";
 import UserSetup from "./pages/UserSetup";
 import CreateEventMUI from "./components/CreateEventMUI";
+import EventPage from "./pages/EventPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/event" element={<EventPage />} />
               <Route
                 path="/home"
                 element={

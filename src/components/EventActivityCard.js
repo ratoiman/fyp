@@ -8,11 +8,7 @@ import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
-import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import AddNewActivity from "./AddNewActivity";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
 
 const EventActivityCard = (props) => {
   const [showContainer, setShowContainer] = useState("d-none");
@@ -51,7 +47,7 @@ const EventActivityCard = (props) => {
     const actArr = props.activities.find((x) => x.id === activity.id);
     // const dateTo = stringToDate(actArr.startDate);
     // console.log(stringToDate(stringToDate(actArr.startDate)));
-    props.setActivityID(activity.id)
+    props.setActivityID(activity.id);
     props.setActivityTitle(actArr.title);
     props.setActivityStartDate(stringToDate(actArr.startDate));
     props.setActivityStartTime(stringToTime(actArr.startTime));
