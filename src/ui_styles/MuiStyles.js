@@ -96,3 +96,19 @@ export const submitButtonTheme = createTheme({
   //   },
   // },
 });
+
+export const event_page_card_mobile = {
+  minWidth: "90%",
+  maxWidth: "100%",
+  minHeigth: "60%",
+  border: "none",
+  bgcolor: "black",
+  top: "12%",
+};
+
+export const event_page_card_desktop = {
+  minWidth: "50%",
+  maxWidth: "80%",
+  border: "none",
+  bgcolor: "grey",
+};

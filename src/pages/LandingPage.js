@@ -119,6 +119,7 @@ const LandingPage = () => {
   const handleNav = (nav) => {
     navigate(nav);
   };
+  
 
   if (user) {
     if (eventPageLoad === false) {
