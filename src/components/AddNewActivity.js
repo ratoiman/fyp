@@ -22,6 +22,9 @@ import {
 } from "../ui_styles/MuiStyles";
 import { v4 as uuid } from "uuid";
 
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+
 const AddNewActivity = (props) => {
   // Format event dates to MM/DD/YYYY so they can be passed to DatePicker as default values
 
@@ -251,17 +254,31 @@ const AddNewActivity = (props) => {
     activityDetails.title = title;
     activityDetails.startDate = formattedStartDate;
     if (startDate !== null) {
-      activityDetails.start_date_day = startDate["$d"].toString().split(" ")[0];
-      activityDetails.start_date_month = startDate["$d"]
-        .toString()
-        .split(" ")[1];
+      if (startDate["$d"] !== undefined) {
+        console.log("Start date ", startDate, startDate !== undefined);
+        activityDetails.start_date_day = startDate["$d"]
+          .toString()
+          .split(" ")[0];
+        activityDetails.start_date_month = startDate["$d"]
+          .toString()
+          .split(" ")[1];
+      } else {
+        activityDetails.start_date_day = startDate.toString().split(" ")[0];
+        activityDetails.start_date_month = startDate.toString().split(" ")[1];
+      }
     }
     activityDetails.startTime = formattedStartTime;
     activityDetails.endDate = formattedEndDate;
     if (endDate !== null) {
-      activityDetails.end_date_day = endDate["$d"].toString().split(" ")[0];
+      if (endDate["$d"] !== undefined) {
+        activityDetails.end_date_day = endDate["$d"].toString().split(" ")[0];
 
-      activityDetails.end_date_month = endDate["$d"].toString().split(" ")[1];
+        activityDetails.end_date_month = endDate["$d"].toString().split(" ")[1];
+      } else {
+        activityDetails.end_date_day = endDate.toString().split(" ")[0];
+
+        activityDetails.end_date_month = endDate.toString().split(" ")[1];
+      }
     }
     activityDetails.endTime = formattedEndTime;
     activityDetails.description = description;
@@ -529,22 +546,25 @@ const AddNewActivity = (props) => {
         </LocalizationProvider>
 
         {/* Expand dates button */}
-        <Link
-          className="d-flex  justify-content-left mb-4 create_event_links"
-          style={{ textDecoration: "none" }}
-          onClick={showDate}
-        >
-          <Row className="">
-            <Col md="auto">
-              <i>
-                {" "}
-                <PlusCircleDotted className={`${expandDate}`} />
-                <DashCircleDotted className={`${showEndDate}`} />
-              </i>
-            </Col>
-            <Col>End date and time</Col>
-          </Row>
-        </Link>
+
+        <ThemeProvider theme={submitButtonTheme}>
+          <Button
+            size="small"
+            startIcon={
+              expandDate === false ? (
+                <AddCircleOutlineIcon />
+              ) : (
+                <RemoveCircleOutlineIcon />
+              )
+            }
+            onClick={() => {
+              showDate();
+              setExpandDate(!expandDate);
+            }}
+          >
+            End date and time
+          </Button>
+        </ThemeProvider>
 
         {/* Description */}
         <StyledTextField

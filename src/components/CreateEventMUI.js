@@ -13,6 +13,7 @@ import {
   StyledTextField,
   pickerStyle,
   popupStyle,
+  submitButtonTheme,
 } from "../ui_styles/MuiStyles";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -20,6 +21,9 @@ import Button from "@mui/material/Button";
 import AddNewActivity from "./AddNewActivity";
 import NewEventActivityCard from "./NewEventActivityCard";
 import { isMobile } from "react-device-detect";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
@@ -30,7 +34,7 @@ const CreateEvent = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [eventIsValid, setEventIsValid] = useState(false);
   const [showEndDate, setShowEndDate] = useState("d-none");
-  const [expandDate, setExpandDate] = useState("");
+  const [expandDate, setExpandDate] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
@@ -53,7 +57,7 @@ const CreateEvent = () => {
   const [activityEndDate, setActivityEndDate] = useState(null);
   const [activityEndTime, setActivityEndTime] = useState(null);
   const [activityDescription, setActivityDescription] = useState(null);
-  const [activityExpandDate, setActivityExpandDate] = useState("");
+  const [activityExpandDate, setActivityExpandDate] = useState(false);
   const [activityShowEndDate, setActivityShowEndDate] = useState("d-none");
 
   const [activities, setActivities] = useState([]);
@@ -67,7 +71,7 @@ const CreateEvent = () => {
   const [editActivityEndDate, setEditActivityEndDate] = useState(null);
   const [editActivityEndTime, setEditActivityEndTime] = useState(null);
   const [editActivityDescription, setEditActivityDescription] = useState(null);
-  const [editActivityExpandDate, setEditActivityExpandDate] = useState("");
+  const [editActivityExpandDate, setEditActivityExpandDate] = useState(false);
   const [editActivityShowEndDate, setEditActivityShowEndDate] =
     useState("d-none");
 
@@ -157,10 +161,8 @@ const CreateEvent = () => {
   const showDate = () => {
     if (showEndDate === "") {
       setShowEndDate("d-none");
-      setExpandDate("");
     } else {
       setShowEndDate("");
-      setExpandDate("d-none");
     }
   };
 
@@ -339,6 +341,13 @@ const CreateEvent = () => {
           "data",
           "event_details"
         );
+        let end_date_month = ""
+        let end_date_day = ""
+        
+        if(endDate){
+          end_date_day = endDate["$d"].toString().split(" ")[0]
+          end_date_month = endDate["$d"].toString().split(" ")[1]
+        }
         await setDoc(eventDetailsRef, {
           title: title,
           subtitle: subtitle,
@@ -347,8 +356,8 @@ const CreateEvent = () => {
           start_date_month: startDate["$d"].toString().split(" ")[1],
           start_time: formattedStartTime,
           end_date: formattedEndDate,
-          end_date_day: endDate["$d"].toString().split(" ")[0],
-          end_date_month: endDate["$d"].toString().split(" ")[1],
+          end_date_day: end_date_day,
+          end_date_month: end_date_month,
           end_time: formattedEndTime,
           description: description,
           author: user.uid,
@@ -551,22 +560,25 @@ const CreateEvent = () => {
             </LocalizationProvider>
 
             {/* End date and time */}
-            <Link
-              className="d-flex  justify-content-left mb-4 create_event_links"
-              style={{ textDecoration: "none" }}
-              onClick={showDate}
-            >
-              <Row className="">
-                <Col md="auto">
-                  <i>
-                    {" "}
-                    <PlusCircleDotted className={`${expandDate}`} />
-                    <DashCircleDotted className={`${showEndDate}`} />
-                  </i>
-                </Col>
-                <Col>End date and time</Col>
-              </Row>
-            </Link>
+
+            <ThemeProvider theme={submitButtonTheme}>
+              <Button
+                size="small"
+                startIcon={
+                  expandDate === false ? (
+                    <AddCircleOutlineIcon />
+                  ) : (
+                    <RemoveCircleOutlineIcon />
+                  )
+                }
+                onClick={() => {
+                  showDate();
+                  setExpandDate(!expandDate);
+                }}
+              >
+                End date and time
+              </Button>
+            </ThemeProvider>
 
             {/* //TODO add event location (add option to select if event is in person or virtual) */}
 
@@ -598,24 +610,24 @@ const CreateEvent = () => {
                   </Col>
                   <Col>
                     {/* <Row className="d-flex flex-row"> */}
-                    <Link
-                      className="create_event_links d-flex"
-                      variant="dark"
-                      style={{ textDecoration: "none" }}
-                      onClick={() => {
-                        newActivity();
-                      }}
-                    >
-                      <Row className="mt-4">
-                        <Col md="auto">
-                          <i>
-                            {" "}
-                            <PlusCircleDotted />
-                          </i>
-                        </Col>
-                        <Col>Add new activity</Col>
-                      </Row>
-                    </Link>
+
+                    <ThemeProvider theme={submitButtonTheme}>
+                      <Button
+                        size="small"
+                        startIcon={
+                          expandDate === false ? (
+                            <AddCircleOutlineIcon />
+                          ) : (
+                            <RemoveCircleOutlineIcon />
+                          )
+                        }
+                        onClick={() => {
+                          newActivity();
+                        }}
+                      >
+                        Add new activity
+                      </Button>
+                    </ThemeProvider>
                     {/* </Row> */}
                   </Col>
                 </Row>
@@ -643,21 +655,23 @@ const CreateEvent = () => {
 
             {/* Confirm */}
             <div className="d-flex justify-content-center">
-              <Button
-                sx={{
-                  color: "white",
-                  outline: "#DAA520",
-                }}
-                className="mt-4"
-                variant="outlined"
-                onClick={async () => {
-                  checkDateAndTime();
-                  handleSubmit();
-                  console.log("After delete ", activities);
-                }}
-              >
-                Confirm
-              </Button>
+              <ThemeProvider theme={submitButtonTheme}>
+                <Button
+                  sx={{
+                    color: "white",
+                    outline: "#DAA520",
+                  }}
+                  className="mt-4"
+                  variant="outlined"
+                  onClick={async () => {
+                    checkDateAndTime();
+                    handleSubmit();
+                    console.log("After delete ", activities);
+                  }}
+                >
+                  Confirm
+                </Button>
+              </ThemeProvider>
             </div>
           </Box>
 

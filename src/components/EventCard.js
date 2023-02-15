@@ -72,7 +72,7 @@ const EventCard = (props) => {
                 {props.title}
               </Typography>
 
-              <Typography textColor="neutral.300">{props.subtitle}</Typography>
+              <Typography >{props.subtitle}</Typography>
 
               <Typography level="h4" fontSize="md" mt={1}>
                 {props.description}
