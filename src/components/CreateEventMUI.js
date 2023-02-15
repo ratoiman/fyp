@@ -18,7 +18,8 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import AddNewActivity from "./AddNewActivity";
-import EventActivityCard from "./EventActivityCard";
+import NewEventActivityCard from "./NewEventActivityCard";
+import { isMobile } from "react-device-detect";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
@@ -342,8 +343,12 @@ const CreateEvent = () => {
           title: title,
           subtitle: subtitle,
           start_date: formattedStartDate,
+          start_date_day: startDate["$d"].toString().split(" ")[0],
+          start_date_month: startDate["$d"].toString().split(" ")[1],
           start_time: formattedStartTime,
           end_date: formattedEndDate,
+          end_date_day: endDate["$d"].toString().split(" ")[0],
+          end_date_month: endDate["$d"].toString().split(" ")[1],
           end_time: formattedEndTime,
           description: description,
           author: user.uid,
@@ -361,8 +366,12 @@ const CreateEvent = () => {
             await setDoc(activitiesRef, {
               title: activity.title,
               start_date: activity.startDate,
+              start_date_day: activity.start_date_day,
+              start_date_month: activity.start_date_month,
               start_time: activity.startTime,
               end_date: activity.endDate,
+              end_date_day: activity.end_date_day,
+              end_date_month: activity.end_date_month,
               end_time: activity.endTime,
               description: activity.description,
               id: activity.id,
@@ -381,13 +390,21 @@ const CreateEvent = () => {
       setShowError(true);
     }
   };
+  if (startDate) {
+    console.log(startDate["$d"].toString().split(" ")[1]);
+  }
   return (
     <>
       <Button onClick={handleHome}>Home</Button>
       <Container
         className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
         // style={{ minWidth: "50%", maxWidth: "80%" }}
-        style={{width:"100%"}}
+        // style={{ width: "100%" }}
+        style={
+          isMobile === true
+            ? { width: "100%" }
+            : { minWidth: "50%", maxWidth: "70%" }
+        }
       >
         <Row>
           <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
@@ -562,7 +579,7 @@ const CreateEvent = () => {
                 {/* Display activities */}
                 <Row className="d-flex flex-column">
                   <Col>
-                    <EventActivityCard
+                    <NewEventActivityCard
                       // Passing setters for edit, so we can populate the AddNewActivity Card
                       // when edit button for one of the activities is pressed
                       setActivityID={setEditActivityID}

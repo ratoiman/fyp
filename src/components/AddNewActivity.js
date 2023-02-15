@@ -250,16 +250,31 @@ const AddNewActivity = (props) => {
     formatTime(endTime, setFormattedEndTime);
     activityDetails.title = title;
     activityDetails.startDate = formattedStartDate;
+    if (startDate !== null) {
+      activityDetails.start_date_day = startDate["$d"].toString().split(" ")[0];
+      activityDetails.start_date_month = startDate["$d"]
+        .toString()
+        .split(" ")[1];
+    }
     activityDetails.startTime = formattedStartTime;
     activityDetails.endDate = formattedEndDate;
+    if (endDate !== null) {
+      activityDetails.end_date_day = endDate["$d"].toString().split(" ")[0];
+
+      activityDetails.end_date_month = endDate["$d"].toString().split(" ")[1];
+    }
     activityDetails.endTime = formattedEndTime;
     activityDetails.description = description;
     activityDetails.id = props.activityID;
   };
 
   const handleDelete = () => {
-    console.log("Handle delete", props.activityID)
-    if (props.activityID === undefined || props.activityID === "" || props.activityID === null) {
+    console.log("Handle delete", props.activityID);
+    if (
+      props.activityID === undefined ||
+      props.activityID === "" ||
+      props.activityID === null
+    ) {
       props.setActivityTitle("");
       props.setActivityStartDate(null);
       props.setActivityStartTime(null);
@@ -269,18 +284,20 @@ const AddNewActivity = (props) => {
       props.setActivityExpandDate("");
       props.setActivityShowEndDate("d-none");
       props.setTrigger(false);
-    } else {if(props.activityID.length > 1){
-      props.setActivityTitle("");
-      props.setActivityStartDate(null);
-      props.setActivityStartTime(null);
-      props.setActivityEndDate(null);
-      props.setActivityEndTime(null);
-      props.setActivityDescription("");
-      props.setActivityExpandDate("");
-      props.setActivityShowEndDate("d-none");
-      props.deleteActivity(props.activityID)
-      props.setTrigger(false);
-    }}
+    } else {
+      if (props.activityID.length > 1) {
+        props.setActivityTitle("");
+        props.setActivityStartDate(null);
+        props.setActivityStartTime(null);
+        props.setActivityEndDate(null);
+        props.setActivityEndTime(null);
+        props.setActivityDescription("");
+        props.setActivityExpandDate("");
+        props.setActivityShowEndDate("d-none");
+        props.deleteActivity(props.activityID);
+        props.setTrigger(false);
+      }
+    }
   };
 
   useEffect(() => {

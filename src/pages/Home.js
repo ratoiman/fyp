@@ -2,6 +2,8 @@ import React from "react";
 import { Button, Container } from "react-bootstrap";
 import { useNavigate } from "react-router";
 import { useUserAuth } from "../context/UserAuthContext";
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 
 const Home = () => {
   // eslint-disable-next-line
@@ -31,9 +33,12 @@ const Home = () => {
   return (
     <>
       <div className="p-4 box mt-3 text-center">
-        Welcome <br />
+      <Box sx={{ width: '100%', maxWidth: 500 }}>
+      <Typography variant="h6">Welcome </Typography><br />
         {/* {user && user.email} */}
-        {currentUser}
+       <Typography variant="h5"> {currentUser}
+       </Typography>
+       </Box>
       </div>
       <Container className="login-container">
         <div className="d-grid gap-2">

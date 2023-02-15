@@ -7,12 +7,18 @@ import Card from "@mui/joy/Card";
 import CardCover from "@mui/joy/CardCover";
 import CardOverflow from "@mui/joy/CardOverflow";
 import Divider from "@mui/joy/Divider";
-import Typography from "@mui/joy/Typography";
+import Typography from "@mui/material/Typography";
 import Chip from "@mui/joy/Chip";
 import CardContent from "@mui/joy/CardContent";
 import Link from "@mui/joy/Link";
 import EventPage from "../pages/EventPage";
 import texture from "../resources/texture.jpeg";
+import background from "../resources/solid-concrete-wall-textured-backdrop.jpg";
+import {
+  event_card_style_desktop,
+  event_card_style_mobile,
+} from "../ui_styles/MuiStyles";
+import { isMobile } from "react-device-detect";
 
 const EventCard = (props) => {
   const [viewStartTime, setViewStartTime] = useState("d-none");
@@ -51,36 +57,16 @@ const EventCard = (props) => {
           <Card
             variant="outlined"
             orientation="horizontal"
-            sx={{
-              minWidth: 400,
-              maxWidth: 400,
-              borderColor: "#DAA520",
-              gap: 2,
-              "&:hover": {
-                boxShadow: "md",
-                borderColor: "#DAA520",
-                borderBlock: "2px solid",
-                borderBlockColor: "#DAA520",
-                textColor: "#DAA520",
-              },
-              my: "20px",
-            }}
+            sx={isMobile ? event_card_style_mobile : event_card_style_desktop}
           >
             <CardCover>
-              <img
-                // src="https://c4.wallpaperflare.com/wallpaper/955/69/70/minimalism-space-stars-wallpaper-preview.jpg"
-                // srcSet="https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320&dpr=2 2x"
-                src={texture}
-                loading="lazy"
-                alt=""
-              />
+              <img src={texture} loading="lazy" alt="" />
             </CardCover>
             <CardContent>
               <Typography
-                level="h2"
+                textAlign="center"
+                variant="h4"
                 fontSize="lg"
-                // textColor="#DAA520"
-                mb={1}
                 fontWeight={"bold"}
               >
                 {props.title}

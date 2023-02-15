@@ -1,0 +1,10 @@
+.event-page-activity-card-title {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.event-page-activity-card-expand {
+  display: flex !important;
+  justify-content: left !important;
+  margin-top: 3%;
+}

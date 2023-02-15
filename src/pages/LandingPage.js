@@ -16,12 +16,15 @@ import Event from "../components/Event";
 import GuestLandingPage from "./GuestLandingPage";
 import EventCard from "../components/EventCard";
 import EventPage from "./EventPage";
+import Loading from "../components/Loading";
+import { setLogLevel } from "firebase/app";
 
 const LandingPage = () => {
   const navigate = useNavigate();
   const [userEvents, setUserEvents] = useState([]);
   const [userEventsDetails, setUserEventsDetails] = useState([]);
   const [selectedEventID, setSelectedEventID] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [eventPageLoad, setEventPageLoad] = useState(false);
 
   const { user } = useUserAuth();
@@ -89,6 +92,14 @@ const LandingPage = () => {
     });
   };
 
+  const loading = () => {
+    if (userEventsDetails.length > 0) {
+      setIsLoading(false);
+    } else {
+      setIsLoading(true);
+    }
+  };
+
   useEffect(() => {
     getUserEvents();
   }, [user]);
@@ -96,6 +107,10 @@ const LandingPage = () => {
   useEffect(() => {
     getEventsDetails();
   }, [userEvents]);
+
+  useEffect(() => {
+    loading();
+  }, [userEventsDetails]);
 
   function GreetGuest() {
     return (
@@ -119,49 +134,72 @@ const LandingPage = () => {
   const handleNav = (nav) => {
     navigate(nav);
   };
-  
 
   if (user) {
     if (eventPageLoad === false) {
-      return (
-        <>
-          <Button
-            onClick={() => {
-              handleNav("/home");
-            }}
-          >
-            Home
-          </Button>
-          <Button
-            onClick={() => {
-              handleNav("/login");
-            }}
-          >
-            Login
-          </Button>{" "}
-          {userEventsDetails.map((eventDetails) => {
-            // console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
-            // console.log("Event details ",eventDetails["activities"])
-            return (
-              <EventCard
-                title={eventDetails["details"].title}
-                subtitle={eventDetails["details"].subtitle}
-                start_date={eventDetails["details"].start_date}
-                start_time={eventDetails["details"].start_time}
-                end_date={eventDetails["details"].end_date}
-                end_time={eventDetails["details"].end_time}
-                description={eventDetails["details"].description}
-                author={eventDetails["details"].author_username}
-                activities={eventDetails["activities"]}
-                eventID={eventDetails.id}
-                handleEventLink={(id) => {
-                  handleEventLink(id);
-                }}
-              />
-            );
-          })}
-        </>
-      );
+      if (!isLoading) {
+        return (
+          <>
+            <Button
+              className="mb-4"
+              onClick={() => {
+                handleNav("/home");
+              }}
+            >
+              Home
+            </Button>
+            <Button
+              className="mb-4"
+              onClick={() => {
+                handleNav("/login");
+              }}
+            >
+              Login
+            </Button>{" "}
+            {userEventsDetails.map((eventDetails) => {
+              // console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
+              // console.log("Event details ",eventDetails["activities"])
+              return (
+                <EventCard
+                  title={eventDetails["details"].title}
+                  subtitle={eventDetails["details"].subtitle}
+                  start_date={eventDetails["details"].start_date}
+                  start_time={eventDetails["details"].start_time}
+                  end_date={eventDetails["details"].end_date}
+                  end_time={eventDetails["details"].end_time}
+                  description={eventDetails["details"].description}
+                  author={eventDetails["details"].author_username}
+                  activities={eventDetails["activities"]}
+                  eventID={eventDetails.id}
+                  handleEventLink={(id) => {
+                    handleEventLink(id);
+                  }}
+                />
+              );
+            })}
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Button
+              onClick={() => {
+                handleNav("/home");
+              }}
+            >
+              Home
+            </Button>
+            <Button
+              onClick={() => {
+                handleNav("/login");
+              }}
+            >
+              Login
+            </Button>{" "}
+            <Loading />
+          </>
+        );
+      }
     } else {
       return (
         <>

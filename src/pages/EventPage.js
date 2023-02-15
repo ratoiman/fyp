@@ -13,18 +13,34 @@ import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import { useEffect } from "react";
 import { isMobile } from "react-device-detect";
-import AspectRatio from "@mui/joy/AspectRatio";
+import Button from "@mui/material/Button";
 import Card from "@mui/joy/Card";
 import CardOverflow from "@mui/joy/CardOverflow";
 import CardContent from "@mui/joy/CardContent";
 import CardCover from "@mui/joy/CardCover";
 import Divider from "@mui/joy/Divider";
-import Typography from "@mui/joy/Typography";
+import Typography from "@mui/material/Typography";
 import Box from "@mui/joy/Box";
+import Loading from "../components/Loading";
 import {
   event_page_card_mobile,
   event_page_card_desktop,
 } from "../ui_styles/MuiStyles";
+import background from "../resources/solid-concrete-wall-textured-backdrop.jpg";
+import { BorderStyle } from "react-bootstrap-icons";
+import {
+  event_page_card_title_box,
+  event_page_card_dates_box,
+} from "../ui_styles/MuiStyles";
+import EventPageActivityCard from "../components/EventPageActivityCard";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  eventActivityCardStyle,
+  editButtonStyle,
+  submitButtonTheme,
+} from "../ui_styles/MuiStyles";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const EventPage = (props) => {
   const { user } = useUserAuth();
@@ -32,6 +48,10 @@ const EventPage = (props) => {
   const [eventData, setEventData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [deviceType, setDeviceType] = useState("desktop");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [startDateSet, setStartDateSet] = useState([]);
+  const [displayActivities, setDisplayActivities] = useState(true);
 
   const getEventsDetails = async () => {
     let eventObj = new Object();
@@ -62,9 +82,50 @@ const EventPage = (props) => {
     setEventData(eventObj);
   };
 
+  const getDates = () => {
+    if (!isLoading) {
+      const startDateArray = eventData["details"].start_date.split("/");
+      const endDateArray = eventData["details"].end_date.split("/");
+      let sd =
+        eventData["details"].start_date_day +
+        " " +
+        startDateArray[0] +
+        " " +
+        eventData["details"].start_date_month;
+
+      let ed =
+        eventData["details"].end_date_day +
+        " " +
+        endDateArray[0] +
+        " " +
+        eventData["details"].end_date_month;
+
+      setStartDate(sd);
+      setEndDate(ed);
+    }
+  };
+
+  const getActivitiesDateRange = () => {
+    console.log("Act ", eventData["activities"]);
+    if (eventData["activities"]) {
+      eventData["activities"].map((activity) => {
+        let startDateArray = activity.start_date.split("/");
+        const sd = new Date(
+          startDateArray[2] + "-" + startDateArray[1] + "-" + startDateArray[0]
+        ).toString();
+        console.log("sd ", sd);
+        setStartDateSet((prev) => [...new Set([...prev, sd].sort())]);
+      });
+    }
+  };
+
   useEffect(() => {
     getEventsDetails();
   }, []);
+
+  useEffect(() => {
+    getDates();
+  }, [eventData, isLoading]);
 
   useEffect(() => {
     if (eventData.length !== 0) {
@@ -74,81 +135,128 @@ const EventPage = (props) => {
     }
   }, [eventData]);
 
+  useEffect(() => {
+    getActivitiesDateRange();
+  }, [eventData, isLoading]);
+
   if (!isLoading) {
     return (
-      // <Container className="card mt-5 w-100 p-4 bg-black">
-      //   <div className="text-white">Title: {eventData["details"].title}</div>
-      //   <div className="text-white">
-      //     Subtitle: {eventData["details"].subtitle}
-      //   </div>
-      //   <div className="text-white">
-      //     Start Date: {eventData["details"].start_date}
-      //   </div>
-      //   <div className="text-white">
-      //     Start Time: {eventData["details"].start_time}
-      //   </div>
-      //   <div className="text-white">
-      //     End Date: {eventData["details"].end_date}
-      //   </div>
-      //   <div className="text-white">
-      //     End Time: {eventData["details"].end_time}
-      //   </div>
-      //   <div className="text-white">
-      //     Description: {eventData["details"].description}
-      //   </div>
-
-      //   ACTIVITIES
-      //   <div className="text-white">
-      //     {eventData["activities"].map((activity) => {
-
-      //       return (
-      //         <>
-      //           <div>Title: {activity.title}</div>
-      //         </>
-      //       );
-      //     })}
-      //   </div>
-      // </Container>
       <>
-        <Box className="event-card">
+        <Box>
           <Card
             variant="outlined"
             sx={isMobile ? event_page_card_mobile : event_page_card_desktop}
           >
-            <CardOverflow sx={{ maxHeight: "8%" }}>
-              <AspectRatio ratio="2">
-                <img
-                  style={{ maxHeight: "25%" }}
-                  src="https://c4.wallpaperflare.com/wallpaper/955/69/70/minimalism-space-stars-wallpaper-preview.jpg"
-                  // srcSet="https://images.unsplash.com/photo-1542773998-9325f0a098d7?auto=format&fit=crop&w=320&dpr=2 2x"
-                  loading="lazy"
-                  alt="BANNER"
-                />
-              </AspectRatio>
-            </CardOverflow>
-            <Box className="mt-2">
-              <h1>{eventData["details"].title}</h1>
-              <h3>Subtitle: {eventData["details"].subtitle}</h3>
-              <h5>From: {eventData["details"].start_date}</h5>
-              <h5>at: {eventData["details"].start_time}</h5>
-              <h1></h1>
-              <h5>Until: {eventData["details"].end_date}</h5>
-              <h5>at: {eventData["details"].end_time}</h5>
+            <CardContent>
+              <Box className="">
+                <Box className="w-100" sx={event_page_card_title_box}>
+                  <Box className="">
+                    <Typography textAlign="center" variant="h4">
+                      {eventData["details"].title}
+                    </Typography>
+                  </Box>
+                  <Box className="mt-2">
+                    <Typography variant="subtitle2">
+                      {eventData["details"].subtitle}
+                    </Typography>
+                  </Box>
+                </Box>
+                <h1></h1>
+                <Box className="w-100" sx={event_page_card_dates_box}>
+                  <Typography variant="h6">
+                    {/* From: {eventData["details"].start_date} */}
+                    Starts: {startDate} {eventData["details"].start_time}
+                  </Typography>
 
-              <h2> Event details </h2>
-              <h6>{eventData["details"].description}</h6>
+                  <Typography variant="h6">
+                    Ends: {endDate} {eventData["details"].end_time}
+                  </Typography>
+                </Box>
 
-              <h2> Activities </h2>
-              <ul>
-                {eventData["activities"].map((activity) => {
-                  return (
-                    <>
-                      <li>{activity.title} </li>
-                    </>
-                  );
-                })}
-              </ul>
-            </Box>
+                <Typography variant="h5">
+                  <br />
+                  Details{" "}
+                </Typography>
+                <Typography variant="h6">
+                  {eventData["details"].description}
+                </Typography>
+
+                <Box className="mt-4">
+                  <Typography className="mb-2" variant="h5">
+                    {" "}
+                    What's on?{" "}
+                    <ThemeProvider theme={submitButtonTheme}>
+                      <Button
+                        size="large"
+                        startIcon={
+                          displayActivities === false ? (
+                            <ExpandMoreIcon />
+                          ) : (
+                            <ExpandLessIcon />
+                          )
+                        }
+                        onClick={() => setDisplayActivities(!displayActivities)}
+                      />
+                        {/* See
+                      </Button> */}
+                    </ThemeProvider>
+                  </Typography>
+                  <Box display={displayActivities === true ? "" : "none"}>
+                    {startDateSet.map((sd) => {
+                      return (
+                        <>
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                            }}
+                          >
+                            <div className="date-line" />
+
+                            <div>
+                              {/* <Typography sx={{textAlign:"center"}} variant="h6" className="mb-1 mt-4"> */}
+                              <p>
+                                <Typography
+                                  sx={{
+                                    textAlign: "center",
+                                    color: "#DAA520",
+                                  }}
+                                  variant="h6"
+                                  className="mx-1 mb-1 mt-2"
+                                >
+                                  {sd.split(" ")[0] +
+                                    " " +
+                                    sd.split(" ")[2] +
+                                    " " +
+                                    sd.split(" ")[1]}
+                                </Typography>
+                              </p>
+                            </div>
+
+                            <div className="date-line" />
+                          </div>
+                          {eventData["activities"].map((activity) => {
+                            if (
+                              activity.start_date_day === sd.split(" ")[0] &&
+                              activity.start_date.split("/")[0].toString() ===
+                                sd.split(" ")[2] &&
+                              activity.start_date_month === sd.split(" ")[1]
+                            ) {
+                              return (
+                                <>
+                                  <EventPageActivityCard activity={activity} />
+                                </>
+                              );
+                            }
+                          })}
+                        </>
+                      );
+                    })}
+                  </Box>
+                </Box>
+              </Box>
+            </CardContent>
           </Card>
         </Box>
       </>
@@ -156,10 +264,7 @@ const EventPage = (props) => {
   } else {
     return (
       <>
-        <div>
-          {" "}
-          <h1 style={{ color: "#DAA520" }}> LOADING........</h1>
-        </div>
+        <Loading />
       </>
     );
   }

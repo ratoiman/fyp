@@ -36,8 +36,9 @@
 .event-card {
   display: flex !important;
   justify-content: center !important;
-  padding-top: 2%;
-  margin-top: 5%;
+  /* padding-top: 2%; */
+  margin-top: 2%;
+  max-height: 90%;
 }
 
 .event-card-mobile {
@@ -45,3 +46,20 @@
   max-width: 100%;
   background-color: "black";
 }
+
+.loading {
+  display: flex !important;
+  justify-content: center !important;
+  /* padding-top: 2%; */
+  margin-top: 50%;
+  height: 100%;
+}
+
+.date-line{
+  border-bottom-style: dotted;
+  border-color: #DAA520 ;
+  margin-top: 5px;
+  flex: 1;
+  height: 0px;
+}
+
