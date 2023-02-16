@@ -35,7 +35,6 @@ import {
 import EventPageActivityCard from "../components/EventPageActivityCard";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {
-  eventActivityCardStyle,
   editButtonStyle,
   submitButtonTheme,
 } from "../ui_styles/MuiStyles";
