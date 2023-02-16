@@ -17,7 +17,6 @@ import GuestLandingPage from "./GuestLandingPage";
 import EventCard from "../components/EventCard";
 import EventPage from "./EventPage";
 import Loading from "../components/Loading";
-import { setLogLevel } from "firebase/app";
 
 const LandingPage = () => {
   const navigate = useNavigate();
