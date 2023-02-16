@@ -12,7 +12,6 @@ import {
 } from "firebase/firestore";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
-import Event from "../components/Event";
 import GuestLandingPage from "./GuestLandingPage";
 import EventCard from "../components/EventCard";
 import EventPage from "./EventPage";
