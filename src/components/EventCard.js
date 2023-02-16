@@ -6,7 +6,6 @@ import AspectRatio from "@mui/joy/AspectRatio";
 import Card from "@mui/joy/Card";
 import CardCover from "@mui/joy/CardCover";
 import CardOverflow from "@mui/joy/CardOverflow";
-import Divider from "@mui/joy/Divider";
 import Typography from "@mui/material/Typography";
 import Chip from "@mui/joy/Chip";
 import CardContent from "@mui/joy/CardContent";
