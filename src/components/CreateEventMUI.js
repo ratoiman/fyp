@@ -404,7 +404,6 @@ const CreateEvent = () => {
   }
   return (
     <>
-      <Button onClick={handleHome}>Home</Button>
       <Container
         className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
         // style={{ minWidth: "50%", maxWidth: "80%" }}

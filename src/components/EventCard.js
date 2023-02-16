@@ -52,7 +52,9 @@ const EventCard = (props) => {
   if (eventPageLoad === false) {
     return (
       <>
-        <Container className="event-card">
+        <Container
+          className={isMobile === true ? "event-card-mobile" : "event-card"}
+        >
           <Card
             variant="outlined"
             orientation="horizontal"
@@ -71,10 +73,14 @@ const EventCard = (props) => {
                 {props.title}
               </Typography>
 
-              <Typography >{props.subtitle}</Typography>
+              <Typography>{props.subtitle}</Typography>
 
-              <Typography level="h4" fontSize="md" mt={1}>
+              <Typography variant="h6" fontSize="md" mt={1}>
                 {props.description}
+              </Typography>
+
+              <Typography variant="h7" mt={2}>
+                created by {props.author}
               </Typography>
 
               {/* <Typography fontSize="sm" aria-describedby="card-description" mb={1}> */}
@@ -96,7 +102,7 @@ const EventCard = (props) => {
       </>
     );
   } else {
-    return <EventPage></EventPage>;
+    return <EventPage />;
   }
 };
 

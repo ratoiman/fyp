@@ -33,19 +33,7 @@
   padding-right: 3%;
 }
 
-.event-card {
-  display: flex !important;
-  justify-content: center !important;
-  /* padding-top: 2%; */
-  margin-top: 2%;
-  max-height: 90%;
-}
 
-.event-card-mobile {
-  min-width: 90%;
-  max-width: 100%;
-  background-color: "black";
-}
 
 .loading {
   display: flex !important;

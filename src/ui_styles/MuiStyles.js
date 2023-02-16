@@ -142,13 +142,14 @@ export const event_page_card_mobile = {
 };
 
 export const event_page_card_desktop = {
-  minWidth: "50%",
-  maxWidth: "80%",
+  display: "flex",
+  justifyContent: "center",
+  minWidth: "60%",
+  maxWidth: "60%",
   maxHeight: "50%",
   border: "none",
   bgcolor: "grey",
   backgroundImage: `url(${background})`,
-  // backgroundSize: "600px 500px"
   backgroundSize: "cover",
   backgroundRepeat: "  no-repeat",
   backgroundPosition: "center center",
@@ -158,7 +159,7 @@ export const event_page_card_title_box = {
   border: "1px",
   borderBottomStyle: "solid",
   borderColor: "#DAA520",
-  // mb: 1,
+  mt: 1,
 };
 
 export const event_page_card_dates_box = {
@@ -166,5 +167,24 @@ export const event_page_card_dates_box = {
   borderBottomStyle: "solid",
   borderColor: "#DAA520",
   textAlign: "center",
-  p:1
+  p: 1,
 };
+
+export const sidebar_buttons = {
+  display: "flex",
+  minWidth: "110px",
+  // minHeigth: "40px",
+  flexDirection: "column",
+  justifyContent: "center",
+  size: "large"
+};
+
+export const topbar_buttons = {
+  display: "flex",
+  // minWidth: "110px",
+  minHeigth: "40px",
+  flexDirection: "column",
+  justifyContent: "center",
+  size: "large"
+};
+

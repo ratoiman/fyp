@@ -16,6 +16,7 @@ import GuestLandingPage from "./GuestLandingPage";
 import EventCard from "../components/EventCard";
 import EventPage from "./EventPage";
 import Loading from "../components/Loading";
+import NavBar from "../components/NavBar";
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -110,25 +111,6 @@ const LandingPage = () => {
     loading();
   }, [userEventsDetails]);
 
-  function GreetGuest() {
-    return (
-      <div>
-        Hi guest
-        <Button onClick={handleNavigation}>Log in</Button>
-      </div>
-    );
-  }
-
-  function GreetUser() {
-    const currentUser = JSON.parse(localStorage.getItem("user")).email;
-    return (
-      <div>
-        <Button onClick={handleNavigation}>Home Page</Button>
-        <p>Welcome {currentUser}</p>
-      </div>
-    );
-  }
-
   const handleNav = (nav) => {
     navigate(nav);
   };
@@ -138,7 +120,7 @@ const LandingPage = () => {
       if (!isLoading) {
         return (
           <>
-            <Button
+            {/* <Button
               className="mb-4"
               onClick={() => {
                 handleNav("/home");
@@ -153,7 +135,7 @@ const LandingPage = () => {
               }}
             >
               Login
-            </Button>{" "}
+            </Button>{" "} */}
             {userEventsDetails.map((eventDetails) => {
               // console.log("Title: ", eventDetails.title ,"End date: ",eventDetails.end_date)
               // console.log("Event details ",eventDetails["activities"])
@@ -180,20 +162,6 @@ const LandingPage = () => {
       } else {
         return (
           <>
-            <Button
-              onClick={() => {
-                handleNav("/home");
-              }}
-            >
-              Home
-            </Button>
-            <Button
-              onClick={() => {
-                handleNav("/login");
-              }}
-            >
-              Login
-            </Button>{" "}
             <Loading />
           </>
         );
@@ -201,20 +169,6 @@ const LandingPage = () => {
     } else {
       return (
         <>
-          <Button
-            onClick={() => {
-              handleNav("/home");
-            }}
-          >
-            Home
-          </Button>
-          <Button
-            onClick={() => {
-              handleNav("/login");
-            }}
-          >
-            Login
-          </Button>{" "}
           <EventPage eventID={selectedEventID} />
         </>
       );

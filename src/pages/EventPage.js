@@ -34,10 +34,7 @@ import {
 } from "../ui_styles/MuiStyles";
 import EventPageActivityCard from "../components/EventPageActivityCard";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {
-  editButtonStyle,
-  submitButtonTheme,
-} from "../ui_styles/MuiStyles";
+import { editButtonStyle, submitButtonTheme } from "../ui_styles/MuiStyles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
@@ -83,6 +80,9 @@ const EventPage = (props) => {
 
   const getDates = () => {
     if (!isLoading) {
+      if (eventData["details"].end_date === null) {
+        eventData["details"].end_date = "";
+      }
       const startDateArray = eventData["details"].start_date.split("/");
       const endDateArray = eventData["details"].end_date.split("/");
       let sd =
@@ -141,7 +141,7 @@ const EventPage = (props) => {
   if (!isLoading) {
     return (
       <>
-        <Box>
+        <Box className={isMobile ? "event-card-mobile" : "event-card"}>
           <Card
             variant="outlined"
             sx={isMobile ? event_page_card_mobile : event_page_card_desktop}
@@ -196,7 +196,7 @@ const EventPage = (props) => {
                         }
                         onClick={() => setDisplayActivities(!displayActivities)}
                       />
-                        {/* See
+                      {/* See
                       </Button> */}
                     </ThemeProvider>
                   </Typography>

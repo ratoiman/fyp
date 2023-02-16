@@ -5,7 +5,7 @@ import { Container } from "react-bootstrap";
 const Loading = () => {
   return (
     <>
-      {" "}
+      {console.log("loading")}
       <Container className="loading">
         <RingLoader size="100px" color="#DAA520" />
       </Container>
