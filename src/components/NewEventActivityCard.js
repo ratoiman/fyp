@@ -68,7 +68,7 @@ const NewEventActivityCard = (props) => {
     <Col className={`${showContainer}`}>
       {props.activities.map((activity) => {
         return (
-          <Card sx={eventActivityCardStyle} variant="outlines">
+          <Card sx={eventActivityCardStyle} variant="outlined" className="mb-3">
             <CardContent>
               <Row className="d-flex flex-row justify-content-center  w-100">
                 <Col fluid="md">{activity.title}</Col>

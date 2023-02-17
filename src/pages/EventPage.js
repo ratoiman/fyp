@@ -113,7 +113,7 @@ const EventPage = (props) => {
           startDateArray[2] + "-" + startDateArray[1] + "-" + startDateArray[0]
         ).toString();
         console.log("sd ", sd);
-        setStartDateSet((prev) => [...new Set([...prev, sd].sort())]);
+        setStartDateSet((prev) => [...new Set([...prev, sd])]);
       });
     }
   };
@@ -136,12 +136,13 @@ const EventPage = (props) => {
 
   useEffect(() => {
     getActivitiesDateRange();
+    console.log("set ", startDateSet);
   }, [eventData, isLoading]);
 
   if (!isLoading) {
     return (
       <>
-        <Box className={isMobile ? "event-card-mobile" : "event-card"}>
+        <Box className={isMobile ? "event-card-mobile" : "event-page-card"}>
           <Card
             variant="outlined"
             sx={isMobile ? event_page_card_mobile : event_page_card_desktop}
@@ -163,7 +164,6 @@ const EventPage = (props) => {
                 <h1></h1>
                 <Box className="w-100" sx={event_page_card_dates_box}>
                   <Typography variant="h6">
-                    {/* From: {eventData["details"].start_date} */}
                     Starts: {startDate} {eventData["details"].start_time}
                   </Typography>
 
@@ -244,7 +244,11 @@ const EventPage = (props) => {
                             ) {
                               return (
                                 <>
-                                  <EventPageActivityCard activity={activity} />
+                                  <Box className="mb-2">
+                                    <EventPageActivityCard
+                                      activity={activity}
+                                    />
+                                  </Box>
                                 </>
                               );
                             }

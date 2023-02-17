@@ -39,7 +39,15 @@
   display: flex !important;
   justify-content: center !important;
   /* padding-top: 2%; */
-  margin-top: 50%;
+  margin-top: 300px;
+  padding-right: 30%;
+  height: 100%;
+}
+
+.loading-mobile{
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 60%;
   height: 100%;
 }
 

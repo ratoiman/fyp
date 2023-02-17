@@ -341,12 +341,12 @@ const CreateEvent = () => {
           "data",
           "event_details"
         );
-        let end_date_month = ""
-        let end_date_day = ""
-        
-        if(endDate){
-          end_date_day = endDate["$d"].toString().split(" ")[0]
-          end_date_month = endDate["$d"].toString().split(" ")[1]
+        let end_date_month = "";
+        let end_date_day = "";
+
+        if (endDate) {
+          end_date_day = endDate["$d"].toString().split(" ")[0];
+          end_date_month = endDate["$d"].toString().split(" ")[1];
         }
         await setDoc(eventDetailsRef, {
           title: title,
@@ -613,13 +613,7 @@ const CreateEvent = () => {
                     <ThemeProvider theme={submitButtonTheme}>
                       <Button
                         size="small"
-                        startIcon={
-                          expandDate === false ? (
-                            <AddCircleOutlineIcon />
-                          ) : (
-                            <RemoveCircleOutlineIcon />
-                          )
-                        }
+                        startIcon={<AddCircleOutlineIcon />}
                         onClick={() => {
                           newActivity();
                         }}

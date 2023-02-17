@@ -48,7 +48,7 @@ const EventPageActivityCard = (activity) => {
           <Box>
             <Typography variant="h7">{activityDetails.description}</Typography>
           </Box>
-          <Box>
+          {/* <Box>
             <Typography variant="h7">{activityDetails.description}</Typography>
           </Box>
           <Box>
@@ -62,7 +62,7 @@ const EventPageActivityCard = (activity) => {
           </Box>
           <Box>
             <Typography variant="h7">{activityDetails.description}</Typography>
-          </Box>
+          </Box> */}
         </Box>
 
         <Box className="event-page-activity-card-expand">
