@@ -37,6 +37,8 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { editButtonStyle, submitButtonTheme } from "../ui_styles/MuiStyles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import IconButton from "@mui/material/IconButton";
 
 const EventPage = (props) => {
   const { user } = useUserAuth();
@@ -147,6 +149,19 @@ const EventPage = (props) => {
             variant="outlined"
             sx={isMobile ? event_page_card_mobile : event_page_card_desktop}
           >
+            <div className="close-button">
+              <IconButton
+                aria-label="close"
+                size="small"
+                onClick={() => {
+                  props.setSelectedEventID(null);
+                  props.setEventPageLoad(false)
+                }}
+              >
+                {/* using same style as edit button, no need to create new style */}
+                <CloseOutlinedIcon sx={editButtonStyle} />
+              </IconButton>
+            </div>
             <CardContent>
               <Box className="">
                 <Box className="w-100" sx={event_page_card_title_box}>

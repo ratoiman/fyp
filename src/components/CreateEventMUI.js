@@ -13,6 +13,7 @@ import {
   StyledTextField,
   pickerStyle,
   popupStyle,
+  popupStyleMobile,
   submitButtonTheme,
 } from "../ui_styles/MuiStyles";
 import Box from "@mui/material/Box";
@@ -330,6 +331,10 @@ const CreateEvent = () => {
         title: title,
         subtitle: subtitle,
         author: user.uid,
+        start_date: formattedStartDate,
+        start_time: formattedStartTime,
+        end_date: formattedEndDate,
+        end_time: formattedEndTime,
       }).then(async function (docRef) {
         console.log("Document written with ID: ", docRef.id);
         const userRef = doc(db, "users", user.uid, "events", docRef.id);
@@ -389,7 +394,13 @@ const CreateEvent = () => {
         });
 
         await setDoc(eventUsersRef, { status: "admin" });
-        await setDoc(userRef, { status: "admin" });
+        await setDoc(userRef, {
+          status: "admin",
+          start_date: formattedStartDate,
+          start_time: formattedStartTime,
+          end_date: formattedEndDate,
+          end_time: formattedEndTime,
+        });
         console.log("Event created with ID:", docRef.id);
         console.log(activities);
       });
@@ -674,7 +685,7 @@ const CreateEvent = () => {
             aria-labelledby="modal-modal-title"
             aria-describedby="modal-modal-description"
           >
-            <Box sx={popupStyle}>
+            <Box sx={isMobile ? popupStyleMobile : popupStyle}>
               <AddNewActivity
                 type={"new"}
                 header={"Add New Activity"}

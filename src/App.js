@@ -1,6 +1,6 @@
 import { Col, Container, Row } from "react-bootstrap";
 import "./App.css";
-import LandingPage from "./pages/LandingPage";
+import MyEvents from "./pages/MyEvents";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -13,6 +13,7 @@ import EventPage from "./pages/EventPage";
 import NavBar from "./components/NavBar";
 import { isMobile } from "react-device-detect";
 import { Box, Stack } from "@mui/material";
+import MyEvents2 from "./pages/MyEvents2";
 
 function App() {
   if (isMobile === true) {
@@ -32,7 +33,7 @@ function App() {
                   {/* </Col> */}
                   <Col>
                     <Routes>
-                      <Route path="/" element={<LandingPage />} />
+                      <Route path="/" element={<MyEvents />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
                       <Route path="/event" element={<EventPage />} />
@@ -78,9 +79,9 @@ function App() {
               <Col xs={2} className="d-flex">
                 <NavBar />
               </Col>
-              <Col>
+              <Col md={10}>
                 <Routes>
-                  <Route path="/" element={<LandingPage />} />
+                  <Route path="/" element={<MyEvents2 />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/event" element={<EventPage />} />

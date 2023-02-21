@@ -1,7 +1,8 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
+import Button from "@mui/material/Button";
 import AspectRatio from "@mui/joy/AspectRatio";
 import Card from "@mui/joy/Card";
 import CardCover from "@mui/joy/CardCover";
@@ -16,8 +17,15 @@ import background from "../resources/solid-concrete-wall-textured-backdrop.jpg";
 import {
   event_card_style_desktop,
   event_card_style_mobile,
+  submitButtonTheme,
 } from "../ui_styles/MuiStyles";
 import { isMobile } from "react-device-detect";
+import { Divider } from "@mui/joy";
+import { Box, Stack } from "@mui/material";
+import Favorite from "@mui/icons-material/Favorite";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
+import { ThemeProvider } from "@mui/material/styles";
 
 const EventCard = (props) => {
   const [viewStartTime, setViewStartTime] = useState("d-none");
@@ -53,17 +61,36 @@ const EventCard = (props) => {
     return (
       <>
         <Container
-          className={isMobile === true ? "event-card-mobile" : "event-card"}
+          className={
+            isMobile === true ? "event-card-mobile" : "event-page-card"
+          }
         >
           <Card
             variant="outlined"
             orientation="horizontal"
             sx={isMobile ? event_card_style_mobile : event_card_style_desktop}
           >
-            <CardCover>
+            {/* <CardCover>
               <img src={texture} loading="lazy" alt="" />
-            </CardCover>
-            <CardContent>
+            </CardCover> */}
+
+            <CardContent
+              sx={{
+                minWidth: "100%",
+                display: "flex",
+                justifyContent: "center",
+                backgroundColor: "black",
+              }}
+            >
+              <Link
+                overlay
+                onClick={() => {
+                  props.handleEventLink(props.eventID);
+                }}
+                underline="none"
+                // href="#interactive-card"
+                sx={{ color: "text.tertiary" }}
+              ></Link>
               <Typography
                 textAlign="center"
                 variant="h4"
@@ -72,10 +99,14 @@ const EventCard = (props) => {
               >
                 {props.title}
               </Typography>
-
               <Typography>{props.subtitle}</Typography>
-
-              <Typography variant="h6" fontSize="md" mt={1}>
+              <Typography
+                variant="h6"
+                fontSize="md"
+                mt={1}
+                marginLeft={4}
+                marginRight={2}
+              >
                 {props.description}
               </Typography>
 
@@ -84,19 +115,38 @@ const EventCard = (props) => {
               </Typography>
 
               {/* <Typography fontSize="sm" aria-describedby="card-description" mb={1}> */}
-              <Link
-                overlay
-                onClick={() => {
-                  props.handleEventLink(props.eventID);
-                }}
-                underline="none"
-                href="#interactive-card"
-                sx={{ color: "text.tertiary" }}
-              >
-                {/* See event... */}
-              </Link>
-              {/* </Typography> */}
             </CardContent>
+            <Box
+              sx={{
+                zIndex: 2,
+                // marginRight: "50px", // paddingLeft: "80%",
+                // paddingRight: "5%",
+                maxHeight: "40px",
+                // minWidth: "15%",
+                display: "flex",
+                transform: "translateY(-125%) translateX(-120%)",
+                // transform: "translateX(-100%)",
+                // transform: "",
+                alignContent: "center",
+                // backgroundColor: "white",
+              }}
+            >
+              <CardContent
+                sx={{
+                  bgcolor: "rgb(24, 20, 19)",
+                  borderStyle: "solid",
+                  borderColor: "#DAA520",
+                  display: "flex",
+                  justifyContent: "center",
+                  borderRadius: "25%",
+                  minWidth: "130px",
+                }}
+              >
+                <Divider inset="context">
+                 
+                </Divider>
+              </CardContent>
+            </Box>
           </Card>
         </Container>
       </>
@@ -107,5 +157,3 @@ const EventCard = (props) => {
 };
 
 export default EventCard;
-
-// https://c4.wallpaperflare.com/wallpaper/955/69/70/minimalism-space-stars-wallpaper-preview.jpg

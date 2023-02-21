@@ -57,6 +57,21 @@ export const popupStyle = {
   px: 2,
 };
 
+export const popupStyleMobile = {
+  position: "inherit",
+  // display: "flex",
+  justifyContent: "center",
+  top: "9%",
+  left: "2.5%",
+  width: "95%",
+  bgcolor: "black",
+  border: "2px solid #DAA520",
+  boxShadow: 24,
+  pt: 1,
+  pb: 2,
+  px: 2,
+};
+
 // style for displaying activity inside Create New event
 export const eventActivityCardStyle = {
   bgcolor: "transparent",
@@ -99,8 +114,9 @@ export const submitButtonTheme = createTheme({
 });
 
 export const event_card_style_desktop = {
-  minWidth: "60%",
-  maxWidth: "60%",
+  minWidth: "100%",
+  maxWidth: "100%",
+  borderWidth: "1px",
   borderColor: "#DAA520",
   gap: 2,
   "&:hover": {
@@ -110,7 +126,7 @@ export const event_card_style_desktop = {
     borderBlockColor: "#DAA520",
     textColor: "#DAA520",
   },
-  my: "2%",
+  mb: "4%",
 };
 
 export const event_card_style_mobile = {
@@ -144,8 +160,8 @@ export const event_page_card_mobile = {
 export const event_page_card_desktop = {
   display: "flex",
   justifyContent: "center",
-  minWidth: "60%",
-  maxWidth: "60%",
+  minWidth: "100px",
+  maxWidth: "100px",
   maxHeight: "50%",
   border: "none",
   bgcolor: "grey",
@@ -176,7 +192,7 @@ export const sidebar_buttons = {
   // minHeigth: "40px",
   flexDirection: "column",
   justifyContent: "center",
-  size: "large"
+  size: "large",
 };
 
 export const topbar_buttons = {
@@ -185,6 +201,20 @@ export const topbar_buttons = {
   minHeigth: "40px",
   flexDirection: "column",
   justifyContent: "center",
-  size: "large"
+  size: "large",
 };
 
+export const following_button = {
+  minWidth: "130px",
+  maxWidth: "130px",
+  transform: "translatey(-20%)",
+  fontWeight: "bold",
+};
+
+export const follow_button = {
+  minWidth: "130px",
+  maxWidth: "130px",
+  transform: "translatey(-20%)",
+  backgroundColor: "rgb(17,17,17)",
+  fontWeight: "bold",
+};

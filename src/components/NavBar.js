@@ -66,7 +66,7 @@ const NavBar = () => {
   if (isMobile) {
     return (
       <Box>
-        <Box >
+        <Box>
           <ThemeProvider theme={submitButtonTheme}>
             <Box className="mt-1">
               <Stack direction="row" spacing={3}>
@@ -113,7 +113,6 @@ const NavBar = () => {
       </Box>
     );
   } else {
-    console.log("user ", user === null);
     return (
       <Box>
         <Box className="sidebar">
