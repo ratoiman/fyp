@@ -72,18 +72,39 @@
 .event-card-mobile {
   display: flex !important;
   justify-content: center !important;
-  min-width: 90%;
+  min-width: 100%;
   max-width: 750px;
-  background-color: "black";
+  /* background-color: "black"; */
   /* transform: translateX(-3%); */
 }
 
 .event-page-card {
   display: flex !important;
   justify-content: center !important;
-  min-width: 60%;
-  max-width: 60%;
+  min-width: 100%;
+  margin-bottom: 2%;
+}
+
+.display-events-category-box {
+  /* display: flex !important; */
+  justify-content: center !important;
+  width: 80%;
   margin-right: 29%;
-  margin-top: 60px;
-  background-color: white;
+  margin-top: 50px;
+}
+
+.display-events-category-box-mobile {
+  justify-content: center !important;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.my-events-page-category-title-box {
+  display: flex !important;
+  justify-content: center !important;
+  margin-bottom: 2%;
+  border-bottom-style: solid;
+  /* border-bottom: 1px; */
+  border-bottom-color: #daa520;
+  /* z-index: 2; */
 }

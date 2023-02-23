@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Button, Container } from "react-bootstrap";
-import { useNavigate } from "react-router";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import Typography from "@mui/material/Typography";
@@ -14,34 +12,32 @@ import {
   onSnapshot,
   query,
   orderBy,
-  deleteDoc,
 } from "firebase/firestore";
 import Loading from "../components/Loading";
 import EventPage from "./EventPage";
 import EventCard2 from "../components/EventCard2";
-import { getUserEventsDetails, getUserEvents } from "../context/DbCallsContext";
+import { isMobile } from "react-device-detect";
+import {
+  display_events_category_box_title,
+  display_events_category_box_title_stack,
+} from "../ui_styles/MuiStyles";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { ThemeProvider } from "@mui/material/styles";
+import { submitButtonTheme } from "../ui_styles/MuiStyles";
+import Button from "@mui/material/Button";
+import { Navigate } from "react-router-dom";
 
-const MyEvents2 = () => {
+const MyEvents2 = (props) => {
   const { user } = useUserAuth();
   const [userEvents, setUserEvents] = useState(new Set());
   const [userEventsArr, setUserEventsArr] = useState([]);
   const [userEventsDetails, setUserEventsDetails] = useState([]);
   const [eventPageLoad, setEventPageLoad] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  let eve = [];
-
-  const handleDelete = async (db, userID, eventID) => {
-    const userRef = doc(db, "users", userID, "events", eventID);
-    const eventRef = doc(db, "events", eventID, "users", userID);
-    console.log("before ", userEventsDetails);
-    const objInd = userEventsDetails.findIndex((obj) => obj.id === eventID);
-    userEventsDetails.splice(objInd, 1);
-    console.log("after ", userEventsDetails);
-    await deleteDoc(userRef);
-    await deleteDoc(eventRef);
-
-    const toRemove = console.log("doc ", eventID, " deleted");
-  };
+  const [displaySubscribed, setDisplaySubscribed] = useState(true);
+  const [displayAdministrated, setDisplayAdministrated] = useState(true);
+  const [selectedEventID, setSelectedEventID] = useState("");
 
   const getUserEvents = () => {
     try {
@@ -66,10 +62,8 @@ const MyEvents2 = () => {
 
   const getUserEventsDetails = () => {
     userEventsArr.map(async (event) => {
-      // console.log("event ", event);
       const found = userEventsDetails.find((ev) => ev["id"] === event.id);
 
-      console.log("founds ", !found, found);
       if (!found) {
         let eventObj = new Object();
         let activities = [];
@@ -108,16 +102,7 @@ const MyEvents2 = () => {
         eventObj["activities"] = activities;
         eventObj["id"] = event.id;
 
-        let old = [userEventsDetails];
-
-        console.log("old ", old);
-
-        setUserEventsDetails((eventDetails) => {
-          const spread = [...eventDetails, eventObj];
-          // console.log("spread ", spread.length, spread);
-          return spread;
-        });
-        eve.push(eventObj);
+        setUserEventsDetails((eventDetails) => [...eventDetails, eventObj]);
       }
     });
   };
@@ -128,6 +113,18 @@ const MyEvents2 = () => {
     } else {
       setIsLoading(true);
     }
+  };
+
+  const handleEventLink = (id) => {
+    // navigator("/event")
+    setSelectedEventID(id);
+    setEventPageLoad(true);
+  };
+
+  const closeEvent = () => {
+    // navigator("/event")
+    setSelectedEventID(null);
+    setEventPageLoad(false);
   };
 
   useEffect(() => {
@@ -146,45 +143,173 @@ const MyEvents2 = () => {
     loading();
   }, [userEventsDetails]);
 
-  // useEffect(() => {
-  //   console.log("detials");
-  //   getEventsDetails();
-  // }, [userEventsArr]);
-
-  // console.log("event ", userEventsDetailsArr)
-
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
         if (userEventsDetails.length > 0) {
           return (
             <>
-              <Box>
-                {userEventsDetails.map((eventDetails) => {
-                  return (
-                    <EventCard2
-                      title={eventDetails["details"].title}
-                      subtitle={eventDetails["details"].subtitle}
-                      start_date={eventDetails["details"].start_date}
-                      start_date_day={eventDetails["details"].start_date_day}
-                      start_date_month={
-                        eventDetails["details"].start_date_month
+              <Box
+                className={
+                  isMobile
+                    ? "display-events-category-box-mobile"
+                    : "display-events-category-box"
+                }
+              >
+                <Stack direction="column">
+                  <Box className="my-events-page-category-title-box">
+                    <Stack
+                      direction="row"
+                      sx={display_events_category_box_title_stack}
+                    >
+                      <Typography
+                        variant={isMobile ? "h5" : "h4"}
+                        align="center"
+                        sx={display_events_category_box_title}
+                      >
+                        {" "}
+                        Administrated events
+                      </Typography>
+                      <Box sx={{ justifyContent: "right" }}>
+                        <ThemeProvider theme={submitButtonTheme}>
+                          <Button
+                            sx={{ width: "35px", transform: "translateX(5px)" }}
+                            size="large"
+                            startIcon={
+                              displayAdministrated === false ? (
+                                <ExpandMoreIcon />
+                              ) : (
+                                <ExpandLessIcon />
+                              )
+                            }
+                            onClick={() =>
+                              setDisplayAdministrated(!displayAdministrated)
+                            }
+                          />
+                        </ThemeProvider>
+                      </Box>
+                    </Stack>
+                  </Box>
+
+                  <Box display={displayAdministrated === true ? "" : "none"}>
+                    {userEventsDetails.map((eventDetails) => {
+                      const found = userEvents.find(
+                        (ev) => ev["id"] === eventDetails.id
+                      );
+                      if (found.status === "admin") {
+                        return (
+                          <EventCard2
+                            title={eventDetails["details"].title}
+                            subtitle={eventDetails["details"].subtitle}
+                            start_date={eventDetails["details"].start_date}
+                            start_date_day={
+                              eventDetails["details"].start_date_day
+                            }
+                            start_date_month={
+                              eventDetails["details"].start_date_month
+                            }
+                            start_time={eventDetails["details"].start_time}
+                            end_date={eventDetails["details"].end_date}
+                            end_date_day={eventDetails["details"].end_date_day}
+                            end_date_month={
+                              eventDetails["details"].end_date_month
+                            }
+                            end_time={eventDetails["details"].end_time}
+                            description={eventDetails["details"].description}
+                            author={eventDetails["details"].author_username}
+                            activities={eventDetails["activities"]}
+                            usersList={eventDetails["users"]}
+                            eventID={eventDetails.id}
+                            userEventsDetails={userEventsDetails}
+                            handleEventLink={handleEventLink}
+                            followingOnly={true}
+                          />
+                        );
                       }
-                      start_time={eventDetails["details"].start_time}
-                      end_date={eventDetails["details"].end_date}
-                      end_date_day={eventDetails["details"].end_date_day}
-                      end_date_month={eventDetails["details"].end_date_month}
-                      end_time={eventDetails["details"].end_time}
-                      description={eventDetails["details"].description}
-                      author={eventDetails["details"].author_username}
-                      activities={eventDetails["activities"]}
-                      usersList={eventDetails["users"]}
-                      eventID={eventDetails.id}
-                      userEventsDetails={userEventsDetails}
-                      followingOnly={true}
-                    />
-                  );
-                })}
+                    })}
+                  </Box>
+                </Stack>
+              </Box>
+
+              <Box
+                className={
+                  isMobile
+                    ? "display-events-category-box-mobile"
+                    : "display-events-category-box"
+                }
+              >
+                <Stack direction="column">
+                  <Box className="my-events-page-category-title-box">
+                    <Stack
+                      direction="row"
+                      sx={display_events_category_box_title_stack}
+                    >
+                      <Typography
+                        variant={isMobile ? "h5" : "h4"}
+                        align="center"
+                        sx={display_events_category_box_title}
+                      >
+                        {" "}
+                        Events that you follow
+                      </Typography>
+                      <Box sx={{ justifyContent: "right" }}>
+                        <ThemeProvider theme={submitButtonTheme}>
+                          <Button
+                            sx={{ width: "35px" }}
+                            size="large"
+                            startIcon={
+                              displaySubscribed === false ? (
+                                <ExpandMoreIcon />
+                              ) : (
+                                <ExpandLessIcon />
+                              )
+                            }
+                            onClick={() =>
+                              setDisplaySubscribed(!displaySubscribed)
+                            }
+                          />
+                        </ThemeProvider>
+                      </Box>
+                    </Stack>
+                  </Box>
+                  <Box display={displaySubscribed === true ? "" : "none"}>
+                    {userEventsDetails.map((eventDetails) => {
+                      const found = userEvents.find(
+                        (ev) => ev["id"] === eventDetails.id
+                      );
+                      if (found.status === "guest") {
+                        return (
+                          <EventCard2
+                            title={eventDetails["details"].title}
+                            subtitle={eventDetails["details"].subtitle}
+                            start_date={eventDetails["details"].start_date}
+                            start_date_day={
+                              eventDetails["details"].start_date_day
+                            }
+                            start_date_month={
+                              eventDetails["details"].start_date_month
+                            }
+                            start_time={eventDetails["details"].start_time}
+                            end_date={eventDetails["details"].end_date}
+                            end_date_day={eventDetails["details"].end_date_day}
+                            end_date_month={
+                              eventDetails["details"].end_date_month
+                            }
+                            end_time={eventDetails["details"].end_time}
+                            description={eventDetails["details"].description}
+                            author={eventDetails["details"].author_username}
+                            activities={eventDetails["activities"]}
+                            usersList={eventDetails["users"]}
+                            eventID={eventDetails.id}
+                            userEventsDetails={userEventsDetails}
+                            handleEventLink={handleEventLink}
+                            followingOnly={true}
+                          />
+                        );
+                      }
+                    })}
+                  </Box>
+                </Stack>
               </Box>
             </>
           );
@@ -202,6 +327,20 @@ const MyEvents2 = () => {
           </>
         );
       }
+    } else {
+      return (
+        <>
+          <Box
+            className={
+              isMobile
+                ? "display-events-category-box-mobile"
+                : "display-events-category-box"
+            }
+          >
+            <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
+          </Box>
+        </>
+      );
     }
   }
 };

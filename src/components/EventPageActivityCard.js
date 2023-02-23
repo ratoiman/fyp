@@ -30,7 +30,7 @@ const EventPageActivityCard = (activity) => {
 
   return (
     <>
-      <Card variant="outlined">
+      <Card sx={eventActivityCardStyle}>
         <Box className="event-page-activity-card-title">
           <Typography variant="h5"> {activityDetails.title} </Typography>
         </Box>
@@ -39,8 +39,15 @@ const EventPageActivityCard = (activity) => {
             {" "}
             {activityDetails.start_date_day}{" "}
             {activityDetails.start_date.split("/")[0]}{" "}
-            {activityDetails.start_date_month} {activityDetails.start_time} -{" "}
-            {activityDetails.end_time}
+            {activityDetails.start_date_month}
+            <Typography
+              color="#DAA520"
+              ml={1}
+              variant="h7"
+              className="event-page-activity-card-title"
+            >
+              {activityDetails.start_time} - {activityDetails.end_time}
+            </Typography>
           </Typography>
         </Box>
 

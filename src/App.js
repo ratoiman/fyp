@@ -1,6 +1,5 @@
 import { Col, Container, Row } from "react-bootstrap";
 import "./App.css";
-import MyEvents from "./pages/MyEvents";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -9,7 +8,6 @@ import { Route, Routes } from "react-router-dom";
 import Signup from "./pages/Signup";
 import UserSetup from "./pages/UserSetup";
 import CreateEventMUI from "./components/CreateEventMUI";
-import EventPage from "./pages/EventPage";
 import NavBar from "./components/NavBar";
 import { isMobile } from "react-device-detect";
 import { Box, Stack } from "@mui/material";
@@ -33,10 +31,16 @@ function App() {
                   {/* </Col> */}
                   <Col>
                     <Routes>
-                      <Route path="/" element={<MyEvents />} />
+                      <Route
+                        path="/"
+                        element={
+                          <ProtectedRoute>
+                            <MyEvents2 />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route path="/login" element={<Login />} />
                       <Route path="/signup" element={<Signup />} />
-                      <Route path="/event" element={<EventPage />} />
                       <Route
                         path="/home"
                         element={
@@ -81,10 +85,26 @@ function App() {
               </Col>
               <Col md={10}>
                 <Routes>
-                  <Route path="/" element={<MyEvents2 />} />
+                  <Route
+                    path="/"
+                    element={
+                      <ProtectedRoute>
+                        <MyEvents2 />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
-                  <Route path="/event" element={<EventPage />} />
+                  {/* <Route
+                    path="/event"
+                    element={
+                      <EventPage
+                        eventID={selectedEventID}
+                        setEventToOpen={setEventToOpen}
+                        setPageToLoad={setPageToLoad}
+                      />
+                    }
+                  /> */}
                   <Route
                     path="/home"
                     element={

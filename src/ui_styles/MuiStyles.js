@@ -3,7 +3,9 @@ import { outlinedInputClasses } from "@mui/material/OutlinedInput";
 import { inputLabelClasses } from "@mui/material/InputLabel";
 import TextField from "@mui/material/TextField";
 import { createTheme, ThemeProvider } from "@mui/material";
-import background from "../resources/solid-concrete-wall-textured-backdrop.jpg";
+import background from "../resources/Concrete texture Wallpaper 5954.jpg";
+import cardbg from "../resources/cardbg.jpg";
+import cardbg_rotated from "../resources/13107748_5137843.jpg";
 
 export const StyledTextField = styled(TextField)({
   [`& .${outlinedInputClasses.root} .${outlinedInputClasses.notchedOutline}`]: {
@@ -75,8 +77,9 @@ export const popupStyleMobile = {
 // style for displaying activity inside Create New event
 export const eventActivityCardStyle = {
   bgcolor: "transparent",
-  border: "1px solid #DAA520",
-  color: "white",
+  border: "solid",
+  borderWidth: "1px",
+  borderColor: "#DAA520",
   fontWeight: 600,
 };
 
@@ -144,32 +147,6 @@ export const event_card_style_mobile = {
   my: "2%",
 };
 
-export const event_page_card_mobile = {
-  minWidth: "90%",
-  maxWidth: "100%",
-  minHeigth: "60%",
-  border: "none",
-  bgcolor: "black",
-  mt: 3,
-  backgroundImage: `url(${background})`,
-  backgroundSize: "cover",
-  backgroundRepeat: "  no-repeat",
-  backgroundPosition: "center center",
-};
-
-export const event_page_card_desktop = {
-  display: "flex",
-  justifyContent: "center",
-  minWidth: "100px",
-  maxWidth: "100px",
-  maxHeight: "50%",
-  border: "none",
-  bgcolor: "grey",
-  backgroundImage: `url(${background})`,
-  backgroundSize: "cover",
-  backgroundRepeat: "  no-repeat",
-  backgroundPosition: "center center",
-};
 
 export const event_page_card_title_box = {
   border: "1px",
@@ -217,4 +194,63 @@ export const follow_button = {
   transform: "translatey(-20%)",
   backgroundColor: "rgb(17,17,17)",
   fontWeight: "bold",
+};
+
+export const display_events_category_box_title = {
+  color: "#daa520",
+  marginBottom: "1%",
+  // marginRight:"4%"
+};
+
+export const display_events_category_box_title_stack = {
+  display: "flex",
+  justifyContent: "center",
+  marginLeft: "40px",
+};
+
+export const card_action_style = {
+  backgroundImage: `url(${cardbg})`,
+  backgroundColor: "rgb(22, 22, 22)",
+  backgroundSize: "cover",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center center",
+};
+
+export const card_action_style_mobile = {
+  backgroundImage: `url(${cardbg_rotated})`,
+  backgroundColor: "rgb(22, 22, 22)",
+
+  backgroundSize: "cover",
+  backgroundRepeat: "no-repeat",
+  backgroundPosition: "center center",
+};
+
+
+
+export const event_page_card_mobile = {
+  minWidth: "90%",
+  maxWidth: "100%",
+  minHeigth: "60%",
+  border: "none",
+  bgcolor: "black",
+  mt: 3,
+  // backgroundImage: `url(${cardbg_rotated})`,
+  // backgroundSize: "cover",
+  // backgroundRepeat: "no-repeat",
+  // backgroundPosition: "center center",
+};
+
+export const event_page_card_desktop = {
+  display: "flex",
+  justifyContent: "center",
+  minWidth: "100%",
+  maxWidth: "100%",
+  maxHeight: "50%",
+  border: "solid",
+  borderWidth: "2px",
+  borderColor: "#DAA520",
+  // backgroundImage: `url(${cardbg})`,
+  // backgroundSize: "cover",
+  // backgroundRepeat: "no-repeat",
+  // backgroundPosition: "center center",
 };

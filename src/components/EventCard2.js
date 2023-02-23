@@ -1,17 +1,12 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import Card from "@mui/material/Card";
-import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Link from "@mui/joy/Link";
-import EventPage from "../pages/EventPage";
 import texture from "../resources/texture.jpeg";
-import background from "../resources/solid-concrete-wall-textured-backdrop.jpg";
 import {
   event_card_style_desktop,
   event_card_style_mobile,
@@ -19,16 +14,15 @@ import {
   follow_button,
   following_button,
   popupStyle,
+  card_action_style,
+  card_action_style_mobile,
 } from "../ui_styles/MuiStyles";
 import { isMobile } from "react-device-detect";
-import { Divider } from "@mui/joy";
-import { Box, Modal, Stack } from "@mui/material";
-import Favorite from "@mui/icons-material/Favorite";
+import { Box, CardActionArea, Modal, Stack } from "@mui/material";
 import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
 import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import { ThemeProvider } from "@mui/material/styles";
-import { BorderColor } from "@mui/icons-material";
 import { useUserAuth } from "../context/UserAuthContext";
 import { handleFollow, handleUnfollow } from "../context/DbCallsContext";
 import { db } from "../utils/firebase";
@@ -37,23 +31,13 @@ import { collection } from "firebase/firestore";
 import ConfirmAction from "./ConfirmAction";
 
 const EventCard2 = (props) => {
-  const [viewStartTime, setViewStartTime] = useState("d-none");
-  const [viewEndDate, setViewEndDate] = useState("d-none");
-  const [viewEndTime, setViewEndTime] = useState("d-none");
   const [userEvents, setUserEvents] = useState(new Set());
   const [eventPageLoad, setEventPageLoad] = useState(false);
   const [selectedEventID, setSelectedEventID] = useState(null);
-  const [isFollowing, setIsFollowing] = useState(true);
+  const [isFollowing, setIsFollowing] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [unfollowPopup, setUnfollowPopup] = useState(false);
-  const [snapshot, setSnapshot] = useState([]);
   const { user } = useUserAuth();
-  const navigator = useNavigate();
-  const setVisible = (view, setter) => {
-    if (view) {
-      setter("");
-    }
-  };
 
   const handleEventLink = (id) => {
     // navigator("/event")
@@ -85,8 +69,6 @@ const EventCard2 = (props) => {
     let arr = Array.from(userEvents);
     let found = arr.find((ev) => ev["id"] === props.eventID);
 
-    console.log("found ", found);
-
     if (found) {
       setIsFollowing(true);
       if (found.status === "admin") {
@@ -111,7 +93,7 @@ const EventCard2 = (props) => {
 
   const unfollow = () => {
     handleUnfollow(db, props.eventID, user.uid, setIsFollowing);
-    
+
     // This is for MyEvents page to remove the unfollowed event from the displayed events
     if (props.followingOnly) {
       const objInd = props.userEventsDetails.findIndex(
@@ -225,60 +207,69 @@ const EventCard2 = (props) => {
                 </Stack>
               </CardContent>
             </CardMedia>
-            <CardContent
-              sx={{
-                minWidth: "100%",
-                maxWidth: "100%",
-                display: "flex",
-                justifyContent: "center",
-              }}
+            <CardActionArea
+              sx={isMobile ? card_action_style_mobile : card_action_style}
+              onClick={() => props.handleEventLink(props.eventID)}
             >
-              <Stack
-                direction="column"
+              <CardContent
                 sx={{
                   minWidth: "100%",
                   maxWidth: "100%",
+                  display: "flex",
+                  justifyContent: "center",
                 }}
               >
-                <Typography
-                  textAlign="center"
-                  variant="h4"
-                  fontSize="lg"
-                  fontWeight={"bold"}
+                <Stack
+                  direction="column"
+                  sx={{
+                    minWidth: "100%",
+                    maxWidth: "100%",
+                  }}
                 >
-                  {props.title}
+                  <Typography
+                    textAlign="center"
+                    variant="h4"
+                    fontSize="lg"
+                    fontWeight={"bold"}
+                    color={"white"}
+                  >
+                    {props.title}
+                  </Typography>
+                  {/* </CardContent> */}
+                  {/* <CardContent> */}
+                  <Typography textAlign="left" color={"white"}>
+                    {props.subtitle}
+                  </Typography>
+                </Stack>
+              </CardContent>
+
+              <CardContent>
+                <Typography marginLeft={4} color={"white"}>
+                  Starts: {props.start_date_day}{" "}
+                  {props.start_date.split("/")[0]} {props.start_date_month}
                 </Typography>
-                {/* </CardContent> */}
-                {/* <CardContent> */}
-                <Typography textAlign="left">{props.subtitle}</Typography>
-              </Stack>
-            </CardContent>
+                <Typography marginLeft={4} color={"white"}>
+                  {props.end_date !== null
+                    ? `Ends: ${props.end_date_day} ${
+                        props.end_date.split("/")[0]
+                      } ${props.end_date_month}`
+                    : ""}
+                </Typography>
+              </CardContent>
 
-            <CardContent>
-              <Typography marginLeft={4}>
-                Starts: {props.start_date_day} {props.start_date.split("/")[0]}{" "}
-                {props.start_date_month}
-              </Typography>
-              <Typography marginLeft={4}>
-                {props.end_date !== null
-                  ? `Ends: ${props.end_date_day} ${
-                      props.end_date.split("/")[0]
-                    } ${props.end_date_month}`
-                  : ""}
-              </Typography>
-            </CardContent>
-
-            <CardContent>
-              <Typography
-                variant="h6"
-                fontSize="md"
-                mt={1}
-                marginLeft={4}
-                marginRight={2}
-              >
-                {props.description}
-              </Typography>
-            </CardContent>
+              <CardContent>
+                <Typography
+                  variant="h6"
+                  fontSize="md"
+                  mt={1}
+                  marginLeft={4}
+                  marginRight={2}
+                  color={"white"}
+                >
+                  {props.description}
+                </Typography>
+              </CardContent>
+            </CardActionArea>
           </Card>
           <Modal
             sx={{ overflow: "auto" }}
@@ -297,8 +288,6 @@ const EventCard2 = (props) => {
         </Container>
       </>
     );
-  } else {
-    return <EventPage />;
   }
 };
 

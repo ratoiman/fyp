@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Container, Form, Row, Col } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import Button from "@mui/material/Button";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import IconButton from "@mui/material/IconButton";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
-import { Link } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
 import "./../css/NewActivity.css";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";

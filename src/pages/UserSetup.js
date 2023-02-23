@@ -8,8 +8,6 @@ import  {updateProfile}  from "firebase/auth";
 import {
   collection,
   getDocs,
-  getDoc,
-  addDoc,
   setDoc,
   doc,
   onSnapshot,

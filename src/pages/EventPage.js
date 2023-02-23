@@ -1,11 +1,9 @@
 import React, { useState } from "react";
-import { Container } from "react-bootstrap";
 import {
   collection,
   getDocs,
   getDoc,
   doc,
-  onSnapshot,
   query,
   orderBy,
 } from "firebase/firestore";
@@ -15,10 +13,7 @@ import { useEffect } from "react";
 import { isMobile } from "react-device-detect";
 import Button from "@mui/material/Button";
 import Card from "@mui/joy/Card";
-import CardOverflow from "@mui/joy/CardOverflow";
 import CardContent from "@mui/joy/CardContent";
-import CardCover from "@mui/joy/CardCover";
-import Divider from "@mui/joy/Divider";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/joy/Box";
 import Loading from "../components/Loading";
@@ -26,14 +21,12 @@ import {
   event_page_card_mobile,
   event_page_card_desktop,
 } from "../ui_styles/MuiStyles";
-import background from "../resources/solid-concrete-wall-textured-backdrop.jpg";
-import { BorderStyle } from "react-bootstrap-icons";
 import {
   event_page_card_title_box,
   event_page_card_dates_box,
 } from "../ui_styles/MuiStyles";
 import EventPageActivityCard from "../components/EventPageActivityCard";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {  ThemeProvider } from "@mui/material/styles";
 import { editButtonStyle, submitButtonTheme } from "../ui_styles/MuiStyles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -107,14 +100,12 @@ const EventPage = (props) => {
   };
 
   const getActivitiesDateRange = () => {
-    console.log("Act ", eventData["activities"]);
     if (eventData["activities"]) {
       eventData["activities"].map((activity) => {
         let startDateArray = activity.start_date.split("/");
         const sd = new Date(
           startDateArray[2] + "-" + startDateArray[1] + "-" + startDateArray[0]
         ).toString();
-        console.log("sd ", sd);
         setStartDateSet((prev) => [...new Set([...prev, sd])]);
       });
     }
@@ -138,7 +129,6 @@ const EventPage = (props) => {
 
   useEffect(() => {
     getActivitiesDateRange();
-    console.log("set ", startDateSet);
   }, [eventData, isLoading]);
 
   if (!isLoading) {
@@ -154,8 +144,7 @@ const EventPage = (props) => {
                 aria-label="close"
                 size="small"
                 onClick={() => {
-                  props.setSelectedEventID(null);
-                  props.setEventPageLoad(false)
+                  props.closeEvent();
                 }}
               >
                 {/* using same style as edit button, no need to create new style */}
@@ -163,10 +152,10 @@ const EventPage = (props) => {
               </IconButton>
             </div>
             <CardContent>
-              <Box className="">
+              <Box color="white" className="">
                 <Box className="w-100" sx={event_page_card_title_box}>
                   <Box className="">
-                    <Typography textAlign="center" variant="h4">
+                    <Typography  textAlign="center" variant="h4">
                       {eventData["details"].title}
                     </Typography>
                   </Box>
@@ -282,7 +271,9 @@ const EventPage = (props) => {
   } else {
     return (
       <>
-        <Loading />
+        <Box sx={{ justifyContent: "center", marginLeft: "20%" }}>
+          <Loading />
+        </Box>
       </>
     );
   }

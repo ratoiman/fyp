@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { PlusCircleDotted, DashCircleDotted } from "react-bootstrap-icons";
 import { Col, Container, Row } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import { collection, addDoc, setDoc, doc } from "firebase/firestore";
@@ -22,9 +21,10 @@ import Button from "@mui/material/Button";
 import AddNewActivity from "./AddNewActivity";
 import NewEventActivityCard from "./NewEventActivityCard";
 import { isMobile } from "react-device-detect";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
+import GoogleMap from "./GoogleMap";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
@@ -415,362 +415,366 @@ const CreateEvent = () => {
   }
   return (
     <>
-      <Container
-        className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
-        // style={{ minWidth: "50%", maxWidth: "80%" }}
-        // style={{ width: "100%" }}
-        style={
-          isMobile === true
-            ? { width: "100%" }
-            : { minWidth: "50%", maxWidth: "70%" }
+      <Box
+        className={
+          isMobile
+            ? "display-events-category-box-mobile"
+            : "display-events-category-box"
         }
       >
-        <Row>
-          <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
-            Create new event MUI
-          </h1>{" "}
-        </Row>
-        <Container className="mt-4 d-flex flex-column justify-content-center">
-          <Box>
-            {/* Event title */}
-            <StyledTextField
-              className="mt-3 mb-3 w-100 text-light"
-              required
-              variant="outlined"
-              id="outline-required"
-              label="Event Title"
-              defaultValue=""
-              inputProps={{ maxLength: 50 }}
-              error={showError === true ? titleError : false}
-              helperText={
-                titleError === true && showError === true
-                  ? titleErrorMessage
-                  : ""
-              }
-              onChange={(e) => {
-                setTitle(e.target.value);
-              }}
-            />
-
-            {/* Event Subtitle */}
-            <StyledTextField
-              className="mt-3 mb-3 w-100 text-light"
-              variant="outlined"
-              id="outline-basic"
-              label="Event Subitle"
-              defaultValue=""
-              inputProps={{ maxLength: 50 }}
-              onChange={(e) => {
-                setSubtitle(e.target.value);
-              }}
-            />
-
-            {/* Date and time picker */}
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-              <Row className="mt-2 mb-3">
-                <Col>
-                  <DatePicker
-                    minDate={inversedCurrentDate}
-                    className="w-100"
-                    label="Start date"
-                    openTo="day"
-                    views={["month", "year", "day"]}
-                    inputFormat="DD/MM/YYYY"
-                    value={startDate}
-                    onChange={(newValue) => {
-                      setStartDate(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <StyledTextField
-                        required
-                        sx={pickerStyle}
-                        {...params}
-                        error={showError === true ? startDateError : false}
-                        helperText={
-                          startDateError === true && showError === true
-                            ? startDateErrorMessage
-                            : ""
-                        }
-                      />
-                    )}
-                  />
-                </Col>
-
-                <Col>
-                  <TimePicker
-                    className="w-100"
-                    label="Start time"
-                    value={startTime}
-                    onChange={setStartTime}
-                    renderInput={(params) => (
-                      <StyledTextField
-                        sx={pickerStyle}
-                        {...params}
-                        error={showError === true ? startTimeError : false}
-                        helperText={
-                          startTimeError === true && showError === true
-                            ? startTimeErrorMessage
-                            : ""
-                        }
-                      />
-                    )}
-                  />
-                </Col>
-              </Row>
-
-              <Row className={`mt-3 mb-3 ${showEndDate}`}>
-                <Col>
-                  <DatePicker
-                    minDate={inversedCurrentDate}
-                    className="w-100"
-                    label="End date"
-                    openTo="day"
-                    views={["month", "year", "day"]}
-                    inputFormat="DD/MM/YYYY"
-                    value={endDate}
-                    onChange={(newValue) => {
-                      setEndDate(newValue);
-                    }}
-                    renderInput={(params) => (
-                      <StyledTextField
-                        sx={pickerStyle}
-                        {...params}
-                        error={showError === true ? endDateError : false}
-                        helperText={
-                          endDateError === true && showError === true
-                            ? endDateErrorMessage
-                            : ""
-                        }
-                      />
-                    )}
-                  />
-                </Col>
-
-                <Col>
-                  <TimePicker
-                    className="w-100"
-                    label="End time"
-                    value={endTime}
-                    onChange={setEndTime}
-                    renderInput={(params) => (
-                      <StyledTextField
-                        sx={pickerStyle}
-                        {...params}
-                        error={showError === true ? endTimeError : false}
-                        helperText={
-                          endTimeError === true && showError === true
-                            ? endTimeErrorMessage
-                            : ""
-                        }
-                      />
-                    )}
-                  />
-                </Col>
-              </Row>
-            </LocalizationProvider>
-
-            {/* End date and time */}
-
-            <ThemeProvider theme={submitButtonTheme}>
-              <Button
-                size="small"
-                startIcon={
-                  expandDate === false ? (
-                    <AddCircleOutlineIcon />
-                  ) : (
-                    <RemoveCircleOutlineIcon />
-                  )
+        <Container
+          className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
+          // style={{ minWidth: "50%", maxWidth: "80%" }}
+          // style={{ width: "100%" }}
+          style={{ width: "100%" }}
+        >
+          <Row>
+            <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
+              Create new event MUI
+            </h1>{" "}
+          </Row>
+          <Container className="mt-4 d-flex flex-column justify-content-center">
+            <Box>
+              {/* Event title */}
+              <StyledTextField
+                className="mt-3 mb-3 w-100 text-light"
+                required
+                variant="outlined"
+                id="outline-required"
+                label="Event Title"
+                defaultValue=""
+                inputProps={{ maxLength: 50 }}
+                error={showError === true ? titleError : false}
+                helperText={
+                  titleError === true && showError === true
+                    ? titleErrorMessage
+                    : ""
                 }
-                onClick={() => {
-                  showDate();
-                  setExpandDate(!expandDate);
+                onChange={(e) => {
+                  setTitle(e.target.value);
                 }}
-              >
-                End date and time
-              </Button>
-            </ThemeProvider>
+              />
 
-            {/* //TODO add event location (add option to select if event is in person or virtual) */}
+              {/* Event Subtitle */}
+              <StyledTextField
+                className="mt-3 mb-3 w-100 text-light"
+                variant="outlined"
+                id="outline-basic"
+                label="Event Subitle"
+                defaultValue=""
+                inputProps={{ maxLength: 50 }}
+                onChange={(e) => {
+                  setSubtitle(e.target.value);
+                }}
+              />
 
-            {/* Add new activity */}
-            <Row className="d-flex flex-column mb-3">
-              <Col className="d-flex mb-3 fs-2 fw-normal justify-content-center">
-                Activities
-              </Col>
-              <Col className="mb-3 d-flex justify-content-left">
-                {/* Display activities */}
-                <Row className="d-flex flex-column">
+              {/* Date and time picker */}
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <Row className="mt-2 mb-3">
                   <Col>
-                    <NewEventActivityCard
-                      // Passing setters for edit, so we can populate the AddNewActivity Card
-                      // when edit button for one of the activities is pressed
-                      setActivityID={setEditActivityID}
-                      setTrigger={editActivity}
-                      setActivityTitle={setEditActivityTitle}
-                      setActivityStartDate={setEditActivityStartDate}
-                      setActivityStartTime={setEditActivityStartTime}
-                      setActivityEndDate={setEditActivityEndDate}
-                      setActivityEndTime={setEditActivityEndTime}
-                      setActivityDescription={setEditActivityDescription}
-                      setActivityExpandDate={setEditActivityExpandDate}
-                      setActivityShowEndDate={setEditActivityShowEndDate}
-                      activities={activities}
-                      editActivityID={editActivityID}
+                    <DatePicker
+                      minDate={inversedCurrentDate}
+                      className="w-100"
+                      label="Start date"
+                      openTo="day"
+                      views={["month", "year", "day"]}
+                      inputFormat="DD/MM/YYYY"
+                      value={startDate}
+                      onChange={(newValue) => {
+                        setStartDate(newValue);
+                      }}
+                      renderInput={(params) => (
+                        <StyledTextField
+                          required
+                          sx={pickerStyle}
+                          {...params}
+                          error={showError === true ? startDateError : false}
+                          helperText={
+                            startDateError === true && showError === true
+                              ? startDateErrorMessage
+                              : ""
+                          }
+                        />
+                      )}
                     />
                   </Col>
-                  <Col>
-                    {/* <Row className="d-flex flex-row"> */}
 
-                    <ThemeProvider theme={submitButtonTheme}>
-                      <Button
-                        size="small"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={() => {
-                          newActivity();
-                        }}
-                      >
-                        Add new activity
-                      </Button>
-                    </ThemeProvider>
-                    {/* </Row> */}
+                  <Col>
+                    <TimePicker
+                      className="w-100"
+                      label="Start time"
+                      value={startTime}
+                      onChange={setStartTime}
+                      renderInput={(params) => (
+                        <StyledTextField
+                          sx={pickerStyle}
+                          {...params}
+                          error={showError === true ? startTimeError : false}
+                          helperText={
+                            startTimeError === true && showError === true
+                              ? startTimeErrorMessage
+                              : ""
+                          }
+                        />
+                      )}
+                    />
                   </Col>
                 </Row>
-              </Col>
-            </Row>
 
-            {/* Description */}
-            <StyledTextField
-              className="mt-3 mb-3 w-100 text-light"
-              required
-              multiline
-              id="outline-basic"
-              label="Event Description"
-              defaultValue=""
-              error={showError === true ? descriptionError : false}
-              helperText={
-                descriptionError === true && showError === true
-                  ? descriptionErrorMessage
-                  : ""
-              }
-              onChange={(e) => {
-                setDescription(e.target.value);
-              }}
-            />
+                <Row className={`mt-3 mb-3 ${showEndDate}`}>
+                  <Col>
+                    <DatePicker
+                      minDate={inversedCurrentDate}
+                      className="w-100"
+                      label="End date"
+                      openTo="day"
+                      views={["month", "year", "day"]}
+                      inputFormat="DD/MM/YYYY"
+                      value={endDate}
+                      onChange={(newValue) => {
+                        setEndDate(newValue);
+                      }}
+                      renderInput={(params) => (
+                        <StyledTextField
+                          sx={pickerStyle}
+                          {...params}
+                          error={showError === true ? endDateError : false}
+                          helperText={
+                            endDateError === true && showError === true
+                              ? endDateErrorMessage
+                              : ""
+                          }
+                        />
+                      )}
+                    />
+                  </Col>
 
-            {/* Confirm */}
-            <div className="d-flex justify-content-center">
+                  <Col>
+                    <TimePicker
+                      className="w-100"
+                      label="End time"
+                      value={endTime}
+                      onChange={setEndTime}
+                      renderInput={(params) => (
+                        <StyledTextField
+                          sx={pickerStyle}
+                          {...params}
+                          error={showError === true ? endTimeError : false}
+                          helperText={
+                            endTimeError === true && showError === true
+                              ? endTimeErrorMessage
+                              : ""
+                          }
+                        />
+                      )}
+                    />
+                  </Col>
+                </Row>
+              </LocalizationProvider>
+
+              {/* End date and time */}
+
               <ThemeProvider theme={submitButtonTheme}>
                 <Button
-                  sx={{
-                    color: "white",
-                    outline: "#DAA520",
-                  }}
-                  className="mt-4"
-                  variant="outlined"
-                  onClick={async () => {
-                    checkDateAndTime();
-                    handleSubmit();
-                    console.log("After delete ", activities);
+                  size="small"
+                  startIcon={
+                    expandDate === false ? (
+                      <AddCircleOutlineIcon />
+                    ) : (
+                      <RemoveCircleOutlineIcon />
+                    )
+                  }
+                  onClick={() => {
+                    showDate();
+                    setExpandDate(!expandDate);
                   }}
                 >
-                  Confirm
+                  End date and time
                 </Button>
               </ThemeProvider>
-            </div>
-          </Box>
 
-          <Modal
-            sx={{ overflow: "auto" }}
-            open={newActivityPopout}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={isMobile ? popupStyleMobile : popupStyle}>
-              <AddNewActivity
-                type={"new"}
-                header={"Add New Activity"}
-                trigger={newActivityPopout}
-                setTrigger={newActivity}
-                // all setters and getters for activity reffer to the current
-                // activity that is being created
-                setActivityTitle={setActivityTitle}
-                setActivityStartDate={setActivityStartDate}
-                setActivityStartTime={setActivityStartTime}
-                setActivityEndDate={setActivityEndDate}
-                setActivityEndTime={setActivityEndTime}
-                setActivityDescription={setActivityDescription}
-                setActivityExpandDate={setActivityExpandDate}
-                setActivityShowEndDate={setActivityShowEndDate}
-                setActivityID={setActivityID}
-                activityTitle={activityTitle}
-                activityStartDate={activityStartDate}
-                activityStartTime={activityStartTime}
-                activityEndDate={activityEndDate}
-                activityEndTime={activityEndTime}
-                activityDescription={activityDescription}
-                activityExpandDate={activityExpandDate}
-                activityShowEndDate={activityShowEndDate}
-                activityID={activityID}
-                saveActivity={saveActivity}
-                eventStartDate={formattedStartDate}
-                eventStartTime={startTime}
-                eventEndDate={formattedEndDate}
-                eventEndTime={endTime}
-                currentDate={currentDate}
-                currentTime={currentTime}
-                inversedCurrentDate={inversedCurrentDate}
-              />
-            </Box>
-          </Modal>
+              {/* //TODO add event location (add option to select if event is in person or virtual) */}
 
-          {/* Edit activity (using the same card and props as add activity, just different values) */}
-          <Modal
-            sx={{ overflow: "auto" }}
-            open={editActivityPopout}
-            aria-labelledby="modal-modal-title"
-            aria-describedby="modal-modal-description"
-          >
-            <Box sx={popupStyle}>
-              <AddNewActivity
-                //prop to identify if popup is edit or new activity
-                type={"edit"}
-                header={"Edit Activity"}
-                trigger={editActivityPopout}
-                setTrigger={editActivity}
-                // all setters and getters for activity reffer to the current
-                // activity that is being edited
-                setActivityTitle={setEditActivityTitle}
-                setActivityStartDate={setEditActivityStartDate}
-                setActivityStartTime={setEditActivityStartTime}
-                setActivityEndDate={setEditActivityEndDate}
-                setActivityEndTime={setEditActivityEndTime}
-                setActivityDescription={setEditActivityDescription}
-                setActivityExpandDate={setEditActivityExpandDate}
-                setActivityShowEndDate={setEditActivityShowEndDate}
-                setActivityID={setEditActivityID}
-                activityTitle={editActivityTitle}
-                activityStartDate={editActivityStartDate}
-                activityStartTime={editActivityStartTime}
-                activityEndDate={editActivityEndDate}
-                activityEndTime={editActivityEndTime}
-                activityDescription={editActivityDescription}
-                activityExpandDate={editActivityExpandDate}
-                activityShowEndDate={editActivityShowEndDate}
-                activityID={editActivityID}
-                saveActivity={saveActivity}
-                deleteActivity={deleteActivity}
-                eventStartDate={formattedStartDate}
-                eventStartTime={startTime}
-                eventEndDate={formattedEndDate}
-                eventEndTime={endTime}
-                currentDate={currentDate}
-                currentTime={currentTime}
-                inversedCurrentDate={inversedCurrentDate}
+              {/* Add new activity */}
+              <Row className="d-flex flex-column mb-3">
+                <Col className="d-flex mb-3 fs-2 fw-normal justify-content-center">
+                  Activities
+                </Col>
+                <Col className="mb-3 d-flex justify-content-left">
+                  {/* Display activities */}
+                  <Row className="d-flex flex-column">
+                    <Col>
+                      <NewEventActivityCard
+                        // Passing setters for edit, so we can populate the AddNewActivity Card
+                        // when edit button for one of the activities is pressed
+                        setActivityID={setEditActivityID}
+                        setTrigger={editActivity}
+                        setActivityTitle={setEditActivityTitle}
+                        setActivityStartDate={setEditActivityStartDate}
+                        setActivityStartTime={setEditActivityStartTime}
+                        setActivityEndDate={setEditActivityEndDate}
+                        setActivityEndTime={setEditActivityEndTime}
+                        setActivityDescription={setEditActivityDescription}
+                        setActivityExpandDate={setEditActivityExpandDate}
+                        setActivityShowEndDate={setEditActivityShowEndDate}
+                        activities={activities}
+                        editActivityID={editActivityID}
+                      />
+                    </Col>
+                    <Col>
+                      {/* <Row className="d-flex flex-row"> */}
+
+                      <ThemeProvider theme={submitButtonTheme}>
+                        <Button
+                          size="small"
+                          startIcon={<AddCircleOutlineIcon />}
+                          onClick={() => {
+                            newActivity();
+                          }}
+                        >
+                          Add new activity
+                        </Button>
+                      </ThemeProvider>
+                      {/* </Row> */}
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+
+              {/* Description */}
+              <StyledTextField
+                className="mt-3 mb-3 w-100 text-light"
+                required
+                multiline
+                id="outline-basic"
+                label="Event Description"
+                defaultValue=""
+                error={showError === true ? descriptionError : false}
+                helperText={
+                  descriptionError === true && showError === true
+                    ? descriptionErrorMessage
+                    : ""
+                }
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                }}
               />
+
+              {/* Confirm */}
+              <div className="d-flex justify-content-center">
+                <ThemeProvider theme={submitButtonTheme}>
+                  <Button
+                    sx={{
+                      color: "white",
+                      outline: "#DAA520",
+                    }}
+                    className="mt-4"
+                    variant="outlined"
+                    onClick={async () => {
+                      checkDateAndTime();
+                      handleSubmit();
+                      console.log("After delete ", activities);
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </ThemeProvider>
+              </div>
             </Box>
-          </Modal>
+
+            <Modal
+              sx={{ overflow: "auto" }}
+              open={newActivityPopout}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={isMobile ? popupStyleMobile : popupStyle}>
+                <AddNewActivity
+                  type={"new"}
+                  header={"Add New Activity"}
+                  trigger={newActivityPopout}
+                  setTrigger={newActivity}
+                  // all setters and getters for activity reffer to the current
+                  // activity that is being created
+                  setActivityTitle={setActivityTitle}
+                  setActivityStartDate={setActivityStartDate}
+                  setActivityStartTime={setActivityStartTime}
+                  setActivityEndDate={setActivityEndDate}
+                  setActivityEndTime={setActivityEndTime}
+                  setActivityDescription={setActivityDescription}
+                  setActivityExpandDate={setActivityExpandDate}
+                  setActivityShowEndDate={setActivityShowEndDate}
+                  setActivityID={setActivityID}
+                  activityTitle={activityTitle}
+                  activityStartDate={activityStartDate}
+                  activityStartTime={activityStartTime}
+                  activityEndDate={activityEndDate}
+                  activityEndTime={activityEndTime}
+                  activityDescription={activityDescription}
+                  activityExpandDate={activityExpandDate}
+                  activityShowEndDate={activityShowEndDate}
+                  activityID={activityID}
+                  saveActivity={saveActivity}
+                  eventStartDate={formattedStartDate}
+                  eventStartTime={startTime}
+                  eventEndDate={formattedEndDate}
+                  eventEndTime={endTime}
+                  currentDate={currentDate}
+                  currentTime={currentTime}
+                  inversedCurrentDate={inversedCurrentDate}
+                />
+              </Box>
+            </Modal>
+
+            {/* Edit activity (using the same card and props as add activity, just different values) */}
+            <Modal
+              sx={{ overflow: "auto" }}
+              open={editActivityPopout}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box sx={popupStyle}>
+                <AddNewActivity
+                  //prop to identify if popup is edit or new activity
+                  type={"edit"}
+                  header={"Edit Activity"}
+                  trigger={editActivityPopout}
+                  setTrigger={editActivity}
+                  // all setters and getters for activity reffer to the current
+                  // activity that is being edited
+                  setActivityTitle={setEditActivityTitle}
+                  setActivityStartDate={setEditActivityStartDate}
+                  setActivityStartTime={setEditActivityStartTime}
+                  setActivityEndDate={setEditActivityEndDate}
+                  setActivityEndTime={setEditActivityEndTime}
+                  setActivityDescription={setEditActivityDescription}
+                  setActivityExpandDate={setEditActivityExpandDate}
+                  setActivityShowEndDate={setEditActivityShowEndDate}
+                  setActivityID={setEditActivityID}
+                  activityTitle={editActivityTitle}
+                  activityStartDate={editActivityStartDate}
+                  activityStartTime={editActivityStartTime}
+                  activityEndDate={editActivityEndDate}
+                  activityEndTime={editActivityEndTime}
+                  activityDescription={editActivityDescription}
+                  activityExpandDate={editActivityExpandDate}
+                  activityShowEndDate={editActivityShowEndDate}
+                  activityID={editActivityID}
+                  saveActivity={saveActivity}
+                  deleteActivity={deleteActivity}
+                  eventStartDate={formattedStartDate}
+                  eventStartTime={startTime}
+                  eventEndDate={formattedEndDate}
+                  eventEndTime={endTime}
+                  currentDate={currentDate}
+                  currentTime={currentTime}
+                  inversedCurrentDate={inversedCurrentDate}
+                />
+              </Box>
+            </Modal>
+          </Container>
         </Container>
-      </Container>
+      </Box>
     </>
   );
 };
