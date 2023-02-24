@@ -14,6 +14,7 @@ import {
   popupStyle,
   popupStyleMobile,
   submitButtonTheme,
+  new_event_menu_item_style,
 } from "../ui_styles/MuiStyles";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -25,6 +26,18 @@ import { ThemeProvider } from "@mui/material/styles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
 import GoogleMap from "./GoogleMap";
+import ListItemDecorator from "@mui/joy/ListItemDecorator";
+import ListDivider from "@mui/joy/ListDivider";
+import Menu from "@mui/joy/Menu";
+import MenuItem from "@mui/joy/MenuItem";
+import ArrowRight from "@mui/icons-material/ArrowRight";
+import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
+import { Stack, Typography } from "@mui/material";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import AddSocialMediaLinks from "./AddSocialMediaLinks";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
@@ -62,6 +75,8 @@ const CreateEvent = () => {
   const [activityShowEndDate, setActivityShowEndDate] = useState("d-none");
 
   const [activities, setActivities] = useState([]);
+  const [displayActivities, setDisplayActivities] = useState(true);
+  const [displaySocialLinks, setDisplaySocialLinks] = useState(false);
 
   // States to use when editing an activity, to avoid overwritting an unfinished activity
   const [editActivityPopout, setEditActivityPopout] = useState(false);
@@ -97,6 +112,21 @@ const CreateEvent = () => {
 
   const [endTimeError, setEndTimeError] = useState(false);
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
+
+  // Privacy and categories
+  const [visibility, setVisibility] = useState("Privacy");
+  const [category, setCategory] = useState("Category");
+  const categories = ["Music", "Improv", "Sports", "Drama", "Party"];
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
+
+  // Social media links
+  const [instagram, setInstagram] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [twitter, setTwitter] = useState("");
+  const [facebook, setFacebook] = useState("");
 
   let isDateAndTimeValid = false;
 
@@ -264,19 +294,15 @@ const CreateEvent = () => {
       );
     });
     setActivities(temp2);
-
-    // console.log("Temp after temp", activities);
   };
 
   const deleteActivity = (activity_id) => {
     const temp = activities.filter(function (obj) {
       return obj.id !== activity_id;
     });
-    console.log("Temp ", temp);
 
     // making sure everything is sorted in chronologycal order
     temp.sort(function (a, b) {
-      console.log("sorting ", a.startDate, b.startDate, a.startDate);
       return (
         a.startDate.localeCompare(b.startDate) ||
         a.startTime.localeCompare(b.startTime)
@@ -317,13 +343,25 @@ const CreateEvent = () => {
     getCurrentDate();
   }, [startDate, startTime, endDate, endTime]);
 
+  const handlePrivacyClick = (event) => {
+    setAnchorEl(event.currentTarget);
+    setOpen(!open);
+  };
+
+  const handleCategoryClick = (event) => {
+    setCategoryAnchorEl(event.currentTarget);
+    setOpenCategory(!openCategory);
+  };
+  const handleClose = (setAnchor, setOpen) => {
+    setAnchor(null);
+    setOpen(false);
+  };
+
   const handleSubmit = async () => {
     getCurrentDate();
     checkDateAndTime();
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
-
-    console.log("Checked fields, eventIsValid", eventIsValid);
 
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
@@ -368,7 +406,6 @@ const CreateEvent = () => {
           author: user.uid,
           author_username: user.displayName,
         }).then(async function () {
-          console.log("before map");
           activities.map(async (activity) => {
             const activitiesRef = doc(
               db,
@@ -402,7 +439,6 @@ const CreateEvent = () => {
           end_time: formattedEndTime,
         });
         console.log("Event created with ID:", docRef.id);
-        console.log(activities);
       });
       navigate("/home");
       console.log("SUCCESS");
@@ -410,9 +446,7 @@ const CreateEvent = () => {
       setShowError(true);
     }
   };
-  if (startDate) {
-    console.log(startDate["$d"].toString().split(" ")[1]);
-  }
+
   return (
     <>
       <Box
@@ -424,8 +458,6 @@ const CreateEvent = () => {
       >
         <Container
           className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
-          // style={{ minWidth: "50%", maxWidth: "80%" }}
-          // style={{ width: "100%" }}
           style={{ width: "100%" }}
         >
           <Row>
@@ -594,16 +626,220 @@ const CreateEvent = () => {
               </ThemeProvider>
 
               {/* //TODO add event location (add option to select if event is in person or virtual) */}
+              {/* Event privacy */}
+              <Box className="mt-3">
+                <Stack direction="row" spacing={3}>
+                  <Box className="w-100">
+                    <ThemeProvider theme={submitButtonTheme}>
+                      <Button
+                        aria-controls={open ? "group-menu" : undefined}
+                        aria-haspopup="true"
+                        aria-expanded={open ? "true" : undefined}
+                        variant="outlined"
+                        color="primary"
+                        onClick={handlePrivacyClick}
+                        endIcon={<ArrowDropDown />}
+                        startIcon={
+                          visibility === "Private" ? (
+                            <LockOutlinedIcon sx={{ width: "20px" }} />
+                          ) : (
+                            <PublicOutlinedIcon sx={{ width: "20px" }} />
+                          )
+                        }
+                        sx={{
+                          width: "100%",
+                          fontWeight: "500",
+                          letterSpacing: "1.5px",
+                        }}
+                      >
+                        {visibility}
+                      </Button>
+                    </ThemeProvider>
+                    <Menu
+                      id="group-menu"
+                      anchorEl={anchorEl}
+                      open={open}
+                      // open={true}
+                      onClose={() => handleClose(setAnchorEl, setOpen)}
+                      aria-labelledby="group-demo-button"
+                      sx={{
+                        minWidth: "120px",
+                        // minHeight: "150px",
+                        fontWeight: "600",
+                        "--List-decorator-size": "24px",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          borderRadius: "25px",
+                          bgcolor: "#daa520",
+                          zIndex: "2",
+                          minHeight: "80px",
+                        }}
+                      >
+                        <Stack direction="column">
+                          <Box className="menu-item">
+                            <MenuItem
+                              sx={new_event_menu_item_style}
+                              onClick={() => {
+                                setVisibility("Public");
+                                handleClose(setAnchorEl, setOpen);
+                              }}
+                            >
+                              <Stack direction="row" spacing={0}>
+                                <Box sx={{ transform: "translateY(2px)" }}>
+                                  <ListItemDecorator>
+                                    <PublicOutlinedIcon fontSize="xs" />
+                                  </ListItemDecorator>
+                                </Box>
+                                <Box>Public</Box>
+                              </Stack>
+                            </MenuItem>
+                          </Box>
+
+                          <Box className="menu-item">
+                            <MenuItem
+                              sx={new_event_menu_item_style}
+                              endIcon={<LockOutlinedIcon />}
+                              onClick={() => {
+                                setVisibility("Private");
+                                handleClose(setAnchorEl, setOpen);
+                              }}
+                            >
+                              <Stack direction="row" spacing={0}>
+                                <Box sx={{ transform: "translateY(2px)" }}>
+                                  <ListItemDecorator>
+                                    <LockOutlinedIcon fontSize="xs" />
+                                  </ListItemDecorator>
+                                </Box>
+                                <Box>Private</Box>
+                              </Stack>
+                            </MenuItem>
+                          </Box>
+                        </Stack>
+                      </Box>
+                      <ListDivider />
+                    </Menu>
+                  </Box>
+
+                  {/* Event category */}
+                  <Box className="w-100">
+                    <Box>
+                      <ThemeProvider theme={submitButtonTheme}>
+                        <Button
+                          aria-controls={
+                            openCategory ? "group-menu" : undefined
+                          }
+                          aria-haspopup="true"
+                          aria-expanded={openCategory ? "true" : undefined}
+                          variant="outlined"
+                          color="primary"
+                          onClick={handleCategoryClick}
+                          endIcon={<ArrowDropDown />}
+                          sx={{ width: "100%" }}
+                        >
+                          {category}
+                        </Button>
+                      </ThemeProvider>
+
+                      <Menu
+                        id="group-menu"
+                        anchorEl={categoryAnchorEl}
+                        open={openCategory}
+                        // open={true}
+                        onClose={() =>
+                          handleClose(setCategoryAnchorEl, setOpenCategory)
+                        }
+                        aria-labelledby="group-demo-button"
+                        sx={{
+                          minWidth: 120,
+                          justifyContent: "center",
+                          fontWeight: "600",
+                          "--List-decorator-size": "24px",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            borderRadius: "25px",
+                            bgcolor: "#daa520",
+                            zIndex: "2",
+                          }}
+                        >
+                          <Stack direction="column">
+                            {" "}
+                            {categories.map((cat) => {
+                              return (
+                                <Box className="menu-item">
+                                  <MenuItem
+                                    sx={new_event_menu_item_style}
+                                    onClick={() => {
+                                      setCategory(cat);
+                                      handleClose(
+                                        setCategoryAnchorEl,
+                                        setOpenCategory
+                                      );
+                                    }}
+                                  >
+                                    {cat}
+                                  </MenuItem>
+                                </Box>
+                              );
+                            })}
+                          </Stack>
+                        </Box>
+
+                        <ListDivider />
+                      </Menu>
+                    </Box>
+                  </Box>
+                </Stack>
+              </Box>
 
               {/* Add new activity */}
               <Row className="d-flex flex-column mb-3">
-                <Col className="d-flex mb-3 fs-2 fw-normal justify-content-center">
-                  Activities
+                <Col className="d-flex mt-4 mb-3 fs-2 fw-normal text-light justify-content-center">
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      className={activities.length === 0 ? "d-none" : ""}
+                      size="large"
+                      startIcon={
+                        displayActivities === false ? (
+                          <ExpandMoreIcon
+                            sx={{ transform: "translateX(-5px)" }}
+                          />
+                        ) : (
+                          <ExpandLessIcon
+                            sx={{ transform: "translateX(-5px)" }}
+                          />
+                        )
+                      }
+                      onClick={() => setDisplayActivities(!displayActivities)}
+                    />
+                    {/* See
+                      </Button> */}
+                  </ThemeProvider>
+                  <Typography
+                    sx={
+                      activities.length === 0
+                        ? {}
+                        : { transform: "translateX(-15px)" }
+                    }
+                    variant="h5"
+                  >
+                    Activities{" "}
+                  </Typography>
+                  <Typography color="#daa520" variant="h6">
+                    {activities.length === 0 ? "" : `(${activities.length})`}{" "}
+                  </Typography>
                 </Col>
                 <Col className="mb-3 d-flex justify-content-left">
                   {/* Display activities */}
                   <Row className="d-flex flex-column">
-                    <Col>
+                    <Col className={displayActivities === true ? "" : "d-none"}>
                       <NewEventActivityCard
                         // Passing setters for edit, so we can populate the AddNewActivity Card
                         // when edit button for one of the activities is pressed
@@ -660,6 +896,50 @@ const CreateEvent = () => {
                 }}
               />
 
+              {/* Social media links */}
+
+              <Box className="mt-3">
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      size="large"
+                      startIcon={
+                        displaySocialLinks === false ? (
+                          <ExpandMoreIcon
+                            sx={{ transform: "translateX(-30px)" }}
+                          />
+                        ) : (
+                          <ExpandLessIcon
+                            sx={{ transform: "translateX(-30px)" }}
+                          />
+                        )
+                      }
+                      onClick={() => setDisplaySocialLinks(!displaySocialLinks)}
+                    />
+                    {/* See
+                      </Button> */}
+                  </ThemeProvider>
+                  <Typography
+                    variant="h5"
+                    sx={{ transform: "translateX(-30px)" }}
+                  >
+                    Link social media
+                  </Typography>
+                </Box>
+                <Box className={displaySocialLinks === true ? "mt-2" : "mt-2 d-none"}>
+                  <AddSocialMediaLinks
+                    setInstagram={setInstagram}
+                    setTitktok={setTiktok}
+                    setTwitter={setTwitter}
+                    setFacebook={setFacebook}
+                    instagram={instagram}
+                    tiktok={tiktok}
+                    twitter={twitter}
+                    facebook={facebook}
+                  />
+                </Box>
+              </Box>
+              
               {/* Confirm */}
               <div className="d-flex justify-content-center">
                 <ThemeProvider theme={submitButtonTheme}>
@@ -673,7 +953,6 @@ const CreateEvent = () => {
                     onClick={async () => {
                       checkDateAndTime();
                       handleSubmit();
-                      console.log("After delete ", activities);
                     }}
                   >
                     Confirm

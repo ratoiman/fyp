@@ -81,6 +81,7 @@ export const eventActivityCardStyle = {
   borderWidth: "1px",
   borderColor: "#DAA520",
   fontWeight: 600,
+  color: "white",
 };
 
 export const editButtonStyle = {
@@ -146,7 +147,6 @@ export const event_card_style_mobile = {
   },
   my: "2%",
 };
-
 
 export const event_page_card_title_box = {
   border: "1px",
@@ -225,15 +225,16 @@ export const card_action_style_mobile = {
   backgroundPosition: "center center",
 };
 
-
-
 export const event_page_card_mobile = {
   minWidth: "90%",
   maxWidth: "100%",
   minHeigth: "60%",
-  border: "none",
-  bgcolor: "black",
   mt: 3,
+  backgroundColor: "rgb(22, 22, 22, 0.4)",
+  border: "solid",
+  borderWidth: "1px",
+  borderColor: "#DAA520",
+
   // backgroundImage: `url(${cardbg_rotated})`,
   // backgroundSize: "cover",
   // backgroundRepeat: "no-repeat",
@@ -249,8 +250,83 @@ export const event_page_card_desktop = {
   border: "solid",
   borderWidth: "2px",
   borderColor: "#DAA520",
+  backgroundColor: "rgb(22, 22, 22, 0.4)",
   // backgroundImage: `url(${cardbg})`,
   // backgroundSize: "cover",
   // backgroundRepeat: "no-repeat",
   // backgroundPosition: "center center",
 };
+
+export const new_event_menu_item_style = {
+  width: "120px",
+  display: "flex",
+  justifyContent: "center",
+};
+
+export const new_event_social_media_box = {
+  width: "100%",
+  justifyContent: "center",
+  display: "flex",
+};
+
+export const new_event_social_media_inner_box = {
+  width: "30%",
+  border: "solid",
+  borderColor: "#DAA520",
+  borderWidth: "1px",
+  margin: "2%",
+  position: "relative",
+};
+
+export const new_event_social_media_inner_box_mobile = {
+  width: "100%",
+  border: "solid",
+  borderColor: "#DAA520",
+  borderWidth: "1px",
+  margin: "2%",
+  position: "relative",
+};
+
+export const new_event_social_media_button = {
+  width: "100%",
+  margin: "2%",
+  position: "relative",
+  top: "0",
+  left: "0",
+};
+
+export const new_event_social_media_button_overlay = {
+  borderStyle: "solid",
+  borderColor: "#DAA520",
+  borderWidth: "1px",
+  width: "100%",
+  height: "100%",
+  position: "absolute",
+  // marginLeft:"1%",
+  // padding: "2%",
+  top: "0",
+  left: "0",
+  zIndex: "10",
+ 
+};
+
+export const socialMediaButtonTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#DAA520",
+      contrastText: "#FFF",
+    },
+    secondary: {
+      main: "#ff3333",
+      contrastText: "#FFF",
+    },
+    danger: {
+      main: "#dd0132",
+      contrastText: "#FFF",
+    },
+    disabled: {
+      main: "rgb(128, 128, 128)",
+      contrastText: "#FFF",
+    },
+  },
+});

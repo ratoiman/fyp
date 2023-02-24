@@ -38,7 +38,6 @@ const EventPage = (props) => {
 
   const [eventData, setEventData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [deviceType, setDeviceType] = useState("desktop");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [startDateSet, setStartDateSet] = useState([]);
