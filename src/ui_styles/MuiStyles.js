@@ -59,6 +59,22 @@ export const popupStyle = {
   px: 2,
 };
 
+export const linkPopupStyle = {
+  position: "absolute",
+  // display:"flex",
+  // justifyContent:"center",
+  top: "40%",
+  left: "5%",
+  width: "90%",
+  bgcolor: "black",
+  border: "2px solid #DAA520",
+  boxShadow: 24,
+  pt: 1,
+  pb: 2,
+  px: 2,
+};
+
+
 export const popupStyleMobile = {
   position: "inherit",
   // display: "flex",
@@ -278,10 +294,29 @@ export const new_event_social_media_inner_box = {
   position: "relative",
 };
 
+
+export const new_event_social_media_inner_box_disabled = {
+  width: "30%",
+  border: "solid",
+  borderColor: "gray",
+  borderWidth: "1px",
+  margin: "2%",
+  position: "relative",
+};
+
 export const new_event_social_media_inner_box_mobile = {
   width: "100%",
   border: "solid",
   borderColor: "#DAA520",
+  borderWidth: "1px",
+  margin: "2%",
+  position: "relative",
+};
+
+export const new_event_social_media_inner_box_mobile_disabled = {
+  width: "100%",
+  border: "solid",
+  borderColor: "gray",
   borderWidth: "1px",
   margin: "2%",
   position: "relative",
@@ -295,20 +330,7 @@ export const new_event_social_media_button = {
   left: "0",
 };
 
-export const new_event_social_media_button_overlay = {
-  borderStyle: "solid",
-  borderColor: "#DAA520",
-  borderWidth: "1px",
-  width: "100%",
-  height: "100%",
-  position: "absolute",
-  // marginLeft:"1%",
-  // padding: "2%",
-  top: "0",
-  left: "0",
-  zIndex: "10",
- 
-};
+
 
 export const socialMediaButtonTheme = createTheme({
   palette: {

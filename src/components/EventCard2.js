@@ -39,12 +39,6 @@ const EventCard2 = (props) => {
   const [unfollowPopup, setUnfollowPopup] = useState(false);
   const { user } = useUserAuth();
 
-  const handleEventLink = (id) => {
-    // navigator("/event")
-    setSelectedEventID(id);
-    setEventPageLoad(true);
-  };
-
   const getUserEvents = () => {
     try {
       if (user !== null) {

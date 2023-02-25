@@ -38,6 +38,7 @@ import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import AddSocialMediaLinks from "./AddSocialMediaLinks";
+import AddSocialMediaLinkPopover from "./AddSocialMediaLinkPopover";
 
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
@@ -53,7 +54,6 @@ const CreateEvent = () => {
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
   const [startDate, setStartDate] = useState(null);
-  // const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [endTime, setEndTime] = useState(null);
@@ -127,6 +127,8 @@ const CreateEvent = () => {
   const [tiktok, setTiktok] = useState("");
   const [twitter, setTwitter] = useState("");
   const [facebook, setFacebook] = useState("");
+  const [openPopup, setOpenPopup] = useState(false);
+  const [platform, setPlatform] = useState("");
 
   let isDateAndTimeValid = false;
 
@@ -311,6 +313,10 @@ const CreateEvent = () => {
     setActivities([...temp]);
   };
 
+  const closePopup = () => {
+    setOpenPopup(false);
+  };
+
   useEffect(() => {
     checkField(title, setTitleError);
   }, [title]);
@@ -446,6 +452,7 @@ const CreateEvent = () => {
       setShowError(true);
     }
   };
+  console.log("insta ", instagram);
 
   return (
     <>
@@ -920,14 +927,23 @@ const CreateEvent = () => {
                       </Button> */}
                   </ThemeProvider>
                   <Typography
+                  color="primary"
                     variant="h5"
                     sx={{ transform: "translateX(-30px)" }}
+                    
                   >
                     Link social media
                   </Typography>
                 </Box>
-                <Box className={displaySocialLinks === true ? "mt-2" : "mt-2 d-none"}>
+                <Box
+                  className={
+                    displaySocialLinks === true ? "mt-2" : "mt-2 d-none"
+                  }
+                >
                   <AddSocialMediaLinks
+                    setPlatform={setPlatform}
+                    setOpenPopup={setOpenPopup}
+                    closePopup={closePopup}
                     setInstagram={setInstagram}
                     setTitktok={setTiktok}
                     setTwitter={setTwitter}
@@ -939,7 +955,7 @@ const CreateEvent = () => {
                   />
                 </Box>
               </Box>
-              
+
               {/* Confirm */}
               <div className="d-flex justify-content-center">
                 <ThemeProvider theme={submitButtonTheme}>
@@ -1050,6 +1066,17 @@ const CreateEvent = () => {
                   inversedCurrentDate={inversedCurrentDate}
                 />
               </Box>
+            </Modal>
+
+            <Modal sx={{ overflow: "auto" }} open={openPopup}>
+              <AddSocialMediaLinkPopover
+                platform={platform}
+                closePopup={closePopup}
+                setInsta={setInstagram}
+                setTiktok={setTiktok}
+                setTwitter={setTwitter}
+                setFacebook={setFacebook}
+              />
             </Modal>
           </Container>
         </Container>
