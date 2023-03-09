@@ -171,3 +171,14 @@
   border-color: aqua;
 }
 
+.map-container {
+  /* display: flex;
+  justify-content: center; */
+  min-width: 100%;
+  height: 400px;
+  margin-top: 2%;
+  border-style: solid;
+  border-color: #daa520;
+  
+}
+

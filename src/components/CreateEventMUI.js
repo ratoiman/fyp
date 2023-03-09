@@ -25,7 +25,7 @@ import { isMobile } from "react-device-detect";
 import { ThemeProvider } from "@mui/material/styles";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import RemoveCircleOutlineIcon from "@mui/icons-material/RemoveCircleOutline";
-import GoogleMap from "./GoogleMap";
+import GoogleMapsIntegration from "./GoogleMapsIntegration";
 import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import ListDivider from "@mui/joy/ListDivider";
 import Menu from "@mui/joy/Menu";
@@ -126,6 +126,7 @@ const CreateEvent = () => {
   const [locationTypeAnchor, setLocationTypeAnchor] = useState(null);
   const [locationTypeOpen, setLocationTypeOpen] = useState(false);
   const [displayLocation, setDisplayLocation] = useState(true);
+  const [marker, setMarker] = useState("")
 
   // Social media links
   const [instagram, setInstagram] = useState("");
@@ -836,21 +837,17 @@ const CreateEvent = () => {
                       justifyContent: "center",
                       marginBottom: 3,
                       marginTop: 3,
-                      transform: "translateX(-35px)" }}
-                    
+                      transform: "translateX(-35px)",
+                    }}
                   >
                     <ThemeProvider theme={submitButtonTheme}>
                       <Button
                         size="large"
                         startIcon={
                           displayLocation === false ? (
-                            <ExpandMoreIcon
-                              // sx={{ transform: "translateX(-5px)" }}
-                            />
+                            <ExpandMoreIcon />
                           ) : (
-                            <ExpandLessIcon
-                             
-                            />
+                            <ExpandLessIcon />
                           )
                         }
                         onClick={() => setDisplayLocation(!displayLocation)}
@@ -992,6 +989,11 @@ const CreateEvent = () => {
                         ></StyledTextField>
                       </Box>
                     </Stack>
+
+                    {/* Map integration */}
+                    <Box>
+                      <GoogleMapsIntegration setMarker={setMarker} marker={marker} />
+                    </Box>
                   </Box>
                 </Box>
 
