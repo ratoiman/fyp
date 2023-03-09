@@ -129,6 +129,10 @@ const Home = () => {
                           end_time={eventDetails["details"].end_time}
                           description={eventDetails["details"].description}
                           author={eventDetails["details"].author_username}
+                          instagram={eventDetails["details"].instagram}
+                          tiktok={eventDetails["details"].tiktok}
+                          twitter={eventDetails["details"].twitter}
+                          facebook={eventDetails["details"].facebook}
                           activities={eventDetails["activities"]}
                           usersList={eventDetails["users"]}
                           userEvents={events}

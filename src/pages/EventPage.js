@@ -247,7 +247,7 @@ const EventPage = (props) => {
                             ) {
                               return (
                                 <>
-                                  <Box className="mb-2">
+                                  <Box className="mb-2" key={activity}>
                                     <EventPageActivityCard
                                       activity={activity}
                                     />

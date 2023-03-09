@@ -39,15 +39,14 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import AddSocialMediaLinks from "./AddSocialMediaLinks";
 import AddSocialMediaLinkPopover from "./AddSocialMediaLinkPopover";
-
+import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 // TODO add a section to link social media accounts when creating an event
 const CreateEvent = () => {
   // const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
-  const [showAlert, setShowAlert] = useState(false);
-  const [eventIsValid, setEventIsValid] = useState(false);
   const [showEndDate, setShowEndDate] = useState("d-none");
   const [expandDate, setExpandDate] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
@@ -114,13 +113,19 @@ const CreateEvent = () => {
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
 
   // Privacy and categories
-  const [visibility, setVisibility] = useState("Privacy");
+  const [visibility, setVisibility] = useState("Public");
   const [category, setCategory] = useState("Category");
   const categories = ["Music", "Improv", "Sports", "Drama", "Party"];
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
+
+  // Location and location type
+  const [locationType, setLocationType] = useState("in person");
+  const [locationTypeAnchor, setLocationTypeAnchor] = useState(null);
+  const [locationTypeOpen, setLocationTypeOpen] = useState(false);
+  const [displayLocation, setDisplayLocation] = useState(true);
 
   // Social media links
   const [instagram, setInstagram] = useState("");
@@ -129,6 +134,7 @@ const CreateEvent = () => {
   const [facebook, setFacebook] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [platform, setPlatform] = useState("");
+  const [currentProfile, setCurrentProfile] = useState("");
 
   let isDateAndTimeValid = false;
 
@@ -354,6 +360,11 @@ const CreateEvent = () => {
     setOpen(!open);
   };
 
+  const handleLocationTypeClick = (event) => {
+    setLocationTypeAnchor(event.currentTarget);
+    setLocationTypeOpen(!locationTypeOpen);
+  };
+
   const handleCategoryClick = (event) => {
     setCategoryAnchorEl(event.currentTarget);
     setOpenCategory(!openCategory);
@@ -371,6 +382,9 @@ const CreateEvent = () => {
 
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
+      if (category === "Category") {
+        setCategory("");
+      }
       await addDoc(eventsRef, {
         title: title,
         subtitle: subtitle,
@@ -379,6 +393,8 @@ const CreateEvent = () => {
         start_time: formattedStartTime,
         end_date: formattedEndDate,
         end_time: formattedEndTime,
+        privacy: visibility,
+        category: category,
       }).then(async function (docRef) {
         console.log("Document written with ID: ", docRef.id);
         const userRef = doc(db, "users", user.uid, "events", docRef.id);
@@ -411,6 +427,10 @@ const CreateEvent = () => {
           description: description,
           author: user.uid,
           author_username: user.displayName,
+          instagram: instagram,
+          tiktok: tiktok,
+          twitter: twitter,
+          facebook: facebook,
         }).then(async function () {
           activities.map(async (activity) => {
             const activitiesRef = doc(
@@ -452,7 +472,6 @@ const CreateEvent = () => {
       setShowError(true);
     }
   };
-  console.log("insta ", instagram);
 
   return (
     <>
@@ -493,7 +512,6 @@ const CreateEvent = () => {
                   setTitle(e.target.value);
                 }}
               />
-
               {/* Event Subtitle */}
               <StyledTextField
                 className="mt-3 mb-3 w-100 text-light"
@@ -506,7 +524,6 @@ const CreateEvent = () => {
                   setSubtitle(e.target.value);
                 }}
               />
-
               {/* Date and time picker */}
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Row className="mt-2 mb-3">
@@ -610,9 +627,7 @@ const CreateEvent = () => {
                   </Col>
                 </Row>
               </LocalizationProvider>
-
               {/* End date and time */}
-
               <ThemeProvider theme={submitButtonTheme}>
                 <Button
                   size="small"
@@ -631,9 +646,8 @@ const CreateEvent = () => {
                   End date and time
                 </Button>
               </ThemeProvider>
-
               {/* //TODO add event location (add option to select if event is in person or virtual) */}
-              {/* Event privacy */}
+              {/* Event privacy and category*/}
               <Box className="mt-3">
                 <Stack direction="row" spacing={3}>
                   <Box className="w-100">
@@ -805,7 +819,186 @@ const CreateEvent = () => {
                   </Box>
                 </Stack>
               </Box>
+              {/* Event location */}
+              <Box
+                className="mt-3"
+                sx={{
+                  // justifyContent: "center",
+                  // display: "flex",
+                  marginBottom: 3,
+                  marginTop: 3,
+                }}
+              >
+                <Box>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      marginBottom: 3,
+                      marginTop: 3,
+                      transform: "translateX(-35px)" }}
+                    
+                  >
+                    <ThemeProvider theme={submitButtonTheme}>
+                      <Button
+                        size="large"
+                        startIcon={
+                          displayLocation === false ? (
+                            <ExpandMoreIcon
+                              // sx={{ transform: "translateX(-5px)" }}
+                            />
+                          ) : (
+                            <ExpandLessIcon
+                             
+                            />
+                          )
+                        }
+                        onClick={() => setDisplayLocation(!displayLocation)}
+                      />
+                      {/* See
+                      </Button> */}
+                    </ThemeProvider>
+                    <Typography color="white" variant="h5">
+                      Location
+                    </Typography>
+                  </Box>
+                  {/* Location and loccation type */}
+                  <Box display={displayLocation === true ? "" : "none"}>
+                    <Stack direction="row">
+                      {/* Location type */}
+                      <Box className="">
+                        <ThemeProvider theme={submitButtonTheme}>
+                          <Button
+                            aria-controls={
+                              locationTypeOpen ? "group-menu" : undefined
+                            }
+                            aria-haspopup="true"
+                            aria-expanded={
+                              locationTypeOpen ? "true" : undefined
+                            }
+                            variant="text"
+                            color="primary"
+                            onClick={handleLocationTypeClick}
+                            endIcon={<ArrowDropDown />}
+                            startIcon={
+                              locationType === "Online" ? (
+                                <VideoCameraFrontOutlinedIcon
+                                  sx={{ width: "20px" }}
+                                />
+                              ) : (
+                                <LocationOnOutlinedIcon
+                                  sx={{ width: "20px" }}
+                                />
+                              )
+                            }
+                            sx={{
+                              width: "190px",
+                              height: "56px",
+                              fontWeight: "500",
+                              letterSpacing: "1.5px",
+                            }}
+                          >
+                            {locationType}
+                          </Button>
+                        </ThemeProvider>
+                        <Menu
+                          id="group-menu"
+                          anchorEl={locationTypeAnchor}
+                          open={locationTypeOpen}
+                          onClose={() =>
+                            handleClose(
+                              setLocationTypeAnchor,
+                              setLocationTypeOpen
+                            )
+                          }
+                          aria-labelledby="group-demo-button"
+                          sx={{
+                            minWidth: "120px",
+                            // minHeight: "150px",
+                            fontWeight: "600",
+                            "--List-decorator-size": "24px",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              borderRadius: "25px",
+                              bgcolor: "#daa520",
+                              zIndex: "2",
+                              minHeight: "80px",
+                            }}
+                          >
+                            <Stack direction="column">
+                              <Box className="menu-item">
+                                <MenuItem
+                                  sx={new_event_menu_item_style}
+                                  onClick={() => {
+                                    setLocationType("in person");
+                                    handleClose(
+                                      setLocationTypeAnchor,
+                                      setLocationTypeOpen
+                                    );
+                                  }}
+                                >
+                                  <Stack direction="row" spacing={0}>
+                                    <Box sx={{ transform: "translateY(2px)" }}>
+                                      <ListItemDecorator>
+                                        <LocationOnOutlinedIcon fontSize="xs" />
+                                      </ListItemDecorator>
+                                    </Box>
+                                    <Box>In Person</Box>
+                                  </Stack>
+                                </MenuItem>
+                              </Box>
 
+                              <Box className="menu-item">
+                                <MenuItem
+                                  sx={new_event_menu_item_style}
+                                  endIcon={<VideoCameraFrontOutlinedIcon />}
+                                  onClick={() => {
+                                    setLocationType("Online");
+                                    handleClose(
+                                      setLocationTypeAnchor,
+                                      setLocationTypeOpen
+                                    );
+                                  }}
+                                >
+                                  <Stack direction="row" spacing={0}>
+                                    <Box sx={{ transform: "translateY(2px)" }}>
+                                      <ListItemDecorator>
+                                        <VideoCameraFrontOutlinedIcon fontSize="xs" />
+                                      </ListItemDecorator>
+                                    </Box>
+                                    <Box>Online</Box>
+                                  </Stack>
+                                </MenuItem>
+                              </Box>
+                            </Stack>
+                          </Box>
+                          <ListDivider />
+                        </Menu>
+                      </Box>
+
+                      {/* Location input */}
+                      <Box sx={{ width: "100%" }}>
+                        <StyledTextField
+                          sx={{ width: "100%" }}
+                          placeholder={
+                            locationType === "Online"
+                              ? "Meeting link"
+                              : "Location"
+                          }
+                        ></StyledTextField>
+                      </Box>
+                    </Stack>
+                  </Box>
+                </Box>
+
+                <Stack direction="row" spacing={3}>
+                  <Box className="w-100"></Box>
+                </Stack>
+              </Box>
               {/* Add new activity */}
               <Row className="d-flex flex-column mb-3">
                 <Col className="d-flex mt-4 mb-3 fs-2 fw-normal text-light justify-content-center">
@@ -883,7 +1076,6 @@ const CreateEvent = () => {
                   </Row>
                 </Col>
               </Row>
-
               {/* Description */}
               <StyledTextField
                 className="mt-3 mb-3 w-100 text-light"
@@ -902,9 +1094,7 @@ const CreateEvent = () => {
                   setDescription(e.target.value);
                 }}
               />
-
               {/* Social media links */}
-
               <Box className="mt-3">
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <ThemeProvider theme={submitButtonTheme}>
@@ -927,10 +1117,9 @@ const CreateEvent = () => {
                       </Button> */}
                   </ThemeProvider>
                   <Typography
-                  color="primary"
+                    color="#fcfdff"
                     variant="h5"
                     sx={{ transform: "translateX(-30px)" }}
-                    
                   >
                     Link social media
                   </Typography>
@@ -948,6 +1137,7 @@ const CreateEvent = () => {
                     setTitktok={setTiktok}
                     setTwitter={setTwitter}
                     setFacebook={setFacebook}
+                    setProfile={setCurrentProfile}
                     instagram={instagram}
                     tiktok={tiktok}
                     twitter={twitter}
@@ -955,7 +1145,6 @@ const CreateEvent = () => {
                   />
                 </Box>
               </Box>
-
               {/* Confirm */}
               <div className="d-flex justify-content-center">
                 <ThemeProvider theme={submitButtonTheme}>
@@ -1076,6 +1265,11 @@ const CreateEvent = () => {
                 setTiktok={setTiktok}
                 setTwitter={setTwitter}
                 setFacebook={setFacebook}
+                profile={currentProfile}
+                instagram={instagram}
+                tiktok={tiktok}
+                twitter={twitter}
+                facebook={facebook}
               />
             </Modal>
           </Container>

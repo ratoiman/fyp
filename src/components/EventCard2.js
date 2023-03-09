@@ -72,17 +72,6 @@ const EventCard2 = (props) => {
       setIsFollowing(false);
       setIsAdmin(false);
     }
-
-    //   if (found) {
-    //     setIsFollowing(true);
-    //     if (admin) {
-    //       setIsAdmin(true);
-    //     }
-    //   } else {
-    //     setIsFollowing(false);
-    //     setIsAdmin(false);
-    //   }
-    // });
   };
 
   const unfollow = () => {

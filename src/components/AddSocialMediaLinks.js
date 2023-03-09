@@ -41,52 +41,77 @@ const AddSocialMediaLinks = (props) => {
   useEffect(() => {
     if (props.instagram === "") {
       setDisableInsta(true);
+      setHoverInstaText("Instagram");
     } else {
       setDisableInsta(false);
+      setHoverInstaText(
+        props.instagram.match(
+          /(?:(?:http|https):\/\/)?(?:www.)?(?:instagram.com|instagr.am|instagr.com)\/(\w+)/
+        )[1]
+      );
     }
   }, [props.instagram]);
 
   useEffect(() => {
     if (props.facebook === "") {
       setDisableFacebook(true);
+      setHoverFacebookText("Facebook");
     } else {
       setDisableFacebook(false);
+      setHoverFacebookText(props.facebook.match(
+        /(?:(?:http|https):\/\/)?(?:www.)?(?:facebook.com)\/(\w+.+)/
+      )[1]);
     }
   }, [props.facebook]);
 
   useEffect(() => {
     if (props.tiktok === "") {
       setDisableTiktok(true);
+      setHoverTiktokText("TikTok");
     } else {
       setDisableTiktok(false);
+      setHoverTiktokText(
+        props.tiktok
+          .match(/(?:(?:http|https):\/\/)?(?:www.)?(?:tiktok.com)\/(@\w+)/)[1]
+          .replace("@", "")
+      );
     }
   }, [props.tiktok]);
 
   useEffect(() => {
-    if (props.twitter=== "") {
+    if (props.twitter === "") {
       setDisableTwitter(true);
+      setHoverTwitterText("Twitter");
     } else {
       setDisableTwitter(false);
+      setHoverTwitterText(
+        props.twitter.match(
+          /(?:(?:http|https):\/\/)?(?:www.)?(?:twitter.com)\/(\w+)/
+        )[1]
+      );
     }
   }, [props.twitter]);
 
   const handleInsta = () => {
     props.setOpenPopup(true);
     props.setPlatform("Instagram");
+    props.setProfile(props.instagram);
   };
   const handleTiktok = () => {
     props.setOpenPopup(true);
     props.setPlatform("TikTok");
+    props.setProfile(props.tiktok);
   };
   const handleTwitter = () => {
     props.setOpenPopup(true);
     props.setPlatform("Twitter");
+    props.setProfile(props.twitter);
   };
   const handleFacebook = () => {
     props.setOpenPopup(true);
     props.setPlatform("Facebook");
+    props.setProfile(props.facebook);
   };
-
 
   return (
     <>
@@ -110,10 +135,16 @@ const AddSocialMediaLinks = (props) => {
                   sx={new_event_social_media_button}
                   startIcon={<Instagram />}
                   onMouseEnter={() => {
-                    setHoverInstaText("Add link");
+                    props.instagram === ""
+                      ? setHoverInstaText("Add link")
+                      : setHoverInstaText("Edit link");
                   }}
                   onMouseLeave={() => {
-                    setHoverInstaText("Instagram");
+                    setHoverInstaText(
+                      props.instagram === ""
+                        ? "Instagram"
+                        : props.instagram.trim().split("/").at(-2)
+                    );
                   }}
                   onClick={handleInsta}
                 >
@@ -137,10 +168,16 @@ const AddSocialMediaLinks = (props) => {
                   sx={new_event_social_media_button}
                   startIcon={<Tiktok />}
                   onMouseEnter={() => {
-                    setHoverTiktokText("Add link");
+                    props.tiktok === ""
+                      ? setHoverTiktokText("Add link")
+                      : setHoverTiktokText("Edit link");
                   }}
                   onMouseLeave={() => {
-                    setHoverTiktokText("TikTok");
+                    setHoverTiktokText(
+                      props.tiktok === ""
+                        ? "TikTok"
+                        : props.tiktok.trim().split("/").at(-1).replace("@", "")
+                    );
                   }}
                   onClick={handleTiktok}
                 >
@@ -153,23 +190,29 @@ const AddSocialMediaLinks = (props) => {
               <Box
                 sx={
                   isMobile
-                    ? props.twitter=== ""
+                    ? props.twitter === ""
                       ? new_event_social_media_inner_box_mobile_disabled
                       : new_event_social_media_inner_box_mobile
-                    : props.twitter=== ""
+                    : props.twitter === ""
                     ? new_event_social_media_inner_box_disabled
                     : new_event_social_media_inner_box
                 }
               >
                 <Button
-                  color={props.twitter=== "" ? "disabled" : "primary"}
+                  color={props.twitter === "" ? "disabled" : "primary"}
                   sx={new_event_social_media_button}
                   startIcon={<Twitter />}
                   onMouseEnter={() => {
-                    setHoverTwitterText("Add link");
+                    props.twitter === ""
+                      ? setHoverTwitterText("Add link")
+                      : setHoverTwitterText("Edit link");
                   }}
                   onMouseLeave={() => {
-                    setHoverTwitterText("Twitter");
+                    setHoverTwitterText(
+                      props.twitter === ""
+                        ? "Twitter"
+                        : props.twitter.trim().split("/").at(-1)
+                    );
                   }}
                   onClick={handleTwitter}
                 >
@@ -192,10 +235,16 @@ const AddSocialMediaLinks = (props) => {
                   sx={new_event_social_media_button}
                   startIcon={<Facebook />}
                   onMouseEnter={() => {
-                    setHoverFacebookText("Add link");
+                    props.facebook === ""
+                      ? setHoverFacebookText("Add link")
+                      : setHoverFacebookText("Edit link");
                   }}
                   onMouseLeave={() => {
-                    setHoverFacebookText("Facebook");
+                    setHoverFacebookText(
+                      props.facebook === ""
+                        ? "Facebook"
+                        : props.facebook.trim().split("/").at(-1)
+                    );
                   }}
                   onClick={handleFacebook}
                 >
@@ -205,7 +254,6 @@ const AddSocialMediaLinks = (props) => {
             </Box>
           </Grid>
         </ThemeProvider>
-
       </Box>
     </>
   );

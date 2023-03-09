@@ -64,8 +64,23 @@ export const linkPopupStyle = {
   // display:"flex",
   // justifyContent:"center",
   top: "40%",
-  left: "5%",
-  width: "90%",
+  left: "34.5%",
+  width: "30%",
+  bgcolor: "black",
+  border: "2px solid #DAA520",
+  boxShadow: 24,
+  pt: 1,
+  pb: 2,
+  px: 2,
+};
+
+export const linkPopupStyleMobile = {
+  position: "absolute",
+  // display:"flex",
+  // justifyContent:"center",
+  top: "40%",
+  // left: "34.5%",
+  width: "95%",
   bgcolor: "black",
   border: "2px solid #DAA520",
   boxShadow: 24,
@@ -123,6 +138,10 @@ export const submitButtonTheme = createTheme({
     },
     secondary: {
       main: "#ff3333",
+      contrastText: "#FFF",
+    },
+    disabled: {
+      main: "#777a78",
       contrastText: "#FFF",
     },
   },
