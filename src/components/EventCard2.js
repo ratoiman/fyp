@@ -29,6 +29,7 @@ import { db } from "../utils/firebase";
 import { onSnapshot } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import ConfirmAction from "./ConfirmAction";
+import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 
 const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
@@ -100,8 +101,6 @@ const EventCard2 = (props) => {
     getFollowStatus();
   }, [userEvents]);
 
-  // console.log(props.title, " ", isAdmin);
-
   if (eventPageLoad === false) {
     return (
       <>
@@ -126,8 +125,6 @@ const EventCard2 = (props) => {
                 sx={{
                   minWidth: "100%",
                   display: "flex",
-                  // justifyContent: "right",
-                  // backgroundColor: "green",
                 }}
               >
                 {" "}
@@ -137,7 +134,16 @@ const EventCard2 = (props) => {
                       variant="h7"
                       sx={{ color: "rgb(173, 173, 173)", paddingRight: "20%" }}
                     >
-                      created by {props.author}
+                      {props.locationDisplayName === undefined &&
+                      props.locationString === undefined ? (
+                        <></>
+                      ) : (
+                        <LocationOnOutlinedIcon />
+                      )}
+                      
+                      {props.locationDisplayName === ""
+                        ? props.locationString
+                        : props.locationDisplayName}{" "}
                     </Typography>
                   </Box>
                   <Box>

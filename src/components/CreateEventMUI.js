@@ -41,7 +41,8 @@ import AddSocialMediaLinks from "./AddSocialMediaLinks";
 import AddSocialMediaLinkPopover from "./AddSocialMediaLinkPopover";
 import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-// TODO add a section to link social media accounts when creating an event
+import PlacesAutocomplete from "./PlacesAutocomplete";
+
 const CreateEvent = () => {
   // const [error, setError] = useState("");
   const [title, setTitle] = useState("");
@@ -125,8 +126,10 @@ const CreateEvent = () => {
   const [locationType, setLocationType] = useState("in person");
   const [locationTypeAnchor, setLocationTypeAnchor] = useState(null);
   const [locationTypeOpen, setLocationTypeOpen] = useState(false);
+  const [locationString, setLocationString] = useState("");
   const [displayLocation, setDisplayLocation] = useState(true);
-  const [marker, setMarker] = useState("")
+  const [marker, setMarker] = useState("");
+  const [locationDisplayName, setLocationDisplayName] = useState("");
 
   // Social media links
   const [instagram, setInstagram] = useState("");
@@ -432,6 +435,9 @@ const CreateEvent = () => {
           tiktok: tiktok,
           twitter: twitter,
           facebook: facebook,
+          location_string: locationString,
+          location_display_name: locationDisplayName,
+          marker: marker,
         }).then(async function () {
           activities.map(async (activity) => {
             const activitiesRef = doc(
@@ -513,6 +519,7 @@ const CreateEvent = () => {
                   setTitle(e.target.value);
                 }}
               />
+
               {/* Event Subtitle */}
               <StyledTextField
                 className="mt-3 mb-3 w-100 text-light"
@@ -525,6 +532,7 @@ const CreateEvent = () => {
                   setSubtitle(e.target.value);
                 }}
               />
+
               {/* Date and time picker */}
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <Row className="mt-2 mb-3">
@@ -628,6 +636,7 @@ const CreateEvent = () => {
                   </Col>
                 </Row>
               </LocalizationProvider>
+
               {/* End date and time */}
               <ThemeProvider theme={submitButtonTheme}>
                 <Button
@@ -647,7 +656,7 @@ const CreateEvent = () => {
                   End date and time
                 </Button>
               </ThemeProvider>
-              {/* //TODO add event location (add option to select if event is in person or virtual) */}
+
               {/* Event privacy and category*/}
               <Box className="mt-3">
                 <Stack direction="row" spacing={3}>
@@ -689,6 +698,7 @@ const CreateEvent = () => {
                         // minHeight: "150px",
                         fontWeight: "600",
                         "--List-decorator-size": "24px",
+                        borderStyle: "none",
                       }}
                     >
                       <Box
@@ -780,6 +790,7 @@ const CreateEvent = () => {
                           justifyContent: "center",
                           fontWeight: "600",
                           "--List-decorator-size": "24px",
+                          borderStyle: "none",
                         }}
                       >
                         <Box
@@ -820,6 +831,7 @@ const CreateEvent = () => {
                   </Box>
                 </Stack>
               </Box>
+
               {/* Event location */}
               <Box
                 className="mt-3"
@@ -855,10 +867,12 @@ const CreateEvent = () => {
                       {/* See
                       </Button> */}
                     </ThemeProvider>
+
                     <Typography color="white" variant="h5">
                       Location
                     </Typography>
                   </Box>
+
                   {/* Location and loccation type */}
                   <Box display={displayLocation === true ? "" : "none"}>
                     <Stack direction="row">
@@ -914,6 +928,7 @@ const CreateEvent = () => {
                             // minHeight: "150px",
                             fontWeight: "600",
                             "--List-decorator-size": "24px",
+                            borderStyle: "none",
                           }}
                         >
                           <Box
@@ -978,29 +993,27 @@ const CreateEvent = () => {
                       </Box>
 
                       {/* Location input */}
-                      <Box sx={{ width: "100%" }}>
-                        <StyledTextField
-                          sx={{ width: "100%" }}
-                          placeholder={
-                            locationType === "Online"
-                              ? "Meeting link"
-                              : "Location"
-                          }
-                        ></StyledTextField>
-                      </Box>
+                      <PlacesAutocomplete
+                        locationDisplayName={locationDisplayName}
+                        setLocationDisplayName={setLocationDisplayName}
+                        locationString={locationString}
+                        setLocationString={setLocationString}
+                        marker={marker}
+                        setMarker={setMarker}
+                      />
                     </Stack>
 
                     {/* Map integration */}
-                    <Box>
-                      <GoogleMapsIntegration setMarker={setMarker} marker={marker} />
+                    <Box display={locationType === "Online" ? "none" : ""}>
+                      <GoogleMapsIntegration
+                        setMarker={setMarker}
+                        marker={marker}
+                      />
                     </Box>
                   </Box>
                 </Box>
-
-                <Stack direction="row" spacing={3}>
-                  <Box className="w-100"></Box>
-                </Stack>
               </Box>
+
               {/* Add new activity */}
               <Row className="d-flex flex-column mb-3">
                 <Col className="d-flex mt-4 mb-3 fs-2 fw-normal text-light justify-content-center">
@@ -1078,6 +1091,7 @@ const CreateEvent = () => {
                   </Row>
                 </Col>
               </Row>
+
               {/* Description */}
               <StyledTextField
                 className="mt-3 mb-3 w-100 text-light"
@@ -1096,6 +1110,7 @@ const CreateEvent = () => {
                   setDescription(e.target.value);
                 }}
               />
+
               {/* Social media links */}
               <Box className="mt-3">
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -1147,6 +1162,7 @@ const CreateEvent = () => {
                   />
                 </Box>
               </Box>
+
               {/* Confirm */}
               <div className="d-flex justify-content-center">
                 <ThemeProvider theme={submitButtonTheme}>
@@ -1168,6 +1184,7 @@ const CreateEvent = () => {
               </div>
             </Box>
 
+            {/* New activity popout */}
             <Modal
               sx={{ overflow: "auto" }}
               open={newActivityPopout}
@@ -1259,6 +1276,7 @@ const CreateEvent = () => {
               </Box>
             </Modal>
 
+            {/* Add social media link popout */}
             <Modal sx={{ overflow: "auto" }} open={openPopup}>
               <AddSocialMediaLinkPopover
                 platform={platform}
