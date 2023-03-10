@@ -130,6 +130,7 @@ const CreateEvent = () => {
   const [displayLocation, setDisplayLocation] = useState(true);
   const [marker, setMarker] = useState("");
   const [locationDisplayName, setLocationDisplayName] = useState("");
+  const [meetLink, setMeetLink] = useState("");
 
   // Social media links
   const [instagram, setInstagram] = useState("");
@@ -437,7 +438,9 @@ const CreateEvent = () => {
           facebook: facebook,
           location_string: locationString,
           location_display_name: locationDisplayName,
+          location_type: locationType,
           marker: marker,
+          meet_link: meetLink,
         }).then(async function () {
           activities.map(async (activity) => {
             const activitiesRef = doc(
@@ -993,14 +996,25 @@ const CreateEvent = () => {
                       </Box>
 
                       {/* Location input */}
-                      <PlacesAutocomplete
-                        locationDisplayName={locationDisplayName}
-                        setLocationDisplayName={setLocationDisplayName}
-                        locationString={locationString}
-                        setLocationString={setLocationString}
-                        marker={marker}
-                        setMarker={setMarker}
-                      />
+                      {locationType === "Online" ? (
+                        <>
+                          <StyledTextField
+                            placeholder="Meeting link"
+                            sx={{ width: "100%" }}
+                            value={meetLink}
+                            onChange={(e) => setMeetLink(e.target.value)}
+                          ></StyledTextField>
+                        </>
+                      ) : (
+                        <PlacesAutocomplete
+                          locationDisplayName={locationDisplayName}
+                          setLocationDisplayName={setLocationDisplayName}
+                          locationString={locationString}
+                          setLocationString={setLocationString}
+                          marker={marker}
+                          setMarker={setMarker}
+                        />
+                      )}
                     </Stack>
 
                     {/* Map integration */}
