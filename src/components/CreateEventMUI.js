@@ -54,26 +54,33 @@ const CreateEvent = () => {
   const [currentDate, setCurrentDate] = useState("");
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
-  const [startDate, setStartDate] = useState(null);
-  const [startTime, setStartTime] = useState(null);
-  const [endDate, setEndDate] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [formattedStartTime, setFormattedStartTime] = useState(null);
-  const [formattedStartDate, setFormattedStartDate] = useState(null);
-  const [formattedEndTime, setFormattedEndTime] = useState(null);
-  const [formattedEndDate, setFormattedEndDate] = useState(null);
+  const [startDate, setStartDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [formattedStartTime, setFormattedStartTime] = useState("");
+  const [formattedStartDate, setFormattedStartDate] = useState("");
+  const [formattedEndTime, setFormattedEndTime] = useState("");
+  const [formattedEndDate, setFormattedEndDate] = useState("");
 
   // store data from the latest new activity (in case user didn't finish editing, so nothing will be lost)
   const [newActivityPopout, setNewActivityPopout] = useState(false);
   const [activityID, setActivityID] = useState(null);
   const [activityTitle, setActivityTitle] = useState(null);
-  const [activityStartDate, setActivityStartDate] = useState(null);
-  const [activityStartTime, setActivityStartTime] = useState(null);
-  const [activityEndDate, setActivityEndDate] = useState(null);
-  const [activityEndTime, setActivityEndTime] = useState(null);
+  const [activityStartDate, setActivityStartDate] = useState("");
+  const [activityStartTime, setActivityStartTime] = useState("");
+  const [activityEndDate, setActivityEndDate] = useState("");
+  const [activityEndTime, setActivityEndTime] = useState("");
   const [activityDescription, setActivityDescription] = useState(null);
   const [activityExpandDate, setActivityExpandDate] = useState(false);
   const [activityShowEndDate, setActivityShowEndDate] = useState("d-none");
+
+  const [activityLocationType, setActivityLocationType] = useState("");
+  const [activityLocationString, setActivityLocationString] = useState("");
+  const [activityLocationDisplayName, setActivityLocationDisplayName] =
+    useState("");
+  const [activityMarker, setActivityMarker] = useState("");
+  const [activityMeetLink, setActivityMeetLink] = useState("");
 
   const [activities, setActivities] = useState([]);
   const [displayActivities, setDisplayActivities] = useState(true);
@@ -83,14 +90,21 @@ const CreateEvent = () => {
   const [editActivityPopout, setEditActivityPopout] = useState(false);
   const [editActivityID, setEditActivityID] = useState(null);
   const [editActivityTitle, setEditActivityTitle] = useState(null);
-  const [editActivityStartDate, setEditActivityStartDate] = useState(null);
-  const [editActivityStartTime, setEditActivityStartTime] = useState(null);
-  const [editActivityEndDate, setEditActivityEndDate] = useState(null);
-  const [editActivityEndTime, setEditActivityEndTime] = useState(null);
+  const [editActivityStartDate, setEditActivityStartDate] = useState("");
+  const [editActivityStartTime, setEditActivityStartTime] = useState("");
+  const [editActivityEndDate, setEditActivityEndDate] = useState("");
+  const [editActivityEndTime, setEditActivityEndTime] = useState("");
   const [editActivityDescription, setEditActivityDescription] = useState(null);
   const [editActivityExpandDate, setEditActivityExpandDate] = useState(false);
   const [editActivityShowEndDate, setEditActivityShowEndDate] =
     useState("d-none");
+  const [editActivityLocationType, setEditActivityLocationType] = useState("");
+  const [editActivityLocationString, setEditActivityLocationString] =
+    useState("");
+  const [editActivityLocationDisplayName, setEditActivityLocationDisplayName] =
+    useState("");
+  const [editActivityMarker, setEditActivityMarker] = useState("");
+  const [editActivityMeetLink, setEditActivityMeetLink] = useState("");
 
   // error and validation handling
 
@@ -280,6 +294,40 @@ const CreateEvent = () => {
     }
   };
 
+  // Checking if all online activities have the correct location
+  const checkLocation = () => {
+    // Checking if all activities that have location as "Same as event" have accurate locations
+    activities.map((activity) => {
+      if (activity.locationType === "Same as event") {
+        if (locationType === "Online") {
+          activity.locationString = "";
+          activity.marker = "";
+          activity.locationDisplayName = "";
+          activity.meetLink = meetLink;
+        } else {
+          activity.locationString = locationString;
+          activity.marker = marker;
+          activity.locationDisplayName = locationDisplayName;
+          activity.meetLink = "";
+        }
+      }
+
+      // Checking if all online activities have the correct location
+      if (activity.locationType === "Online") {
+        activity.locationString = "";
+        activity.marker = "";
+        activity.locationDisplayName = "";
+      }
+    });
+
+    // Checking if event location corresponds with location type
+    if (locationType === "Online") {
+      setLocationString("");
+      setMarker("");
+      setLocationDisplayName("");
+    }
+  };
+
   const newActivity = () => {
     setNewActivityPopout(!newActivityPopout);
   };
@@ -357,6 +405,10 @@ const CreateEvent = () => {
     getCurrentDate();
   }, [startDate, startTime, endDate, endTime]);
 
+  useEffect(() => {
+    checkLocation();
+  }, [locationString, locationType, locationDisplayName]);
+
   const handlePrivacyClick = (event) => {
     setAnchorEl(event.currentTarget);
     setOpen(!open);
@@ -381,6 +433,7 @@ const CreateEvent = () => {
     checkDateAndTime();
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
+    checkLocation();
 
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
@@ -459,6 +512,11 @@ const CreateEvent = () => {
               end_time: activity.endTime,
               description: activity.description,
               id: activity.id,
+              location_string: activity.locationString,
+              location_display_name: activity.locationDisplayName,
+              location_type: activity.locationType,
+              marker: activity.marker,
+              meet_link: activity.meetLink,
             });
           });
         });
@@ -480,6 +538,7 @@ const CreateEvent = () => {
     }
   };
 
+  console.log("Location type ", activityLocationType);
   return (
     <>
       <Box
@@ -490,8 +549,8 @@ const CreateEvent = () => {
         }
       >
         <Container
-          className="card p-4 box mt-4  square rounded-9 border bg-dark border-2"
-          style={{ width: "100%" }}
+          className="card p-4 box mt-4  square rounded-9 border border-2"
+          style={{ width: "100%", backgroundColor: "#161616" }}
         >
           <Row>
             <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
@@ -836,12 +895,13 @@ const CreateEvent = () => {
               {isMobile ? (
                 <>
                   <Box
-                    className="mt-3"
+                    // className="mt-3"
                     sx={{
-                      // justifyContent: "center",
+                      width: "100%",
+                      justifyContent: "center",
                       // display: "flex",
-                      marginBottom: 3,
-                      marginTop: 3,
+                      // marginBottom: 3,
+                      // marginTop: 3,
                     }}
                   >
                     <Box>
@@ -866,137 +926,141 @@ const CreateEvent = () => {
                             }
                             onClick={() => setDisplayLocation(!displayLocation)}
                           />
-                          {/* See
-                      </Button> */}
                         </ThemeProvider>
 
-                        <Typography color="white" variant="h5">
+                        <Typography
+                          color="white"
+                          variant="h5"
+                          sx={{ marginTop: "3%" }}
+                        >
                           Location
                         </Typography>
+
+                        <Box sx={{ width: "20%" }}>
+                          <ThemeProvider theme={submitButtonTheme}>
+                            <Button
+                              aria-controls={
+                                locationTypeOpen ? "group-menu" : undefined
+                              }
+                              aria-haspopup="true"
+                              aria-expanded={
+                                locationTypeOpen ? "true" : undefined
+                              }
+                              variant="text"
+                              color="primary"
+                              onClick={handleLocationTypeClick}
+                              endIcon={<ArrowDropDown />}
+                              startIcon={
+                                locationType === "Online" ? (
+                                  <VideoCameraFrontOutlinedIcon
+                                    sx={{ width: "20px" }}
+                                  />
+                                ) : (
+                                  <LocationOnOutlinedIcon
+                                    sx={{ width: "20px" }}
+                                  />
+                                )
+                              }
+                              sx={{
+                                marginLeft: "40%",
+                                width: "100px",
+                                height: "56px",
+                                fontWeight: "500",
+                                letterSpacing: "1.5px",
+                              }}
+                            >
+                              {locationType}
+                            </Button>
+                          </ThemeProvider>
+                          <Menu
+                            id="group-menu"
+                            anchorEl={locationTypeAnchor}
+                            open={locationTypeOpen}
+                            onClose={() =>
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              )
+                            }
+                            aria-labelledby="group-demo-button"
+                            sx={{
+                              minWidth: "120px",
+                              // minHeight: "150px",
+                              fontWeight: "600",
+                              "--List-decorator-size": "24px",
+                              borderStyle: "none",
+                            }}
+                          >
+                            <Box
+                              sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                borderRadius: "25px",
+                                bgcolor: "#daa520",
+                                zIndex: "2",
+                                minHeight: "80px",
+                              }}
+                            >
+                              <Stack direction="column">
+                                <Box className="menu-item">
+                                  <MenuItem
+                                    sx={new_event_menu_item_style}
+                                    onClick={() => {
+                                      setLocationType("in person");
+                                      handleClose(
+                                        setLocationTypeAnchor,
+                                        setLocationTypeOpen
+                                      );
+                                    }}
+                                  >
+                                    <Stack direction="row" spacing={0}>
+                                      <Box
+                                        sx={{ transform: "translateY(2px)" }}
+                                      >
+                                        <ListItemDecorator>
+                                          <LocationOnOutlinedIcon fontSize="xs" />
+                                        </ListItemDecorator>
+                                      </Box>
+                                      <Box>In Person</Box>
+                                    </Stack>
+                                  </MenuItem>
+                                </Box>
+
+                                <Box className="menu-item">
+                                  <MenuItem
+                                    sx={new_event_menu_item_style}
+                                    endIcon={<VideoCameraFrontOutlinedIcon />}
+                                    onClick={() => {
+                                      setLocationType("Online");
+                                      handleClose(
+                                        setLocationTypeAnchor,
+                                        setLocationTypeOpen
+                                      );
+                                    }}
+                                  >
+                                    <Stack direction="row" spacing={0}>
+                                      <Box
+                                        sx={{ transform: "translateY(2px)" }}
+                                      >
+                                        <ListItemDecorator>
+                                          <VideoCameraFrontOutlinedIcon fontSize="xs" />
+                                        </ListItemDecorator>
+                                      </Box>
+                                      <Box>Online</Box>
+                                    </Stack>
+                                  </MenuItem>
+                                </Box>
+                              </Stack>
+                            </Box>
+                            <ListDivider />
+                          </Menu>
+                        </Box>
                       </Box>
 
                       {/* Location and loccation type */}
                       <Box display={displayLocation === true ? "" : "none"}>
                         <Stack direction="row">
                           {/* Location type */}
-                          <Box className="">
-                            <ThemeProvider theme={submitButtonTheme}>
-                              <Button
-                                aria-controls={
-                                  locationTypeOpen ? "group-menu" : undefined
-                                }
-                                aria-haspopup="true"
-                                aria-expanded={
-                                  locationTypeOpen ? "true" : undefined
-                                }
-                                variant="text"
-                                color="primary"
-                                onClick={handleLocationTypeClick}
-                                endIcon={<ArrowDropDown />}
-                                startIcon={
-                                  locationType === "Online" ? (
-                                    <VideoCameraFrontOutlinedIcon
-                                      sx={{ width: "20px" }}
-                                    />
-                                  ) : (
-                                    <LocationOnOutlinedIcon
-                                      sx={{ width: "20px" }}
-                                    />
-                                  )
-                                }
-                                sx={{
-                                  width: "190px",
-                                  height: "56px",
-                                  fontWeight: "500",
-                                  letterSpacing: "1.5px",
-                                }}
-                              >
-                                {locationType}
-                              </Button>
-                            </ThemeProvider>
-                            <Menu
-                              id="group-menu"
-                              anchorEl={locationTypeAnchor}
-                              open={locationTypeOpen}
-                              onClose={() =>
-                                handleClose(
-                                  setLocationTypeAnchor,
-                                  setLocationTypeOpen
-                                )
-                              }
-                              aria-labelledby="group-demo-button"
-                              sx={{
-                                minWidth: "120px",
-                                // minHeight: "150px",
-                                fontWeight: "600",
-                                "--List-decorator-size": "24px",
-                                borderStyle: "none",
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  borderRadius: "25px",
-                                  bgcolor: "#daa520",
-                                  zIndex: "2",
-                                  minHeight: "80px",
-                                }}
-                              >
-                                <Stack direction="column">
-                                  <Box className="menu-item">
-                                    <MenuItem
-                                      sx={new_event_menu_item_style}
-                                      onClick={() => {
-                                        setLocationType("in person");
-                                        handleClose(
-                                          setLocationTypeAnchor,
-                                          setLocationTypeOpen
-                                        );
-                                      }}
-                                    >
-                                      <Stack direction="row" spacing={0}>
-                                        <Box
-                                          sx={{ transform: "translateY(2px)" }}
-                                        >
-                                          <ListItemDecorator>
-                                            <LocationOnOutlinedIcon fontSize="xs" />
-                                          </ListItemDecorator>
-                                        </Box>
-                                        <Box>In Person</Box>
-                                      </Stack>
-                                    </MenuItem>
-                                  </Box>
-
-                                  <Box className="menu-item">
-                                    <MenuItem
-                                      sx={new_event_menu_item_style}
-                                      endIcon={<VideoCameraFrontOutlinedIcon />}
-                                      onClick={() => {
-                                        setLocationType("Online");
-                                        handleClose(
-                                          setLocationTypeAnchor,
-                                          setLocationTypeOpen
-                                        );
-                                      }}
-                                    >
-                                      <Stack direction="row" spacing={0}>
-                                        <Box
-                                          sx={{ transform: "translateY(2px)" }}
-                                        >
-                                          <ListItemDecorator>
-                                            <VideoCameraFrontOutlinedIcon fontSize="xs" />
-                                          </ListItemDecorator>
-                                        </Box>
-                                        <Box>Online</Box>
-                                      </Stack>
-                                    </MenuItem>
-                                  </Box>
-                                </Stack>
-                              </Box>
-                              <ListDivider />
-                            </Menu>
-                          </Box>
 
                           {/* Location input */}
                           {locationType === "Online" ? (
@@ -1342,6 +1406,15 @@ const CreateEvent = () => {
                         setActivityDescription={setEditActivityDescription}
                         setActivityExpandDate={setEditActivityExpandDate}
                         setActivityShowEndDate={setEditActivityShowEndDate}
+                        setActivityLocationType={setEditActivityLocationType}
+                        setActivityLocationDisplayName={
+                          setEditActivityLocationDisplayName
+                        }
+                        setActivityLocationString={
+                          setEditActivityLocationString
+                        }
+                        setActivityMarker={setEditActivityMarker}
+                        setActivityMeetLink={setEditActivityMeetLink}
                         activities={activities}
                         editActivityID={editActivityID}
                       />
@@ -1482,6 +1555,18 @@ const CreateEvent = () => {
                   setActivityExpandDate={setActivityExpandDate}
                   setActivityShowEndDate={setActivityShowEndDate}
                   setActivityID={setActivityID}
+                  setActivityLocationType={setActivityLocationType}
+                  setActivityLocationString={setActivityLocationString}
+                  setActivityLocationDisplayName={
+                    setActivityLocationDisplayName
+                  }
+                  setActivityMarker={setActivityMarker}
+                  setActivityMeetLink={setActivityMeetLink}
+                  activityLocationType={activityLocationType}
+                  activityLocationString={activityLocationString}
+                  activityLocationDisplayName={activityLocationDisplayName}
+                  activityMarker={activityMarker}
+                  activityMeetLink={activityMeetLink}
                   activityTitle={activityTitle}
                   activityStartDate={activityStartDate}
                   activityStartTime={activityStartTime}
@@ -1533,6 +1618,18 @@ const CreateEvent = () => {
                   setActivityExpandDate={setEditActivityExpandDate}
                   setActivityShowEndDate={setEditActivityShowEndDate}
                   setActivityID={setEditActivityID}
+                  setActivityLocationType={setEditActivityLocationType}
+                  setActivityLocationString={setEditActivityLocationString}
+                  setActivityLocationDisplayName={
+                    setEditActivityLocationDisplayName
+                  }
+                  setActivityMarker={setEditActivityMarker}
+                  setActivityMeetLink={setEditActivityMeetLink}
+                  activityLocationType={editActivityLocationType}
+                  activityLocationString={editActivityLocationString}
+                  activityLocationDisplayName={editActivityLocationDisplayName}
+                  activityMarker={editActivityMarker}
+                  activityMeetLink={editActivityMeetLink}
                   activityTitle={editActivityTitle}
                   activityStartDate={editActivityStartDate}
                   activityStartTime={editActivityStartTime}

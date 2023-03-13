@@ -57,6 +57,11 @@ const NewEventActivityCard = (props) => {
     props.setActivityExpandDate("d-none");
     props.setActivityShowEndDate("");
     props.setTrigger(true);
+    props.setActivityLocationType(actArr.locationType);
+    props.setActivityLocationString(actArr.locationString);
+    props.setActivityLocationDisplayName(actArr.locationDisplayName);
+    props.setActivityMarker(actArr.marker);
+    props.setActivityMeetLink(actArr.meetLink);
   };
 
   useEffect(() => {

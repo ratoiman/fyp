@@ -51,7 +51,7 @@ export const popupStyle = {
   top: "9%",
   left: "21%",
   width: "58%",
-  bgcolor: "black",
+  bgcolor: "#161616",
   border: "2px solid #DAA520",
   boxShadow: 24,
   pt: 1,
@@ -90,7 +90,8 @@ export const linkPopupStyleMobile = {
 };
 
 export const popupStyleMobile = {
-  position: "inherit",
+  overflow: "scroll",
+  position: "absolute",
   // display: "flex",
   justifyContent: "center",
   top: "9%",
@@ -409,3 +410,20 @@ export const deleteLocationStyle3 = {
   borderTopLeftRadius: "3px",
   height: "56px",
 };
+
+export const deleteLocationStyleMobile = {
+  // display: "flex",
+  justifyContent: "center",
+  width: "15%",
+  borderTop: "solid",
+  borderBottom: "solid",
+  borderLeft: "solid",
+  borderRight: "solid",
+  borderWidth: "1px",
+  borderColor: "gray",
+  borderBottomLeftRadius: "3px",
+  borderTopLeftRadius: "3px",
+  height: "56px",
+};
+
+

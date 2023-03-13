@@ -18,6 +18,7 @@ import {
   submitButtonTheme,
   new_event_menu_item_style,
   deleteLocationStyle3,
+  deleteLocationStyleMobile,
 } from "../ui_styles/MuiStyles";
 import { v4 as uuid } from "uuid";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -34,6 +35,9 @@ import ListDivider from "@mui/joy/ListDivider";
 import CheckCircleOutlineOutlinedIcon from "@mui/icons-material/CheckCircleOutlineOutlined";
 import PlacesAutocomplete from "./PlacesAutocomplete";
 import GoogleMapsIntegration from "./GoogleMapsIntegration";
+import { isMobile } from "react-device-detect";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 const AddNewActivity = (props) => {
   // Format event dates to MM/DD/YYYY so they can be passed to DatePicker as default values
@@ -71,16 +75,16 @@ const AddNewActivity = (props) => {
   const [description, setDescription] = useState(props.activityDescription);
 
   const [startDate, setStartDate] = useState(props.activityStartDate);
-  const [formattedStartDate, setFormattedStartDate] = useState(null);
+  const [formattedStartDate, setFormattedStartDate] = useState("");
 
   const [startTime, setStartTime] = useState(props.activityStartTime);
-  const [formattedStartTime, setFormattedStartTime] = useState(null);
+  const [formattedStartTime, setFormattedStartTime] = useState("");
 
   const [endDate, setEndDate] = useState(props.activityEndDate);
-  const [formattedEndDate, setFormattedEndDate] = useState(null);
+  const [formattedEndDate, setFormattedEndDate] = useState("");
 
   const [endTime, setEndTime] = useState(props.activityEndTime);
-  const [formattedEndTime, setFormattedEndTime] = useState(null);
+  const [formattedEndTime, setFormattedEndTime] = useState("");
 
   const [expandDate, setExpandDate] = useState(props.activityExpandDate);
   const [showEndDate, setShowEndDate] = useState(props.activityShowEndDate);
@@ -107,14 +111,18 @@ const AddNewActivity = (props) => {
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
 
   // Location variables
-  const [locationType, setLocationType] = useState("Same as event");
+  const [locationType, setLocationType] = useState(props.activityLocationType);
   const [locationTypeAnchor, setLocationTypeAnchor] = useState(null);
   const [locationTypeOpen, setLocationTypeOpen] = useState(false);
-  const [locationString, setLocationString] = useState("");
+  const [locationString, setLocationString] = useState(
+    props.activityLocationString
+  );
   const [displayLocation, setDisplayLocation] = useState(true);
-  const [marker, setMarker] = useState("");
-  const [locationDisplayName, setLocationDisplayName] = useState("");
-  const [meetLink, setMeetLink] = useState("");
+  const [marker, setMarker] = useState(props.activityMarker);
+  const [locationDisplayName, setLocationDisplayName] = useState(
+    props.activityLocationDisplayName
+  );
+  const [meetLink, setMeetLink] = useState(props.activityMeetLink);
 
   // const [isDateAndTimeValid, setIsDateAndTimeValid] = useState(false);
 
@@ -289,7 +297,7 @@ const AddNewActivity = (props) => {
     }
     activityDetails.startTime = formattedStartTime;
     activityDetails.endDate = formattedEndDate;
-    if (endDate !== null) {
+    if (endDate !== null && endDate !== "") {
       if (endDate["$d"] !== undefined) {
         activityDetails.end_date_day = endDate["$d"].toString().split(" ")[0];
 
@@ -299,6 +307,9 @@ const AddNewActivity = (props) => {
 
         activityDetails.end_date_month = endDate.toString().split(" ")[1];
       }
+    } else {
+      activityDetails.end_date_day = "";
+      activityDetails.end_date_month = "";
     }
     activityDetails.endTime = formattedEndTime;
     activityDetails.description = description;
@@ -318,10 +329,10 @@ const AddNewActivity = (props) => {
       props.activityID === null
     ) {
       props.setActivityTitle("");
-      props.setActivityStartDate(null);
-      props.setActivityStartTime(null);
-      props.setActivityEndDate(null);
-      props.setActivityEndTime(null);
+      props.setActivityStartDate("");
+      props.setActivityStartTime("");
+      props.setActivityEndDate("");
+      props.setActivityEndTime("");
       props.setActivityDescription("");
       props.setActivityExpandDate("");
       props.setActivityShowEndDate("d-none");
@@ -329,10 +340,10 @@ const AddNewActivity = (props) => {
     } else {
       if (props.activityID.length > 1) {
         props.setActivityTitle("");
-        props.setActivityStartDate(null);
-        props.setActivityStartTime(null);
-        props.setActivityEndDate(null);
-        props.setActivityEndTime(null);
+        props.setActivityStartDate("");
+        props.setActivityStartTime("");
+        props.setActivityEndDate("");
+        props.setActivityEndTime("");
         props.setActivityDescription("");
         props.setActivityExpandDate("");
         props.setActivityShowEndDate("d-none");
@@ -348,6 +359,10 @@ const AddNewActivity = (props) => {
   };
 
   const setLocationDefault = () => {
+    if (locationType === "") {
+      setLocationType("Same as event");
+    }
+
     if (locationType === "Same as event") {
       if (props.eventLocationType === "online") {
         setMeetLink(props.eventMeetLink);
@@ -368,7 +383,11 @@ const AddNewActivity = (props) => {
           setLocationDisplayName(props.locationDisplayName);
         }
 
-        setMarker(props.eventMarker);
+        if (props.marker === undefined || props.marker === "") {
+          setMarker("");
+        } else {
+          setMarker(props.eventMarker);
+        }
       }
     }
   };
@@ -419,6 +438,16 @@ const AddNewActivity = (props) => {
     setOpen(false);
   };
 
+  const handleCloseModal = () => {
+    console.log("Props ", locationType);
+    props.setActivityLocationType(locationType);
+    props.setActivityLocationString(locationString);
+    props.setActivityLocationDisplayName(locationDisplayName);
+    props.setActivityMarker(marker);
+    props.setActivityMeetLink(meetLink);
+    props.setTrigger(false);
+  };
+
   const handleSubmit = () => {
     saveActivity();
 
@@ -450,7 +479,6 @@ const AddNewActivity = (props) => {
   };
 
   // console.log("ID ", activityDetails.id === undefined );
-
   return props.trigger ? (
     <>
       <div className="close-button">
@@ -458,7 +486,7 @@ const AddNewActivity = (props) => {
           aria-label="close"
           size="small"
           onClick={() => {
-            props.setTrigger(false);
+            handleCloseModal();
           }}
         >
           {/* using same style as edit button, no need to create new style */}
@@ -633,170 +661,211 @@ const AddNewActivity = (props) => {
         </ThemeProvider>
 
         {/* Location */}
-        <Box
-          className=""
-          sx={{
-            borderStyle: "solid",
-            borderColor: "gray",
-            display: "flex",
-            borderWidth: "0.7px",
-            borderRadius: "5px",
-            marginTop: "1.5%",
-          }}
-        >
-          <Stack direction="column" sx={{ width: "100%" }}>
-            <Stack direction="row" sx={{ width: "100%" }}>
-              <Box>
-                <Typography
-                  variant="h6"
-                  color="white"
-                  sx={{ marginTop: "15%", marginLeft: "10%" }}
+        {isMobile ? (
+          // Mobile
+          <Box
+            className=""
+            sx={{
+              borderStyle: "solid",
+              borderColor: "gray",
+              display: "flex",
+              borderWidth: "0.7px",
+              borderRadius: "5px",
+              marginTop: "1.5%",
+              padding: 1,
+              maxWidth: "100%",
+            }}
+          >
+            <Stack direction="column" sx={{ maxWidth: "100%" }}>
+              {console.log("type ", locationType)}
+              <Stack direction="row" sx={{ justifyContent: "center" }}>
+                <Box
+                  // display="none"
+                  display={locationType === "Same as event" ? "none" : ""}
                 >
-                  Location
-                </Typography>
-              </Box>
-              <Box sx={{ marginLeft: "5%" }}>
-                <ThemeProvider theme={submitButtonTheme}>
-                  <Button
-                    aria-controls={locationTypeOpen ? "group-menu" : undefined}
-                    aria-haspopup="true"
-                    aria-expanded={locationTypeOpen ? "true" : undefined}
-                    variant="text"
-                    color="primary"
-                    onClick={handleLocationTypeClick}
-                    endIcon={<ArrowDropDown />}
-                    startIcon={
-                      locationType === "Online" ? (
-                        <VideoCameraFrontOutlinedIcon sx={{ width: "20px" }} />
-                      ) : locationType === "in person" ? (
-                        <LocationOnOutlinedIcon sx={{ width: "20px" }} />
-                      ) : (
-                        <CheckCircleOutlineOutlinedIcon
-                          sx={{ width: "20px" }}
-                        />
-                      )
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      // display={locationType === "Same as event" ? "" :"none"}
+                      sx={{ marginTop: "15%", marginLeft: "15%" }}
+                      size="large"
+                      startIcon={
+                        displayLocation === false ? (
+                          <ExpandMoreIcon />
+                        ) : (
+                          <ExpandLessIcon />
+                        )
+                      }
+                      onClick={() => setDisplayLocation(!displayLocation)}
+                    />
+                    {/* See
+                      </Button> */}
+                  </ThemeProvider>
+                </Box>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    color="white"
+                    sx={{ marginTop: "15%", marginLeft: "5%" }}
+                  >
+                    Location
+                  </Typography>
+                </Box>
+                <Box sx={{ marginLeft: "0%" }}>
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      aria-controls={
+                        locationTypeOpen ? "group-menu" : undefined
+                      }
+                      aria-haspopup="true"
+                      aria-expanded={locationTypeOpen ? "true" : undefined}
+                      variant="text"
+                      color="primary"
+                      onClick={handleLocationTypeClick}
+                      endIcon={<ArrowDropDown />}
+                      startIcon={
+                        locationType === "Online" ? (
+                          <VideoCameraFrontOutlinedIcon
+                            sx={{ width: "20px" }}
+                          />
+                        ) : locationType === "in person" ? (
+                          <LocationOnOutlinedIcon sx={{ width: "20px" }} />
+                        ) : (
+                          <CheckCircleOutlineOutlinedIcon
+                            sx={{ width: "20px" }}
+                          />
+                        )
+                      }
+                      sx={
+                        locationType === "Same as event"
+                          ? {
+                              width: "190px",
+                              height: "56px",
+                              fontWeight: "500",
+                              letterSpacing: "1.5px",
+                              marginLeft: "15%",
+                            }
+                          : {
+                              width: "190px",
+                              height: "56px",
+                              fontWeight: "500",
+                              letterSpacing: "1.5px",
+                            }
+                      }
+                    >
+                      {locationType}
+                    </Button>
+                  </ThemeProvider>
+                  <Menu
+                    id="group-menu"
+                    anchorEl={locationTypeAnchor}
+                    open={locationTypeOpen}
+                    onClose={() =>
+                      handleClose(setLocationTypeAnchor, setLocationTypeOpen)
                     }
+                    aria-labelledby="group-demo-button"
                     sx={{
-                      width: "190px",
-                      height: "56px",
-                      fontWeight: "500",
-                      letterSpacing: "1.5px",
+                      minWidth: "120px",
+                      // minHeight: "150px",
+                      fontWeight: "600",
+                      "--List-decorator-size": "20px",
+                      borderStyle: "none",
                     }}
                   >
-                    {locationType}
-                  </Button>
-                </ThemeProvider>
-                <Menu
-                  id="group-menu"
-                  anchorEl={locationTypeAnchor}
-                  open={locationTypeOpen}
-                  onClose={() =>
-                    handleClose(setLocationTypeAnchor, setLocationTypeOpen)
-                  }
-                  aria-labelledby="group-demo-button"
-                  sx={{
-                    minWidth: "120px",
-                    // minHeight: "150px",
-                    fontWeight: "600",
-                    "--List-decorator-size": "24px",
-                    borderStyle: "none",
-                  }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      borderRadius: "25px",
-                      bgcolor: "#daa520",
-                      zIndex: "2",
-                      minHeight: "80px",
-                    }}
-                  >
-                    <Stack direction="column">
-                      <Box className="menu-item">
-                        <MenuItem
-                          sx={new_event_menu_item_style}
-                          onClick={() => {
-                            setLocationType("Same as event");
-                            handleClose(
-                              setLocationTypeAnchor,
-                              setLocationTypeOpen
-                            );
-                          }}
-                        >
-                          <Stack direction="row" spacing={0}>
-                            <Box sx={{ transform: "translateY(2px)" }}>
-                              <ListItemDecorator>
-                                <CheckCircleOutlineOutlinedIcon fontSize="xs" />
-                              </ListItemDecorator>
-                            </Box>
-                            <Box>Same as event</Box>
-                          </Stack>
-                        </MenuItem>
-                      </Box>
-                      <Box className="menu-item">
-                        <MenuItem
-                          sx={new_event_menu_item_style}
-                          onClick={() => {
-                            setLocationType("in person");
-                            handleClose(
-                              setLocationTypeAnchor,
-                              setLocationTypeOpen
-                            );
-                          }}
-                        >
-                          <Stack direction="row" spacing={0}>
-                            <Box sx={{ transform: "translateY(2px)" }}>
-                              <ListItemDecorator>
-                                <LocationOnOutlinedIcon fontSize="xs" />
-                              </ListItemDecorator>
-                            </Box>
-                            <Box>In Person</Box>
-                          </Stack>
-                        </MenuItem>
-                      </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        borderRadius: "25px",
+                        bgcolor: "#daa520",
+                        zIndex: "2",
+                        minHeight: "80px",
+                      }}
+                    >
+                      <Stack direction="column">
+                        <Box className="menu-item">
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            onClick={() => {
+                              setLocationType("Same as event");
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              );
+                            }}
+                          >
+                            <Stack direction="row" spacing={0}>
+                              <Box sx={{ transform: "translateY(2px)" }}>
+                                <ListItemDecorator>
+                                  <CheckCircleOutlineOutlinedIcon fontSize="xs" />
+                                </ListItemDecorator>
+                              </Box>
+                              <Box>Same as event</Box>
+                            </Stack>
+                          </MenuItem>
+                        </Box>
+                        <Box className="menu-item">
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            onClick={() => {
+                              setLocationType("in person");
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              );
+                            }}
+                          >
+                            <Stack direction="row" spacing={0}>
+                              <Box sx={{ transform: "translateY(2px)" }}>
+                                <ListItemDecorator>
+                                  <LocationOnOutlinedIcon fontSize="xs" />
+                                </ListItemDecorator>
+                              </Box>
+                              <Box>In Person</Box>
+                            </Stack>
+                          </MenuItem>
+                        </Box>
 
-                      <Box className="menu-item">
-                        <MenuItem
-                          sx={new_event_menu_item_style}
-                          endIcon={<VideoCameraFrontOutlinedIcon />}
-                          onClick={() => {
-                            setLocationType("Online");
-                            handleClose(
-                              setLocationTypeAnchor,
-                              setLocationTypeOpen
-                            );
-                          }}
-                        >
-                          <Stack direction="row" spacing={0}>
-                            <Box sx={{ transform: "translateY(2px)" }}>
-                              <ListItemDecorator>
-                                <VideoCameraFrontOutlinedIcon fontSize="xs" />
-                              </ListItemDecorator>
-                            </Box>
-                            <Box>Online</Box>
-                          </Stack>
-                        </MenuItem>
-                      </Box>
-                    </Stack>
-                  </Box>
-                  <ListDivider />
-                </Menu>
-              </Box>
-
+                        <Box className="menu-item">
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            endIcon={<VideoCameraFrontOutlinedIcon />}
+                            onClick={() => {
+                              setLocationType("Online");
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              );
+                            }}
+                          >
+                            <Stack direction="row" spacing={0}>
+                              <Box sx={{ transform: "translateY(2px)" }}>
+                                <ListItemDecorator>
+                                  <VideoCameraFrontOutlinedIcon fontSize="xs" />
+                                </ListItemDecorator>
+                              </Box>
+                              <Box>Online</Box>
+                            </Stack>
+                          </MenuItem>
+                        </Box>
+                      </Stack>
+                    </Box>
+                    <ListDivider />
+                  </Menu>
+                </Box>
+              </Stack>
               {locationType === "Online" ? (
                 <>
                   <Stack
+                    display={displayLocation === false ? "none" : "flex"}
                     direction="row"
                     sx={{
                       width: "100%",
-                      display: "flex",
                       justifyContent: "left",
                     }}
                   >
                     <ThemeProvider theme={submitButtonTheme}>
                       <Box
-                        sx={deleteLocationStyle3}
+                        sx={deleteLocationStyleMobile}
                         display={meetLink.length === 0 ? "none" : "flex"}
                       >
                         <IconButton
@@ -824,6 +893,7 @@ const AddNewActivity = (props) => {
               ) : locationType === "in person" ? (
                 <>
                   <Box
+                    display={displayLocation === false ? "none" : "flex"}
                     sx={{
                       width: "100%",
                       marginTop: "0.35%",
@@ -845,15 +915,251 @@ const AddNewActivity = (props) => {
               ) : (
                 <></>
               )}
+              {/* </Stack> */}
+              <Box
+                sx={{ width: "100%" }}
+                display={
+                  displayLocation === false
+                    ? "none"
+                    : locationType === "in person"
+                    ? ""
+                    : "none"
+                }
+                // display={locationType === "in person" ? "" : "none"}
+              >
+                <GoogleMapsIntegration setMarker={setMarker} marker={marker} />
+              </Box>
             </Stack>
-            <Box
-              sx={{ width: "100%" }}
-              display={locationType === "in person" ? "" : "none"}
-            >
-              <GoogleMapsIntegration setMarker={setMarker} marker={marker} />
-            </Box>
-          </Stack>
-        </Box>
+          </Box>
+        ) : (
+          // Desktop
+          <Box
+            className=""
+            sx={{
+              borderStyle: "solid",
+              borderColor: "gray",
+              display: "flex",
+              borderWidth: "0.7px",
+              borderRadius: "5px",
+              marginTop: "1.5%",
+              padding: 1,
+            }}
+          >
+            <Stack direction="column" sx={{ width: "100%" }}>
+              <Stack direction="row" sx={{ width: "100%" }}>
+                <Box>
+                  <Typography
+                    variant="h6"
+                    color="white"
+                    sx={{ marginTop: "15%", marginLeft: "10%" }}
+                  >
+                    Location
+                  </Typography>
+                </Box>
+                <Box sx={{ marginLeft: "5%" }}>
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      aria-controls={
+                        locationTypeOpen ? "group-menu" : undefined
+                      }
+                      aria-haspopup="true"
+                      aria-expanded={locationTypeOpen ? "true" : undefined}
+                      variant="text"
+                      color="primary"
+                      onClick={handleLocationTypeClick}
+                      endIcon={<ArrowDropDown />}
+                      startIcon={
+                        locationType === "Online" ? (
+                          <VideoCameraFrontOutlinedIcon
+                            sx={{ width: "20px" }}
+                          />
+                        ) : locationType === "in person" ? (
+                          <LocationOnOutlinedIcon sx={{ width: "20px" }} />
+                        ) : (
+                          <CheckCircleOutlineOutlinedIcon
+                            sx={{ width: "20px" }}
+                          />
+                        )
+                      }
+                      sx={{
+                        width: "190px",
+                        height: "56px",
+                        fontWeight: "500",
+                        letterSpacing: "1.5px",
+                      }}
+                    >
+                      {locationType}
+                    </Button>
+                  </ThemeProvider>
+                  <Menu
+                    id="group-menu"
+                    anchorEl={locationTypeAnchor}
+                    open={locationTypeOpen}
+                    onClose={() =>
+                      handleClose(setLocationTypeAnchor, setLocationTypeOpen)
+                    }
+                    aria-labelledby="group-demo-button"
+                    sx={{
+                      minWidth: "120px",
+                      // minHeight: "150px",
+                      fontWeight: "600",
+                      "--List-decorator-size": "24px",
+                      borderStyle: "none",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        borderRadius: "25px",
+                        bgcolor: "#daa520",
+                        zIndex: "2",
+                        minHeight: "80px",
+                      }}
+                    >
+                      <Stack direction="column">
+                        <Box className="menu-item">
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            onClick={() => {
+                              setLocationType("Same as event");
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              );
+                            }}
+                          >
+                            <Stack direction="row" spacing={0}>
+                              <Box sx={{ transform: "translateY(2px)" }}>
+                                <ListItemDecorator>
+                                  <CheckCircleOutlineOutlinedIcon fontSize="xs" />
+                                </ListItemDecorator>
+                              </Box>
+                              <Box>Same as event</Box>
+                            </Stack>
+                          </MenuItem>
+                        </Box>
+                        <Box className="menu-item">
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            onClick={() => {
+                              setLocationType("in person");
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              );
+                            }}
+                          >
+                            <Stack direction="row" spacing={0}>
+                              <Box sx={{ transform: "translateY(2px)" }}>
+                                <ListItemDecorator>
+                                  <LocationOnOutlinedIcon fontSize="xs" />
+                                </ListItemDecorator>
+                              </Box>
+                              <Box>In Person</Box>
+                            </Stack>
+                          </MenuItem>
+                        </Box>
+
+                        <Box className="menu-item">
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            endIcon={<VideoCameraFrontOutlinedIcon />}
+                            onClick={() => {
+                              setLocationType("Online");
+                              handleClose(
+                                setLocationTypeAnchor,
+                                setLocationTypeOpen
+                              );
+                            }}
+                          >
+                            <Stack direction="row" spacing={0}>
+                              <Box sx={{ transform: "translateY(2px)" }}>
+                                <ListItemDecorator>
+                                  <VideoCameraFrontOutlinedIcon fontSize="xs" />
+                                </ListItemDecorator>
+                              </Box>
+                              <Box>Online</Box>
+                            </Stack>
+                          </MenuItem>
+                        </Box>
+                      </Stack>
+                    </Box>
+                    <ListDivider />
+                  </Menu>
+                </Box>
+
+                {locationType === "Online" ? (
+                  <>
+                    <Stack
+                      direction="row"
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "left",
+                      }}
+                    >
+                      <ThemeProvider theme={submitButtonTheme}>
+                        <Box
+                          sx={deleteLocationStyle3}
+                          display={meetLink.length === 0 ? "none" : "flex"}
+                        >
+                          <IconButton
+                            onClick={() => {
+                              setMeetLink("");
+                            }}
+                          >
+                            <DeleteOutlineOutlinedIcon
+                              sx={{
+                                width: "100%",
+                              }}
+                              color="secondary"
+                            />
+                          </IconButton>
+                        </Box>
+                      </ThemeProvider>{" "}
+                      <StyledTextField
+                        placeholder="Meeting link"
+                        sx={{ width: "100%" }}
+                        value={meetLink}
+                        onChange={(e) => setMeetLink(e.target.value)}
+                      ></StyledTextField>
+                    </Stack>
+                  </>
+                ) : locationType === "in person" ? (
+                  <>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        marginTop: "0.35%",
+                        marginRight: "0.5%",
+                      }}
+                    >
+                      <PlacesAutocomplete
+                        locationDisplayName={locationDisplayName}
+                        setLocationDisplayName={setLocationDisplayName}
+                        locationString={locationString}
+                        setLocationString={setLocationString}
+                        marker={marker}
+                        setMarker={setMarker}
+                      />
+
+                      {/* Map integration */}
+                    </Box>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Stack>
+              <Box
+                sx={{ width: "100%" }}
+                display={locationType === "in person" ? "" : "none"}
+              >
+                <GoogleMapsIntegration setMarker={setMarker} marker={marker} />
+              </Box>
+            </Stack>
+          </Box>
+        )}
 
         {/* Description */}
         <StyledTextField

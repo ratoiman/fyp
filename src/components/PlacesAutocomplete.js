@@ -18,6 +18,7 @@ import {
   submitButtonTheme,
   deleteLocationStyle,
   deleteLocationStyle2,
+  deleteLocationStyleMobile,
 } from "../ui_styles/MuiStyles";
 import { useEffect, useState } from "react";
 import { useLoadScript } from "@react-google-maps/api";
@@ -74,7 +75,7 @@ const PlacesAutocomplete = (props) => {
                 >
                   <ThemeProvider theme={submitButtonTheme}>
                     <Box
-                      sx={deleteLocationStyle}
+                      sx={deleteLocationStyleMobile}
                       display={
                         props.locationString.length === 0 ? "none" : "flex"
                       }
@@ -125,7 +126,6 @@ const PlacesAutocomplete = (props) => {
 
           <Box
             sx={{
-              marginLeft: "15px",
               width: "100%",
               display: "flex",
             }}
@@ -139,7 +139,7 @@ const PlacesAutocomplete = (props) => {
             >
               <ThemeProvider theme={submitButtonTheme}>
                 <Box
-                  sx={deleteLocationStyle2}
+                  sx={deleteLocationStyleMobile}
                   display={
                     props.locationDisplayName.length === 0 ? "none" : "flex"
                   }
