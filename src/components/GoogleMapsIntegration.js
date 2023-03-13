@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { GoogleMap, useLoadScript, MarkerF } from "@react-google-maps/api";
 import { Box } from "@mui/material";
 import Loading from "./Loading";
@@ -9,6 +9,26 @@ const GoogleMapsIntegration = (props) => {
     googleMapsApiKey: process.env.REACT_APP_PUBLIC_API_KEY_MAPS,
     libraries: ["places"],
   });
+
+  const [userLocation, setUserLocation] = useState(null);
+
+  function setLocation(position) {
+    setUserLocation({
+      lat: position.coords.latitude,
+      lng: position.coords.longitude,
+    });
+  }
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(setLocation);
+    } else {
+      setUserLocation("Geolocation not suported");
+    }
+  };
+
+  useEffect(() => {
+    getUserLocation();
+  }, [isLoaded]);
 
   if (!isLoaded) {
     return (
@@ -26,7 +46,7 @@ const GoogleMapsIntegration = (props) => {
             center={
               props.marker !== ""
                 ? props.marker
-                : { lat: 51.500942, lng: -0.177498 }
+                : (userLocation === null ? { lat: 51.500942, lng: -0.177498 } : userLocation)
             }
             mapContainerClassName="map-container"
           >

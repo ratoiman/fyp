@@ -15,7 +15,6 @@ import {
   popupStyleMobile,
   submitButtonTheme,
   new_event_menu_item_style,
-  deleteLocationStyle3,
 } from "../ui_styles/MuiStyles";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -31,8 +30,9 @@ import ListItemDecorator from "@mui/joy/ListItemDecorator";
 import ListDivider from "@mui/joy/ListDivider";
 import Menu from "@mui/joy/Menu";
 import MenuItem from "@mui/joy/MenuItem";
+import ArrowRight from "@mui/icons-material/ArrowRight";
 import ArrowDropDown from "@mui/icons-material/ArrowDropDown";
-import { IconButton, Stack, Typography } from "@mui/material";
+import { Stack, Typography } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -42,7 +42,6 @@ import AddSocialMediaLinkPopover from "./AddSocialMediaLinkPopover";
 import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PlacesAutocomplete from "./PlacesAutocomplete";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 const CreateEvent = () => {
   // const [error, setError] = useState("");
@@ -151,6 +150,10 @@ const CreateEvent = () => {
   const eventsRef = collection(db, "events");
 
   const navigate = useNavigate();
+
+  const handleHome = () => {
+    navigate("/home");
+  };
 
   const formatDate = (date, setter, format) => {
     let formatted = null;
@@ -833,461 +836,76 @@ const CreateEvent = () => {
               </Box>
 
               {/* Event location */}
-              {isMobile ? (
-                <>
+              <Box
+                className="mt-3"
+                sx={{
+                  // justifyContent: "center",
+                  // display: "flex",
+                  marginBottom: 3,
+                  marginTop: 3,
+                }}
+              >
+                <Box>
                   <Box
-                    className="mt-3"
                     sx={{
-                      // justifyContent: "center",
-                      // display: "flex",
+                      display: "flex",
+                      justifyContent: "center",
                       marginBottom: 3,
                       marginTop: 3,
+                      transform: "translateX(-35px)",
                     }}
                   >
-                    <Box>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          marginBottom: 3,
-                          marginTop: 3,
-                          transform: "translateX(-35px)",
-                        }}
-                      >
-                        <ThemeProvider theme={submitButtonTheme}>
-                          <Button
-                            size="large"
-                            startIcon={
-                              displayLocation === false ? (
-                                <ExpandMoreIcon />
-                              ) : (
-                                <ExpandLessIcon />
-                              )
-                            }
-                            onClick={() => setDisplayLocation(!displayLocation)}
-                          />
-                          {/* See
-                      </Button> */}
-                        </ThemeProvider>
-
-                        <Typography color="white" variant="h5">
-                          Location
-                        </Typography>
-                      </Box>
-
-                      {/* Location and loccation type */}
-                      <Box display={displayLocation === true ? "" : "none"}>
-                        <Stack direction="row">
-                          {/* Location type */}
-                          <Box className="">
-                            <ThemeProvider theme={submitButtonTheme}>
-                              <Button
-                                aria-controls={
-                                  locationTypeOpen ? "group-menu" : undefined
-                                }
-                                aria-haspopup="true"
-                                aria-expanded={
-                                  locationTypeOpen ? "true" : undefined
-                                }
-                                variant="text"
-                                color="primary"
-                                onClick={handleLocationTypeClick}
-                                endIcon={<ArrowDropDown />}
-                                startIcon={
-                                  locationType === "Online" ? (
-                                    <VideoCameraFrontOutlinedIcon
-                                      sx={{ width: "20px" }}
-                                    />
-                                  ) : (
-                                    <LocationOnOutlinedIcon
-                                      sx={{ width: "20px" }}
-                                    />
-                                  )
-                                }
-                                sx={{
-                                  width: "190px",
-                                  height: "56px",
-                                  fontWeight: "500",
-                                  letterSpacing: "1.5px",
-                                }}
-                              >
-                                {locationType}
-                              </Button>
-                            </ThemeProvider>
-                            <Menu
-                              id="group-menu"
-                              anchorEl={locationTypeAnchor}
-                              open={locationTypeOpen}
-                              onClose={() =>
-                                handleClose(
-                                  setLocationTypeAnchor,
-                                  setLocationTypeOpen
-                                )
-                              }
-                              aria-labelledby="group-demo-button"
-                              sx={{
-                                minWidth: "120px",
-                                // minHeight: "150px",
-                                fontWeight: "600",
-                                "--List-decorator-size": "24px",
-                                borderStyle: "none",
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  justifyContent: "center",
-                                  borderRadius: "25px",
-                                  bgcolor: "#daa520",
-                                  zIndex: "2",
-                                  minHeight: "80px",
-                                }}
-                              >
-                                <Stack direction="column">
-                                  <Box className="menu-item">
-                                    <MenuItem
-                                      sx={new_event_menu_item_style}
-                                      onClick={() => {
-                                        setLocationType("in person");
-                                        handleClose(
-                                          setLocationTypeAnchor,
-                                          setLocationTypeOpen
-                                        );
-                                      }}
-                                    >
-                                      <Stack direction="row" spacing={0}>
-                                        <Box
-                                          sx={{ transform: "translateY(2px)" }}
-                                        >
-                                          <ListItemDecorator>
-                                            <LocationOnOutlinedIcon fontSize="xs" />
-                                          </ListItemDecorator>
-                                        </Box>
-                                        <Box>In Person</Box>
-                                      </Stack>
-                                    </MenuItem>
-                                  </Box>
-
-                                  <Box className="menu-item">
-                                    <MenuItem
-                                      sx={new_event_menu_item_style}
-                                      endIcon={<VideoCameraFrontOutlinedIcon />}
-                                      onClick={() => {
-                                        setLocationType("Online");
-                                        handleClose(
-                                          setLocationTypeAnchor,
-                                          setLocationTypeOpen
-                                        );
-                                      }}
-                                    >
-                                      <Stack direction="row" spacing={0}>
-                                        <Box
-                                          sx={{ transform: "translateY(2px)" }}
-                                        >
-                                          <ListItemDecorator>
-                                            <VideoCameraFrontOutlinedIcon fontSize="xs" />
-                                          </ListItemDecorator>
-                                        </Box>
-                                        <Box>Online</Box>
-                                      </Stack>
-                                    </MenuItem>
-                                  </Box>
-                                </Stack>
-                              </Box>
-                              <ListDivider />
-                            </Menu>
-                          </Box>
-
-                          {/* Location input */}
-                          {locationType === "Online" ? (
-                            <>
-                              <Stack
-                                direction="row"
-                                sx={{
-                                  width: "100%",
-                                  display: "flex",
-                                  justifyContent: "left",
-                                }}
-                              >
-                                <ThemeProvider theme={submitButtonTheme}>
-                                  <Box
-                                    sx={deleteLocationStyle3}
-                                    display={
-                                      meetLink.length === 0 ? "none" : "flex"
-                                    }
-                                  >
-                                    <IconButton
-                                      onClick={() => {
-                                        setMeetLink("");
-                                      }}
-                                    >
-                                      <DeleteOutlineOutlinedIcon
-                                        sx={{
-                                          width: "100%",
-                                        }}
-                                        color="secondary"
-                                      />
-                                    </IconButton>
-                                  </Box>
-                                </ThemeProvider>{" "}
-                                <StyledTextField
-                                  placeholder="Meeting link"
-                                  sx={{ width: "100%" }}
-                                  value={meetLink}
-                                  onChange={(e) => setMeetLink(e.target.value)}
-                                ></StyledTextField>
-                              </Stack>
-                            </>
+                    <ThemeProvider theme={submitButtonTheme}>
+                      <Button
+                        size="large"
+                        startIcon={
+                          displayLocation === false ? (
+                            <ExpandMoreIcon />
                           ) : (
-                            <PlacesAutocomplete
-                              locationDisplayName={locationDisplayName}
-                              setLocationDisplayName={setLocationDisplayName}
-                              locationString={locationString}
-                              setLocationString={setLocationString}
-                              marker={marker}
-                              setMarker={setMarker}
-                            />
-                          )}
-                        </Stack>
-
-                        {/* Map integration */}
-                        <Box display={locationType === "Online" ? "none" : ""}>
-                          <GoogleMapsIntegration
-                            setMarker={setMarker}
-                            marker={marker}
-                          />
-                        </Box>
-                      </Box>
-                    </Box>
-                  </Box>
-                </>
-              ) : (
-                <Box
-                  className="mt-3"
-                  sx={{
-                    // justifyContent: "center",
-                    // display: "flex",
-                    marginBottom: 3,
-                    marginTop: 3,
-                  }}
-                >
-                  <Box>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: 3,
-                        marginTop: 3,
-                        transform: "translateX(-35px)",
-                      }}
-                    >
-                      <ThemeProvider theme={submitButtonTheme}>
-                        <Button
-                          size="large"
-                          startIcon={
-                            displayLocation === false ? (
-                              <ExpandMoreIcon />
-                            ) : (
-                              <ExpandLessIcon />
-                            )
-                          }
-                          onClick={() => setDisplayLocation(!displayLocation)}
-                        />
-                        {/* See
+                            <ExpandLessIcon />
+                          )
+                        }
+                        onClick={() => setDisplayLocation(!displayLocation)}
+                      />
+                      {/* See
                       </Button> */}
-                      </ThemeProvider>
+                    </ThemeProvider>
 
-                      <Typography color="white" variant="h5">
-                        Location
-                      </Typography>
-                    </Box>
+                    <Typography color="white" variant="h5">
+                      Location
+                    </Typography>
+                  </Box>
 
-                    {/* Location and loccation type */}
-                    <Box display={displayLocation === true ? "" : "none"}>
-                      <Stack direction="row">
-                        {/* Location type */}
-                        <Box className="">
-                          <ThemeProvider theme={submitButtonTheme}>
-                            <Button
-                              aria-controls={
-                                locationTypeOpen ? "group-menu" : undefined
-                              }
-                              aria-haspopup="true"
-                              aria-expanded={
-                                locationTypeOpen ? "true" : undefined
-                              }
-                              variant="text"
-                              color="primary"
-                              onClick={handleLocationTypeClick}
-                              endIcon={<ArrowDropDown />}
-                              startIcon={
-                                locationType === "Online" ? (
-                                  <VideoCameraFrontOutlinedIcon
-                                    sx={{ width: "20px" }}
-                                  />
-                                ) : (
-                                  <LocationOnOutlinedIcon
-                                    sx={{ width: "20px" }}
-                                  />
-                                )
-                              }
-                              sx={{
-                                width: "190px",
-                                height: "56px",
-                                fontWeight: "500",
-                                letterSpacing: "1.5px",
-                              }}
-                            >
-                              {locationType}
-                            </Button>
-                          </ThemeProvider>
-                          <Menu
-                            id="group-menu"
-                            anchorEl={locationTypeAnchor}
-                            open={locationTypeOpen}
-                            onClose={() =>
-                              handleClose(
-                                setLocationTypeAnchor,
-                                setLocationTypeOpen
-                              )
-                            }
-                            aria-labelledby="group-demo-button"
-                            sx={{
-                              minWidth: "120px",
-                              // minHeight: "150px",
-                              fontWeight: "600",
-                              "--List-decorator-size": "24px",
-                              borderStyle: "none",
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                borderRadius: "25px",
-                                bgcolor: "#daa520",
-                                zIndex: "2",
-                                minHeight: "80px",
-                              }}
-                            >
-                              <Stack direction="column">
-                                <Box className="menu-item">
-                                  <MenuItem
-                                    sx={new_event_menu_item_style}
-                                    onClick={() => {
-                                      setLocationType("in person");
-                                      handleClose(
-                                        setLocationTypeAnchor,
-                                        setLocationTypeOpen
-                                      );
-                                    }}
-                                  >
-                                    <Stack direction="row" spacing={0}>
-                                      <Box
-                                        sx={{ transform: "translateY(2px)" }}
-                                      >
-                                        <ListItemDecorator>
-                                          <LocationOnOutlinedIcon fontSize="xs" />
-                                        </ListItemDecorator>
-                                      </Box>
-                                      <Box>In Person</Box>
-                                    </Stack>
-                                  </MenuItem>
-                                </Box>
+                  {/* Location and loccation type */}
+                  <Box display={displayLocation === true ? "" : "none"}>
+                    <Stack direction="row">
+                      {/* Location input */}
 
-                                <Box className="menu-item">
-                                  <MenuItem
-                                    sx={new_event_menu_item_style}
-                                    endIcon={<VideoCameraFrontOutlinedIcon />}
-                                    onClick={() => {
-                                      setLocationType("Online");
-                                      handleClose(
-                                        setLocationTypeAnchor,
-                                        setLocationTypeOpen
-                                      );
-                                    }}
-                                  >
-                                    <Stack direction="row" spacing={0}>
-                                      <Box
-                                        sx={{ transform: "translateY(2px)" }}
-                                      >
-                                        <ListItemDecorator>
-                                          <VideoCameraFrontOutlinedIcon fontSize="xs" />
-                                        </ListItemDecorator>
-                                      </Box>
-                                      <Box>Online</Box>
-                                    </Stack>
-                                  </MenuItem>
-                                </Box>
-                              </Stack>
-                            </Box>
-                            <ListDivider />
-                          </Menu>
-                        </Box>
+                      <PlacesAutocomplete
+                        meetLink={meetLink}
+                        setMeetLink={setMeetLink}
+                        locationType={locationType}
+                        setLocationType={setLocationType}
+                        locationDisplayName={locationDisplayName}
+                        setLocationDisplayName={setLocationDisplayName}
+                        locationString={locationString}
+                        setLocationString={setLocationString}
+                        marker={marker}
+                        setMarker={setMarker}
+                      />
+                    </Stack>
 
-                        {/* Location input */}
-                        {locationType === "Online" ? (
-                          <>
-                            <Stack
-                              direction="row"
-                              sx={{
-                                width: "100%",
-                                display: "flex",
-                                justifyContent: "left",
-                              }}
-                            >
-                              <ThemeProvider theme={submitButtonTheme}>
-                                <Box
-                                  sx={deleteLocationStyle3}
-                                  display={
-                                    meetLink.length === 0 ? "none" : "flex"
-                                  }
-                                >
-                                  <IconButton
-                                    onClick={() => {
-                                      setMeetLink("");
-                                    }}
-                                  >
-                                    <DeleteOutlineOutlinedIcon
-                                      sx={{
-                                        width: "100%",
-                                      }}
-                                      color="secondary"
-                                    />
-                                  </IconButton>
-                                </Box>
-                              </ThemeProvider>{" "}
-                              <StyledTextField
-                                placeholder="Meeting link"
-                                sx={{ width: "100%" }}
-                                value={meetLink}
-                                onChange={(e) => setMeetLink(e.target.value)}
-                              ></StyledTextField>
-                            </Stack>
-                          </>
-                        ) : (
-                          <PlacesAutocomplete
-                            locationDisplayName={locationDisplayName}
-                            setLocationDisplayName={setLocationDisplayName}
-                            locationString={locationString}
-                            setLocationString={setLocationString}
-                            marker={marker}
-                            setMarker={setMarker}
-                          />
-                        )}
-                      </Stack>
-
-                      {/* Map integration */}
-                      <Box display={locationType === "Online" ? "none" : ""}>
-                        <GoogleMapsIntegration
-                          setMarker={setMarker}
-                          marker={marker}
-                        />
-                      </Box>
+                    {/* Map integration */}
+                    <Box display={locationType === "Online" ? "none" : ""}>
+                      <GoogleMapsIntegration
+                        setMarker={setMarker}
+                        marker={marker}
+                      />
                     </Box>
                   </Box>
                 </Box>
-              )}
+              </Box>
+
               {/* Add new activity */}
               <Row className="d-flex flex-column mb-3">
                 <Col className="d-flex mt-4 mb-3 fs-2 fw-normal text-light justify-content-center">
@@ -1492,11 +1110,6 @@ const CreateEvent = () => {
                   activityShowEndDate={activityShowEndDate}
                   activityID={activityID}
                   saveActivity={saveActivity}
-                  eventLocationString={locationString}
-                  eventLocationDisplayName={locationDisplayName}
-                  eventLocationType={locationType}
-                  eventMarker={marker}
-                  eventMeetLink={meetLink}
                   eventStartDate={formattedStartDate}
                   eventStartTime={startTime}
                   eventEndDate={formattedEndDate}
@@ -1544,11 +1157,6 @@ const CreateEvent = () => {
                   activityID={editActivityID}
                   saveActivity={saveActivity}
                   deleteActivity={deleteActivity}
-                  eventLocationString={locationString}
-                  eventLocationDisplayName={locationDisplayName}
-                  eventLocationType={locationType}
-                  eventMarker={marker}
-                  eventMeetLink={meetLink}
                   eventStartDate={formattedStartDate}
                   eventStartTime={startTime}
                   eventEndDate={formattedEndDate}

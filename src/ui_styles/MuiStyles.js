@@ -89,7 +89,6 @@ export const linkPopupStyleMobile = {
   px: 2,
 };
 
-
 export const popupStyleMobile = {
   position: "inherit",
   // display: "flex",
@@ -293,7 +292,7 @@ export const event_page_card_desktop = {
 };
 
 export const new_event_menu_item_style = {
-  width: "120px",
+  width: "100%",
   display: "flex",
   justifyContent: "center",
 };
@@ -312,7 +311,6 @@ export const new_event_social_media_inner_box = {
   margin: "2%",
   position: "relative",
 };
-
 
 export const new_event_social_media_inner_box_disabled = {
   width: "30%",
@@ -349,8 +347,6 @@ export const new_event_social_media_button = {
   left: "0",
 };
 
-
-
 export const socialMediaButtonTheme = createTheme({
   palette: {
     primary: {
@@ -371,3 +367,45 @@ export const socialMediaButtonTheme = createTheme({
     },
   },
 });
+
+export const deleteLocationStyle = {
+  // visibility:"hidden",
+  // display: "flex",
+  justifyContent: "center",
+  width: "10%",
+  borderRight: "solid",
+  borderWidth: "1px",
+  borderColor: "gray",
+  borderBottomRightRadius: "3px",
+  height: "56px",
+};
+
+export const deleteLocationStyle2 = {
+  // display: "flex",
+  justifyContent: "center",
+  width: "10%",
+  borderTop: "solid",
+  borderBottom: "solid",
+  borderLeft: "solid",
+  borderRight: "solid",
+  borderWidth: "1px",
+  borderColor: "gray",
+  borderBottomLeftRadius: "3px",
+  borderTopLeftRadius: "3px",
+  height: "56px",
+};
+
+export const deleteLocationStyle3 = {
+  // display: "flex",
+  justifyContent: "center",
+  width: "5%",
+  borderTop: "solid",
+  borderBottom: "solid",
+  borderLeft: "solid",
+  borderRight: "solid",
+  borderWidth: "1px",
+  borderColor: "gray",
+  borderBottomLeftRadius: "3px",
+  borderTopLeftRadius: "3px",
+  height: "56px",
+};
