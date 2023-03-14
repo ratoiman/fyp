@@ -17,6 +17,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { ThemeProvider } from "@mui/material/styles";
 import { submitButtonTheme } from "../ui_styles/MuiStyles";
 import Button from "@mui/material/Button";
+import EditEvent from "../components/EditEvent";
 
 const Home = () => {
   const [events, setEvents] = useState(new Set());
@@ -25,6 +26,8 @@ const Home = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [eventPageLoad, setEventPageLoad] = useState(false);
   const [displayEvents, setDisplayEvents] = useState(true);
+  const [editEventDetails, setEditEventDetails] = useState(new Object());
+  const [editSelectedEvent, setEditSelectedEvent] = useState(false);
 
   const { user } = useUserAuth();
 
@@ -32,6 +35,24 @@ const Home = () => {
     // navigator("/event")
     setSelectedEventID(id);
     setEventPageLoad(true);
+  };
+
+  const getEditEventDetails = (id) => {
+    let arr = Array.from(eventsDetails);
+    let found = arr.find((ev) => ev["id"] === id);
+    console.log("found ", id);
+    console.log("arr ", arr);
+    if (found) {
+      setEditEventDetails(found);
+    }
+  };
+
+  const handleEdit = (id) => {
+    console.log("id ", id);
+    setSelectedEventID(id);
+    getEditEventDetails(id);
+    setEventPageLoad(true);
+    setEditSelectedEvent(true);
   };
 
   const closeEvent = () => {
@@ -133,8 +154,12 @@ const Home = () => {
                           tiktok={eventDetails["details"].tiktok}
                           twitter={eventDetails["details"].twitter}
                           facebook={eventDetails["details"].facebook}
-                          locationString={eventDetails["details"].location_string}
-                          locationDisplayName={eventDetails["details"].location_display_name}
+                          locationString={
+                            eventDetails["details"].location_string
+                          }
+                          locationDisplayName={
+                            eventDetails["details"].location_display_name
+                          }
                           marker={eventDetails["details"].marker}
                           activities={eventDetails["activities"]}
                           usersList={eventDetails["users"]}
@@ -142,6 +167,8 @@ const Home = () => {
                           eventID={eventDetails.id}
                           handleEventLink={handleEventLink}
                           followingOnly={false}
+                          handleEdit={handleEdit}
+                          setEditSelectedEvent={setEditSelectedEvent}
                         />
                       );
                     })}
@@ -165,19 +192,33 @@ const Home = () => {
         );
       }
     } else {
-      return (
-        <>
-          <Box
-            className={
-              isMobile
-                ? "display-events-category-box-mobile"
-                : "display-events-category-box"
-            }
-          >
-            <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
-          </Box>
-        </>
-      );
+      if (editSelectedEvent === true) {
+        return (
+          <>
+            <EditEvent
+              eventID={selectedEventID}
+              setEditSelectedEvent={setEditSelectedEvent}
+              setEventPageLoad={setEventPageLoad}
+              eventDetails={editEventDetails}
+              closeEvent={closeEvent}
+            />
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Box
+              className={
+                isMobile
+                  ? "display-events-category-box-mobile"
+                  : "display-events-category-box"
+              }
+            >
+              <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
+            </Box>
+          </>
+        );
+      }
     }
   } else {
     return <GuestLandingPage />;

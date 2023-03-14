@@ -45,23 +45,25 @@ const NewEventActivityCard = (props) => {
 
   const handleEdit = (activity) => {
     const actArr = props.activities.find((x) => x.id === activity.id);
+    console.log("arr", actArr);
+
     // const dateTo = stringToDate(actArr.startDate);
     // console.log(stringToDate(stringToDate(actArr.startDate)));
     props.setActivityID(activity.id);
     props.setActivityTitle(actArr.title);
-    props.setActivityStartDate(stringToDate(actArr.startDate));
-    props.setActivityStartTime(stringToTime(actArr.startTime));
-    props.setActivityEndDate(stringToDate(actArr.endDate));
-    props.setActivityEndTime(stringToTime(actArr.endTime));
+    props.setActivityStartDate(stringToDate(actArr.start_date));
+    props.setActivityStartTime(stringToTime(actArr.start_time));
+    props.setActivityEndDate(stringToDate(actArr.end_date));
+    props.setActivityEndTime(stringToTime(actArr.end_time));
     props.setActivityDescription(actArr.description);
     props.setActivityExpandDate("d-none");
     props.setActivityShowEndDate("");
     props.setTrigger(true);
-    props.setActivityLocationType(actArr.locationType);
-    props.setActivityLocationString(actArr.locationString);
-    props.setActivityLocationDisplayName(actArr.locationDisplayName);
+    props.setActivityLocationType(actArr.location_type);
+    props.setActivityLocationString(actArr.location_string);
+    props.setActivityLocationDisplayName(actArr.location_display_name);
     props.setActivityMarker(actArr.marker);
-    props.setActivityMeetLink(actArr.meetLink);
+    props.setActivityMeetLink(actArr.meet_link);
   };
 
   useEffect(() => {
@@ -80,11 +82,11 @@ const NewEventActivityCard = (props) => {
                 <Col fluid="sm">
                   {/* Display just day and month */}
                   Start Date:{" "}
-                  {activity.startDate.split("/")[0] +
+                  {activity.start_date.split("/")[0] +
                     "/" +
-                    activity.startDate.split("/")[1]}
+                    activity.start_date.split("/")[1]}
                 </Col>
-                <Col fluid="sm">Start Time: {activity.startTime}</Col>
+                <Col fluid="sm">Start Time: {activity.start_time}</Col>
                 <Col sm={1}>
                   <IconButton
                     aria-label="edit"

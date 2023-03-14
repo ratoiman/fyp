@@ -3,7 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
-import { collection, addDoc, setDoc, doc } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, getDoc } from "firebase/firestore";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -16,6 +16,7 @@ import {
   submitButtonTheme,
   new_event_menu_item_style,
   deleteLocationStyle3,
+  editButtonStyle,
 } from "../ui_styles/MuiStyles";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
@@ -43,14 +44,15 @@ import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOu
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PlacesAutocomplete from "./PlacesAutocomplete";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 
-const CreateEvent = () => {
+const EditEvent = (props) => {
   // const [error, setError] = useState("");
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
   const [description, setDescription] = useState("");
-  const [showEndDate, setShowEndDate] = useState("d-none");
-  const [expandDate, setExpandDate] = useState(false);
+  const [showEndDate, setShowEndDate] = useState("");
+  const [expandDate, setExpandDate] = useState(true);
   const [currentDate, setCurrentDate] = useState("");
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
@@ -156,6 +158,8 @@ const CreateEvent = () => {
   const [platform, setPlatform] = useState("");
   const [currentProfile, setCurrentProfile] = useState("");
 
+  // Event details
+
   let isDateAndTimeValid = false;
 
   const { user } = useUserAuth();
@@ -166,21 +170,73 @@ const CreateEvent = () => {
 
   const navigate = useNavigate();
 
+  //   Setting states using data passed from parent. props.eventDetails contains everything
+  const getEventDetails = () => {
+    // console.log(props.eventDetails["details"])
+    const changeDateFormat = (date) => {
+      if (date) {
+        const arr = date.split("/");
+        const newDate = arr[1] + "/" + arr[0] + "/" + arr[2];
+        return newDate;
+      } else {
+        return "";
+      }
+    };
+
+    setTitle(props.eventDetails["details"].title);
+    setSubtitle(props.eventDetails["details"].subtitle);
+    setStartDate(changeDateFormat(props.eventDetails["details"].start_date));
+    setStartTime(
+      `Tue Mar 14 2023 ${props.eventDetails["details"].start_time}:00 GMT+0000 (Greenwich Mean Time)`
+    );
+    setEndDate(changeDateFormat(props.eventDetails["details"].end_date));
+    setEndTime(
+      `Tue Mar 14 2023 ${props.eventDetails["details"].end_time}:00 GMT+0000 (Greenwich Mean Time)`
+    );
+    setVisibility(props.eventDetails["details"].privacy);
+    setCategory(props.eventDetails["details"].category);
+    setLocationType(props.eventDetails["details"].location_type);
+    setLocationString(props.eventDetails["details"].location_string);
+    setLocationDisplayName(props.eventDetails["details"].location_display_name);
+    setMarker(props.eventDetails["details"].marker);
+    setMeetLink(props.eventDetails["details"].meet_link);
+    setActivities(props.eventDetails["activities"]);
+    setDescription(props.eventDetails["details"].description);
+    setInstagram(props.eventDetails["details"].instagram);
+    setTiktok(props.eventDetails["details"].tiktok);
+    setFacebook(props.eventDetails["details"].facebook);
+    setTwitter(props.eventDetails["details"].twitter);
+    console.log(props.eventDetails["activities"]);
+  };
+
   const formatDate = (date, setter, format) => {
     let formatted = null;
     if (date) {
-      const day = date.toDate().getDate().toString();
-      const month = (date.toDate().getMonth() + 1).toString();
-      const year = date.toDate().getFullYear().toString();
+      if (typeof date === "string") {
+        if (format === "DD/MM/YYYY") {
+          formatted =
+            date.split("/")[1] +
+            "/" +
+            date.split("/")[0] +
+            "/" +
+            date.split("/")[2];
+        } else {
+          formatted = date;
+        }
+      } else {
+        const day = date.toDate().getDate().toString();
+        const month = (date.toDate().getMonth() + 1).toString();
+        const year = date.toDate().getFullYear().toString();
 
-      if (format === "DD/MM/YYYY") {
-        formatted =
-          day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
-      }
+        if (format === "DD/MM/YYYY") {
+          formatted =
+            day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+        }
 
-      if (format === "MM/DD/YYYY") {
-        formatted =
-          month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+        if (format === "MM/DD/YYYY") {
+          formatted =
+            month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+        }
       }
     }
 
@@ -189,10 +245,18 @@ const CreateEvent = () => {
 
   const formatTime = (time, setter) => {
     if (time) {
-      const hours = time.toDate().getHours().toString();
-      const minutes = time.toDate().getMinutes().toString();
+      if (typeof time === "string") {
+        setter(
+          time.split(" ")[4].split(":")[0] +
+            ":" +
+            time.split(" ")[4].split(":")[1]
+        );
+      } else {
+        const hours = time.toDate().getHours().toString();
+        const minutes = time.toDate().getMinutes().toString();
 
-      setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+        setter(hours.padStart(2, "0") + ":" + minutes.padStart(2, "0"));
+      }
     }
   };
 
@@ -342,6 +406,7 @@ const CreateEvent = () => {
     });
 
     const temp2 = [...temp, activity];
+    console.log("temp2 ", temp2);
     // sorting in chronological order
     temp2.sort(function (a, b) {
       return (
@@ -372,6 +437,14 @@ const CreateEvent = () => {
   const closePopup = () => {
     setOpenPopup(false);
   };
+
+  //   useEffect(() => {
+  //     getEventDetails(props.eventID)
+  //   },[props.eventID])
+
+  useEffect(() => {
+    getEventDetails();
+  }, [props.eventDetails]);
 
   useEffect(() => {
     checkField(title, setTitleError);
@@ -429,18 +502,19 @@ const CreateEvent = () => {
   };
 
   const handleSubmit = async () => {
+    const eventRef = doc(db, "events", props.eventDetails["id"]);
     getCurrentDate();
     checkDateAndTime();
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
     checkLocation();
-
+    console.log("end date ", formattedEndDate, endDate);
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
       if (category === "Category") {
         setCategory("");
       }
-      await addDoc(eventsRef, {
+      await setDoc(eventRef, {
         title: title,
         subtitle: subtitle,
         author: user.uid,
@@ -450,30 +524,61 @@ const CreateEvent = () => {
         end_time: formattedEndTime,
         privacy: visibility,
         category: category,
-      }).then(async function (docRef) {
-        console.log("Document written with ID: ", docRef.id);
-        const userRef = doc(db, "users", user.uid, "events", docRef.id);
-        const eventUsersRef = doc(db, "events", docRef.id, "users", user.uid);
+      }).then(async function () {
+        console.log("Document written with ID: ", props.eventDetails["id"]);
+        const userRef = doc(
+          db,
+          "users",
+          user.uid,
+          "events",
+          props.eventDetails["id"]
+        );
+        const eventUsersRef = doc(
+          db,
+          "events",
+          props.eventDetails["id"],
+          "users",
+          user.uid
+        );
         const eventDetailsRef = doc(
           db,
           "events",
-          docRef.id,
+          props.eventDetails["id"],
           "data",
           "event_details"
         );
         let end_date_month = "";
         let end_date_day = "";
+        let start_date_month = "";
+        let start_date_day = "";
+
+        console.log("meetLink", meetLink);
+
+        if (startDate) {
+          if (typeof startDate === "string") {
+            start_date_day = props.eventDetails["details"].start_date_day;
+            start_date_month = props.eventDetails["details"].start_date_month;
+          } else {
+            start_date_day = startDate["$d"].toString().split(" ")[0];
+            start_date_month = startDate["$d"].toString().split(" ")[1];
+          }
+        }
 
         if (endDate) {
-          end_date_day = endDate["$d"].toString().split(" ")[0];
-          end_date_month = endDate["$d"].toString().split(" ")[1];
+          if (typeof endDate === "string") {
+            end_date_day = props.eventDetails["details"].end_date_day;
+            end_date_month = props.eventDetails["details"].end_date_month;
+          } else {
+            end_date_day = endDate["$d"].toString().split(" ")[0];
+            end_date_month = endDate["$d"].toString().split(" ")[1];
+          }
         }
         await setDoc(eventDetailsRef, {
           title: title,
           subtitle: subtitle,
           start_date: formattedStartDate,
-          start_date_day: startDate["$d"].toString().split(" ")[0],
-          start_date_month: startDate["$d"].toString().split(" ")[1],
+          start_date_day: start_date_day,
+          start_date_month: start_date_month,
           start_time: formattedStartTime,
           end_date: formattedEndDate,
           end_date_day: end_date_day,
@@ -498,11 +603,12 @@ const CreateEvent = () => {
             const activitiesRef = doc(
               db,
               "events",
-              docRef.id,
+              props.eventDetails["id"],
               "activities",
               activity.id
             );
-            console.log("act ",activity);
+
+            console.log("activity ", activity.id, "", activity);
             await setDoc(activitiesRef, {
               title: activity.title,
               start_date: activity.start_date,
@@ -520,7 +626,6 @@ const CreateEvent = () => {
               // location_type: activity.locationType,
               // marker: activity.marker,
               // meet_link: activity.meetLink,
-
               location_string: activity.location_string,
               location_display_name: activity.location_display_name,
               location_type: activity.location_type,
@@ -538,15 +643,17 @@ const CreateEvent = () => {
           end_date: formattedEndDate,
           end_time: formattedEndTime,
         });
-        console.log("Event created with ID:", docRef.id);
+        console.log("Event created with ID:", props.eventDetails["id"]);
       });
-      navigate("/");
+      props.setEditSelectedEvent(false);
+      props.closeEvent();
       console.log("SUCCESS");
     } else {
       setShowError(true);
     }
   };
 
+  //   console.log("details ", props.eventDetails);
   return (
     <>
       <Box
@@ -561,9 +668,29 @@ const CreateEvent = () => {
           style={{ width: "100%", backgroundColor: "#161616" }}
         >
           <Row>
-            <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
-              Create new event
-            </h1>{" "}
+            <Col style={{ transform: "translateX(0%)" }}>
+              <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
+                Edit event
+              </h1>{" "}
+            </Col>
+            <Col
+              md="auto"
+              style={{ width: "10px", transform: "translateY(-5%)" }}
+              className="close-button"
+            >
+              {/* <div className="close-button"> */}
+              <IconButton
+                aria-label="close"
+                size="small"
+                onClick={() => {
+                  props.setEditSelectedEvent(false);
+                  props.closeEvent();
+                }}
+              >
+                <CloseOutlinedIcon sx={editButtonStyle} />
+              </IconButton>
+              {/* </div> */}
+            </Col>
           </Row>
           <Container className="mt-4 d-flex flex-column justify-content-center">
             <Box>
@@ -574,7 +701,8 @@ const CreateEvent = () => {
                 variant="outlined"
                 id="outline-required"
                 label="Event Title"
-                defaultValue=""
+                value={title}
+                // defaultValue={title}
                 inputProps={{ maxLength: 50 }}
                 error={showError === true ? titleError : false}
                 helperText={
@@ -593,7 +721,8 @@ const CreateEvent = () => {
                 variant="outlined"
                 id="outline-basic"
                 label="Event Subitle"
-                defaultValue=""
+                value={subtitle}
+                // defaultValue={subtitle}
                 inputProps={{ maxLength: 50 }}
                 onChange={(e) => {
                   setSubtitle(e.target.value);
@@ -1454,7 +1583,7 @@ const CreateEvent = () => {
                 multiline
                 id="outline-basic"
                 label="Event Description"
-                defaultValue=""
+                value={description}
                 error={showError === true ? descriptionError : false}
                 helperText={
                   descriptionError === true && showError === true
@@ -1688,4 +1817,4 @@ const CreateEvent = () => {
   );
 };
 
-export default CreateEvent;
+export default EditEvent;

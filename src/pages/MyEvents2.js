@@ -27,6 +27,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { submitButtonTheme } from "../ui_styles/MuiStyles";
 import Button from "@mui/material/Button";
 import { Navigate } from "react-router-dom";
+import EditEvent from "../components/EditEvent";
 
 const MyEvents2 = (props) => {
   const { user } = useUserAuth();
@@ -38,6 +39,8 @@ const MyEvents2 = (props) => {
   const [displaySubscribed, setDisplaySubscribed] = useState(true);
   const [displayAdministrated, setDisplayAdministrated] = useState(true);
   const [selectedEventID, setSelectedEventID] = useState("");
+  const [editSelectedEvent, setEditSelectedEvent] = useState(false);
+  const [editEventDetails, setEditEventDetails] = useState(new Object());
 
   const getUserEvents = () => {
     try {
@@ -107,8 +110,19 @@ const MyEvents2 = (props) => {
     });
   };
 
+  const getEditEventDetails = (id) => {
+    let arr = Array.from(userEventsDetails);
+    let found = arr.find((ev) => ev["id"] === id);
+    console.log("found ", id);
+    console.log("arr ", arr);
+    if (found) {
+      setEditEventDetails(found);
+    }
+  };
+
   const loading = () => {
     if (userEventsDetails.length > 0) {
+      console.log("ue ", userEventsDetails)
       setIsLoading(false);
     } else {
       setIsLoading(true);
@@ -119,6 +133,14 @@ const MyEvents2 = (props) => {
     // navigator("/event")
     setSelectedEventID(id);
     setEventPageLoad(true);
+  };
+
+  const handleEdit = (id) => {
+    console.log("id ", id);
+    setSelectedEventID(id);
+    getEditEventDetails(id);
+    setEventPageLoad(true);
+    setEditSelectedEvent(true);
   };
 
   const closeEvent = () => {
@@ -143,6 +165,7 @@ const MyEvents2 = (props) => {
     loading();
   }, [userEventsDetails]);
 
+  console.log("Loading ", isLoading)
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
@@ -234,6 +257,8 @@ const MyEvents2 = (props) => {
                             userEventsDetails={userEventsDetails}
                             handleEventLink={handleEventLink}
                             followingOnly={true}
+                            handleEdit={handleEdit}
+                            setEditSelectedEvent={setEditSelectedEvent}
                           />
                         );
                       }
@@ -325,6 +350,8 @@ const MyEvents2 = (props) => {
                             eventID={eventDetails.id}
                             userEventsDetails={userEventsDetails}
                             handleEventLink={handleEventLink}
+                            handleEdit={handleEdit}
+                            setEditSelectedEvent={setEditSelectedEvent}
                             followingOnly={true}
                           />
                         );
@@ -350,19 +377,34 @@ const MyEvents2 = (props) => {
         );
       }
     } else {
-      return (
-        <>
-          <Box
-            className={
-              isMobile
-                ? "display-events-category-box-mobile"
-                : "display-events-category-box"
-            }
-          >
-            <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
-          </Box>
-        </>
-      );
+      if (editSelectedEvent === true) {
+        return (
+          <>
+            <EditEvent
+              eventID={selectedEventID}
+              setEditSelectedEvent={setEditSelectedEvent}
+              setEventPageLoad={setEventPageLoad}
+              eventDetails={editEventDetails}
+              closeEvent={closeEvent}
+            />
+          </>
+        );
+      } else {
+        console.log("edit");
+        return (
+          <>
+            <Box
+              className={
+                isMobile
+                  ? "display-events-category-box-mobile"
+                  : "display-events-category-box"
+              }
+            >
+              <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
+            </Box>
+          </>
+        );
+      }
     }
   }
 };

@@ -30,6 +30,7 @@ import { onSnapshot } from "firebase/firestore";
 import { collection } from "firebase/firestore";
 import ConfirmAction from "./ConfirmAction";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
+import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
 
 const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
@@ -59,7 +60,6 @@ const EventCard2 = (props) => {
 
   const getFollowStatus = () => {
     // console.log("user list ", props.usersList);
-    let admin = false;
 
     let arr = Array.from(userEvents);
     let found = arr.find((ev) => ev["id"] === props.eventID);
@@ -89,9 +89,7 @@ const EventCard2 = (props) => {
     console.log("Event ", props.eventID, " unfollowed");
   };
 
-  const handleEdit = () => {
-    // console.log("edit");
-  };
+  const handleEdit = () => {};
 
   useEffect(() => {
     getUserEvents();
@@ -137,10 +135,11 @@ const EventCard2 = (props) => {
                       {props.locationDisplayName === undefined &&
                       props.locationString === undefined ? (
                         <></>
+                      ) : props.locationType === "Online" ? (
+                        <VideoCameraFrontOutlinedIcon />
                       ) : (
                         <LocationOnOutlinedIcon />
                       )}
-                      
                       {props.locationDisplayName === ""
                         ? props.locationString
                         : props.locationDisplayName}{" "}
@@ -152,7 +151,7 @@ const EventCard2 = (props) => {
                         <Button
                           onClick={() => {
                             if (isAdmin) {
-                              handleEdit();
+                              props.handleEdit(props.eventID);
                             } else {
                               setUnfollowPopup(true);
                             }

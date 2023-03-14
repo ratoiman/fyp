@@ -280,10 +280,9 @@ const AddNewActivity = (props) => {
     formatTime(startTime, setFormattedStartTime);
     formatTime(endTime, setFormattedEndTime);
     activityDetails.title = title;
-    activityDetails.startDate = formattedStartDate;
+    activityDetails.start_date = formattedStartDate;
     if (startDate !== null) {
       if (startDate["$d"] !== undefined) {
-        console.log("Start date ", startDate, startDate !== undefined);
         activityDetails.start_date_day = startDate["$d"]
           .toString()
           .split(" ")[0];
@@ -295,8 +294,8 @@ const AddNewActivity = (props) => {
         activityDetails.start_date_month = startDate.toString().split(" ")[1];
       }
     }
-    activityDetails.startTime = formattedStartTime;
-    activityDetails.endDate = formattedEndDate;
+    activityDetails.start_time = formattedStartTime;
+    activityDetails.end_date = formattedEndDate;
     if (endDate !== null && endDate !== "") {
       if (endDate["$d"] !== undefined) {
         activityDetails.end_date_day = endDate["$d"].toString().split(" ")[0];
@@ -311,7 +310,7 @@ const AddNewActivity = (props) => {
       activityDetails.end_date_day = "";
       activityDetails.end_date_month = "";
     }
-    activityDetails.endTime = formattedEndTime;
+    activityDetails.end_time = formattedEndTime;
     activityDetails.description = description;
     activityDetails.id = props.activityID;
     activityDetails.locationType = locationType;
