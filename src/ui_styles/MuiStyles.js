@@ -63,10 +63,10 @@ export const linkPopupStyle = {
   position: "absolute",
   // display:"flex",
   // justifyContent:"center",
-  top: "40%",
-  left: "34.5%",
-  width: "30%",
-  bgcolor: "black",
+  top: "20%",
+  left: "25.5%",
+  width: "50%",
+  bgcolor: "#161616",
   border: "2px solid #DAA520",
   boxShadow: 24,
   pt: 1,
@@ -173,6 +173,10 @@ export const privacyAndCategoryTheme = createTheme({
   //   },
   // },
 });
+
+export const joinCodeBoxStyle = {
+  borderStyle:""
+}
 
 export const event_card_style_desktop = {
   minWidth: "100%",

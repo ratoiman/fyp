@@ -500,6 +500,7 @@ const AddNewActivity = (props) => {
           <CloseOutlinedIcon sx={editButtonStyle} />
         </IconButton>
       </div>
+      
       <Container className="justify-content-center">
         <h1 style={{ color: "#DAA520" }}>{props.header}</h1>
 

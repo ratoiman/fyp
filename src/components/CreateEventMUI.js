@@ -43,6 +43,8 @@ import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOu
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import PlacesAutocomplete from "./PlacesAutocomplete";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import PrivacySettingConfigPopover from "./PrivacySettingConfigPopover";
 
 const CreateEvent = () => {
   // const [error, setError] = useState("");
@@ -129,13 +131,19 @@ const CreateEvent = () => {
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
 
   // Privacy and categories
-  const [visibility, setVisibility] = useState("Public");
+  const [visibility, setVisibility] = useState("Private");
   const [category, setCategory] = useState("Category");
   const categories = ["Music", "Improv", "Sports", "Drama", "Party"];
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
   const [openCategory, setOpenCategory] = useState(false);
+
+  // Privacy settings
+  const [joinCode, setJoinCode] = useState("");
+  const [joinByCodeOpen, setJoinByCodeOpen] = useState(false);
+  const [isPrivacyConfigured, setIsPrivacyConfigured] = useState(false);
+  const [configurePrivacyPopout, setConfigurePrivacyPopout] = useState(false);
 
   // Location and location type
   const [locationType, setLocationType] = useState("in person");
@@ -414,6 +422,11 @@ const CreateEvent = () => {
     setOpen(!open);
   };
 
+  const handlePrivacyConfig = (val) => {
+    console.log("poput ", configurePrivacyPopout);
+    setConfigurePrivacyPopout(val);
+  };
+
   const handleLocationTypeClick = (event) => {
     setLocationTypeAnchor(event.currentTarget);
     setLocationTypeOpen(!locationTypeOpen);
@@ -548,7 +561,7 @@ const CreateEvent = () => {
     }
   };
 
-  console.log("act ", activities);
+  // console.log("act ", activities);
 
   return (
     <>
@@ -730,102 +743,224 @@ const CreateEvent = () => {
               {/* Event privacy and category*/}
               <Box className="mt-3">
                 <Stack direction="row" spacing={3}>
-                  <Box className="w-100">
-                    <ThemeProvider theme={submitButtonTheme}>
-                      <Button
-                        aria-controls={open ? "group-menu" : undefined}
-                        aria-haspopup="true"
-                        aria-expanded={open ? "true" : undefined}
-                        variant="outlined"
-                        color="primary"
-                        onClick={handlePrivacyClick}
-                        endIcon={<ArrowDropDown />}
-                        startIcon={
-                          visibility === "Private" ? (
-                            <LockOutlinedIcon sx={{ width: "20px" }} />
-                          ) : (
-                            <PublicOutlinedIcon sx={{ width: "20px" }} />
-                          )
-                        }
+                  {visibility === "Public" ? (
+                    <Box className="w-100">
+                      <ThemeProvider theme={submitButtonTheme}>
+                        <Button
+                          aria-controls={open ? "group-menu" : undefined}
+                          aria-haspopup="true"
+                          aria-expanded={open ? "true" : undefined}
+                          variant="outlined"
+                          color="primary"
+                          onClick={handlePrivacyClick}
+                          endIcon={<ArrowDropDown />}
+                          startIcon={
+                            visibility === "Private" ? (
+                              <LockOutlinedIcon sx={{ width: "20px" }} />
+                            ) : (
+                              <PublicOutlinedIcon sx={{ width: "20px" }} />
+                            )
+                          }
+                          sx={{
+                            width: "100%",
+                            fontWeight: "500",
+                            letterSpacing: "1.5px",
+                          }}
+                        >
+                          {visibility}
+                        </Button>
+                      </ThemeProvider>
+                      <Menu
+                        id="group-menu"
+                        anchorEl={anchorEl}
+                        open={open}
+                        // open={true}
+                        onClose={() => handleClose(setAnchorEl, setOpen)}
+                        aria-labelledby="group-demo-button"
                         sx={{
-                          width: "100%",
-                          fontWeight: "500",
-                          letterSpacing: "1.5px",
+                          minWidth: "120px",
+                          // minHeight: "150px",
+                          fontWeight: "600",
+                          "--List-decorator-size": "24px",
+                          borderStyle: "none",
                         }}
                       >
-                        {visibility}
-                      </Button>
-                    </ThemeProvider>
-                    <Menu
-                      id="group-menu"
-                      anchorEl={anchorEl}
-                      open={open}
-                      // open={true}
-                      onClose={() => handleClose(setAnchorEl, setOpen)}
-                      aria-labelledby="group-demo-button"
-                      sx={{
-                        minWidth: "120px",
-                        // minHeight: "150px",
-                        fontWeight: "600",
-                        "--List-decorator-size": "24px",
-                        borderStyle: "none",
-                      }}
-                    >
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "center",
-                          borderRadius: "25px",
-                          bgcolor: "#daa520",
-                          zIndex: "2",
-                          minHeight: "80px",
-                        }}
-                      >
-                        <Stack direction="column">
-                          <Box className="menu-item">
-                            <MenuItem
-                              sx={new_event_menu_item_style}
-                              onClick={() => {
-                                setVisibility("Public");
-                                handleClose(setAnchorEl, setOpen);
-                              }}
-                            >
-                              <Stack direction="row" spacing={0}>
-                                <Box sx={{ transform: "translateY(2px)" }}>
-                                  <ListItemDecorator>
-                                    <PublicOutlinedIcon fontSize="xs" />
-                                  </ListItemDecorator>
-                                </Box>
-                                <Box>Public</Box>
-                              </Stack>
-                            </MenuItem>
-                          </Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            borderRadius: "25px",
+                            bgcolor: "#daa520",
+                            zIndex: "2",
+                            minHeight: "80px",
+                          }}
+                        >
+                          <Stack direction="column">
+                            <Box className="menu-item">
+                              <MenuItem
+                                sx={new_event_menu_item_style}
+                                onClick={() => {
+                                  setVisibility("Public");
+                                  handleClose(setAnchorEl, setOpen);
+                                }}
+                              >
+                                <Stack direction="row" spacing={0}>
+                                  <Box sx={{ transform: "translateY(2px)" }}>
+                                    <ListItemDecorator>
+                                      <PublicOutlinedIcon fontSize="xs" />
+                                    </ListItemDecorator>
+                                  </Box>
+                                  <Box>Public</Box>
+                                </Stack>
+                              </MenuItem>
+                            </Box>
 
-                          <Box className="menu-item">
-                            <MenuItem
-                              sx={new_event_menu_item_style}
-                              endIcon={<LockOutlinedIcon />}
-                              onClick={() => {
-                                setVisibility("Private");
-                                handleClose(setAnchorEl, setOpen);
+                            <Box className="menu-item">
+                              <MenuItem
+                                sx={new_event_menu_item_style}
+                                endIcon={<LockOutlinedIcon />}
+                                onClick={() => {
+                                  setVisibility("Private");
+                                  handleClose(setAnchorEl, setOpen);
+                                }}
+                              >
+                                <Stack direction="row" spacing={0}>
+                                  <Box sx={{ transform: "translateY(2px)" }}>
+                                    <ListItemDecorator>
+                                      <LockOutlinedIcon fontSize="xs" />
+                                    </ListItemDecorator>
+                                  </Box>
+                                  <Box>Private</Box>
+                                </Stack>
+                              </MenuItem>
+                            </Box>
+                          </Stack>
+                        </Box>
+                        <ListDivider />
+                      </Menu>
+                    </Box>
+                  ) : (
+                    <>
+                      <Box className="w-100">
+                        <ThemeProvider theme={submitButtonTheme}>
+                          <Stack direction="row">
+                            <Button
+                              aria-controls={open ? "group-menu" : undefined}
+                              aria-haspopup="true"
+                              aria-expanded={open ? "true" : undefined}
+                              variant="outlined"
+                              color="primary"
+                              onClick={handlePrivacyClick}
+                              endIcon={<ArrowDropDown />}
+                              startIcon={
+                                visibility === "Private" ? (
+                                  <LockOutlinedIcon sx={{ width: "20px" }} />
+                                ) : (
+                                  <PublicOutlinedIcon sx={{ width: "20px" }} />
+                                )
+                              }
+                              sx={{
+                                width: "100%",
+                                fontWeight: "500",
+                                letterSpacing: "1.5px",
+                                marginRight: "10px",
                               }}
                             >
-                              <Stack direction="row" spacing={0}>
-                                <Box sx={{ transform: "translateY(2px)" }}>
-                                  <ListItemDecorator>
-                                    <LockOutlinedIcon fontSize="xs" />
-                                  </ListItemDecorator>
-                                </Box>
-                                <Box>Private</Box>
-                              </Stack>
-                            </MenuItem>
+                              {visibility}
+                            </Button>
+
+                            {/* Privacy settings */}
+                            <Button
+                              aria-controls={open ? "group-menu" : undefined}
+                              aria-haspopup="true"
+                              aria-expanded={open ? "true" : undefined}
+                              variant="outlined"
+                              // color={
+                              //   isPrivacyConfigured ? "primary" : "disabled"
+                              // }
+                              onClick={() => handlePrivacyConfig(true)}
+                              startIcon={<SettingsOutlinedIcon />}
+                              sx={{
+                                width: "100%",
+                                fontWeight: "500",
+                                letterSpacing: "1.5px",
+                              }}
+                            >
+                              {joinCode !== "" ? joinCode : "privacy settings"}
+                            </Button>
+                          </Stack>
+                        </ThemeProvider>
+                        <Menu
+                          id="group-menu"
+                          anchorEl={anchorEl}
+                          open={open}
+                          // open={true}
+                          onClose={() => handleClose(setAnchorEl, setOpen)}
+                          aria-labelledby="group-demo-button"
+                          sx={{
+                            minWidth: "120px",
+                            // minHeight: "150px",
+                            fontWeight: "600",
+                            "--List-decorator-size": "24px",
+                            borderStyle: "none",
+                          }}
+                        >
+                          <Box
+                            sx={{
+                              display: "flex",
+                              justifyContent: "center",
+                              borderRadius: "25px",
+                              bgcolor: "#daa520",
+                              zIndex: "2",
+                              minHeight: "80px",
+                            }}
+                          >
+                            <Stack direction="column">
+                              <Box className="menu-item">
+                                <MenuItem
+                                  sx={new_event_menu_item_style}
+                                  onClick={() => {
+                                    setVisibility("Public");
+                                    handleClose(setAnchorEl, setOpen);
+                                  }}
+                                >
+                                  <Stack direction="row" spacing={0}>
+                                    <Box sx={{ transform: "translateY(2px)" }}>
+                                      <ListItemDecorator>
+                                        <PublicOutlinedIcon fontSize="xs" />
+                                      </ListItemDecorator>
+                                    </Box>
+                                    <Box>Public</Box>
+                                  </Stack>
+                                </MenuItem>
+                              </Box>
+
+                              <Box className="menu-item">
+                                <MenuItem
+                                  sx={new_event_menu_item_style}
+                                  endIcon={<LockOutlinedIcon />}
+                                  onClick={() => {
+                                    setVisibility("Private");
+                                    handleClose(setAnchorEl, setOpen);
+                                  }}
+                                >
+                                  <Stack direction="row" spacing={0}>
+                                    <Box sx={{ transform: "translateY(2px)" }}>
+                                      <ListItemDecorator>
+                                        <LockOutlinedIcon fontSize="xs" />
+                                      </ListItemDecorator>
+                                    </Box>
+                                    <Box>Private</Box>
+                                  </Stack>
+                                </MenuItem>
+                              </Box>
+                            </Stack>
                           </Box>
-                        </Stack>
+                          <ListDivider />
+                        </Menu>
                       </Box>
-                      <ListDivider />
-                    </Menu>
-                  </Box>
-
+                    </>
+                  )}
                   {/* Event category */}
                   <Box className="w-100">
                     <Box>
@@ -1550,7 +1685,7 @@ const CreateEvent = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={isMobile ? popupStyleMobile : popupStyle}>
-                {console.log("act start date", activityStartDate)}
+                {/* {console.log("act start date", activityStartDate)} */}
 
                 <AddNewActivity
                   type={"new"}
@@ -1614,7 +1749,7 @@ const CreateEvent = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={popupStyle}>
-                {console.log("edit start date", editActivityStartDate)}
+                {/* {console.log("edit start date", editActivityStartDate)} */}
 
                 <AddNewActivity
                   //prop to identify if popup is edit or new activity
@@ -1668,6 +1803,29 @@ const CreateEvent = () => {
                   currentDate={currentDate}
                   currentTime={currentTime}
                   inversedCurrentDate={inversedCurrentDate}
+                />
+              </Box>
+            </Modal>
+
+            {/* Privacy settings */}
+            <Modal
+              sx={{ overflow: "auto" }}
+              open={configurePrivacyPopout}
+              aria-labelledby="modal-modal-title"
+              aria-describedby="modal-modal-description"
+            >
+              <Box>
+                {/* {console.log("edit start date", editActivityStartDate)} */}
+
+                <PrivacySettingConfigPopover
+                  closePopup={handlePrivacyConfig}
+                  joinCode={joinCode}
+                  setJoinCode={setJoinCode}
+                  setIsPrivacyConfigured={setIsPrivacyConfigured}
+                  setConfigurePrivacyPopout={setConfigurePrivacyPopout}
+                  isPrivacyConfigured={isPrivacyConfigured}
+                  setJoinByCodeOpen={setJoinByCodeOpen}
+                  joinByCodeOpen={joinByCodeOpen}
                 />
               </Box>
             </Modal>
