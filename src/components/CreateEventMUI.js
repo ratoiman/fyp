@@ -131,7 +131,7 @@ const CreateEvent = () => {
   const [endTimeErrorMessage, setEndTimeErrorMessage] = useState(false);
 
   // Privacy and categories
-  const [visibility, setVisibility] = useState("Private");
+  const [visibility, setVisibility] = useState("Public");
   const [category, setCategory] = useState("Category");
   const categories = ["Music", "Improv", "Sports", "Drama", "Party"];
   const [anchorEl, setAnchorEl] = useState(null);
@@ -505,6 +505,7 @@ const CreateEvent = () => {
           marker: marker,
           meet_link: meetLink,
           privacy: visibility,
+          join_code:joinCode,
           category: category,
         }).then(async function () {
           activities.map(async (activity) => {
