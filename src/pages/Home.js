@@ -55,10 +55,18 @@ const Home = () => {
     setEditSelectedEvent(true);
   };
 
+  const refreshEdit = () => {
+    setEvents(new Set());
+    setEventsDetails([]);
+    getEvents(db, setIsLoading, setEvents);
+    getEventsDetails(db, events, eventsDetails, setEventsDetails);
+  };
+
   const closeEvent = () => {
     // navigator("/event")
     setSelectedEventID(null);
     setEventPageLoad(false);
+    console.log("page load ", eventPageLoad);
   };
 
   const loading = () => {
@@ -81,6 +89,7 @@ const Home = () => {
     loading();
   }, [eventsDetails]);
 
+  console.log("page load ", eventPageLoad, "edit ", editSelectedEvent);
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
@@ -154,6 +163,9 @@ const Home = () => {
                           tiktok={eventDetails["details"].tiktok}
                           twitter={eventDetails["details"].twitter}
                           facebook={eventDetails["details"].facebook}
+                          privacy={eventDetails["details"].privacy}
+                          category={eventDetails["details"].category}
+                          locationType={eventDetails["details"].location_type}
                           locationString={
                             eventDetails["details"].location_string
                           }
@@ -201,6 +213,7 @@ const Home = () => {
               setEventPageLoad={setEventPageLoad}
               eventDetails={editEventDetails}
               closeEvent={closeEvent}
+              refreshEdit={refreshEdit}
             />
           </>
         );

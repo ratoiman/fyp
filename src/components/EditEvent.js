@@ -603,7 +603,6 @@ const EditEvent = (props) => {
               activity.id
             );
 
-            console.log("activity ", activity.id, "", activity);
             await setDoc(activitiesRef, {
               title: activity.title,
               start_date: activity.start_date,
@@ -642,6 +641,7 @@ const EditEvent = (props) => {
       });
       props.setEditSelectedEvent(false);
       props.closeEvent();
+      props.refreshEdit();
       console.log("SUCCESS");
     } else {
       setShowError(true);
@@ -680,6 +680,7 @@ const EditEvent = (props) => {
                 onClick={() => {
                   props.setEditSelectedEvent(false);
                   props.closeEvent();
+                  props.refreshEdit();
                 }}
               >
                 <CloseOutlinedIcon sx={editButtonStyle} />

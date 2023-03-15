@@ -152,6 +152,28 @@ export const submitButtonTheme = createTheme({
   // },
 });
 
+export const privacyAndCategoryTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#DAA520",
+      contrastText: "#161616",
+    },
+    secondary: {
+      main: "#ff3333",
+      contrastText: "#161616",
+    },
+    disabled: {
+      main: "#777a78",
+      contrastText: "#FFF",
+    },
+  },
+  // typography: {
+  //   h5: {
+  //     fontSize: "10px",
+  //   },
+  // },
+});
+
 export const event_card_style_desktop = {
   minWidth: "100%",
   maxWidth: "100%",
@@ -217,18 +239,19 @@ export const topbar_buttons = {
 };
 
 export const following_button = {
-  minWidth: "130px",
-  maxWidth: "130px",
-  transform: "translatey(-20%)",
+  width: "110px",
+  height:"30px",
   fontWeight: "bold",
+  // backgroundColor: "rgb(17,17,17)",
+  fontSize: "12px",
 };
 
 export const follow_button = {
-  minWidth: "130px",
-  maxWidth: "130px",
-  transform: "translatey(-20%)",
+  width: "120px",
+  height:"30px",
   backgroundColor: "rgb(17,17,17)",
   fontWeight: "bold",
+  fontSize: "12px",
 };
 
 export const display_events_category_box_title = {
@@ -425,5 +448,3 @@ export const deleteLocationStyleMobile = {
   borderTopLeftRadius: "3px",
   height: "56px",
 };
-
-

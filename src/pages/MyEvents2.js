@@ -28,6 +28,7 @@ import { submitButtonTheme } from "../ui_styles/MuiStyles";
 import Button from "@mui/material/Button";
 import { Navigate } from "react-router-dom";
 import EditEvent from "../components/EditEvent";
+import { isEqual } from "lodash";
 
 const MyEvents2 = (props) => {
   const { user } = useUserAuth();
@@ -43,8 +44,6 @@ const MyEvents2 = (props) => {
   const [editEventDetails, setEditEventDetails] = useState(new Object());
 
   const getUserEvents = () => {
-    console.log("before getUserEvents ", userEvents)
-
     try {
       if (user !== null) {
         if (Object.keys(user).length !== 0) {
@@ -60,16 +59,15 @@ const MyEvents2 = (props) => {
           });
         }
       }
-    console.log("getUserEvents ", userEvents)
     } catch (e) {
       console.log(e);
     }
   };
 
   const getUserEventsDetails = () => {
-    console.log("before event details", userEventsDetails)
     userEventsArr.map(async (event) => {
       const found = userEventsDetails.find((ev) => ev["id"] === event.id);
+      console.log("user details ", userEventsDetails);
 
       if (!found) {
         let eventObj = new Object();
@@ -112,9 +110,6 @@ const MyEvents2 = (props) => {
         setUserEventsDetails((eventDetails) => [...eventDetails, eventObj]);
       }
     });
-
-    console.log("after event details", userEventsDetails)
-
   };
 
   const getEditEventDetails = (id) => {
@@ -131,7 +126,6 @@ const MyEvents2 = (props) => {
 
   const loading = () => {
     if (userEventsDetails.length > 0) {
-      console.log("ue ", userEventsDetails);
       setIsLoading(false);
     } else {
       setIsLoading(true);
@@ -158,6 +152,15 @@ const MyEvents2 = (props) => {
     setEventPageLoad(false);
   };
 
+  const refreshEdit = () => {
+    setUserEvents(new Set());
+    setUserEventsArr([]);
+    setUserEventsDetails([]);
+
+    getUserEvents();
+    getUserEventsDetails();
+  };
+
   useEffect(() => {
     getUserEvents();
   }, [user]);
@@ -174,7 +177,6 @@ const MyEvents2 = (props) => {
     loading();
   }, [userEventsDetails]);
 
-  console.log("Loading ", isLoading);
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
@@ -253,6 +255,9 @@ const MyEvents2 = (props) => {
                             tiktok={eventDetails["details"].tiktok}
                             twitter={eventDetails["details"].twitter}
                             facebook={eventDetails["details"].facebook}
+                            privacy={eventDetails["details"].privacy}
+                            category={eventDetails["details"].category}
+                            locationType={eventDetails["details"].location_type}
                             locationString={
                               eventDetails["details"].location_string
                             }
@@ -347,6 +352,9 @@ const MyEvents2 = (props) => {
                             tiktok={eventDetails["details"].tiktok}
                             twitter={eventDetails["details"].twitter}
                             facebook={eventDetails["details"].facebook}
+                            privacy={eventDetails["details"].privacy}
+                            category={eventDetails["details"].category}
+                            locationType={eventDetails["details"].location_type}
                             locationString={
                               eventDetails["details"].location_string
                             }
@@ -395,6 +403,7 @@ const MyEvents2 = (props) => {
               setEventPageLoad={setEventPageLoad}
               eventDetails={editEventDetails}
               closeEvent={closeEvent}
+              refreshEdit={refreshEdit}
             />
           </>
         );

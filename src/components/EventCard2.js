@@ -16,6 +16,7 @@ import {
   popupStyle,
   card_action_style,
   card_action_style_mobile,
+  privacyAndCategoryTheme,
 } from "../ui_styles/MuiStyles";
 import { isMobile } from "react-device-detect";
 import { Box, CardActionArea, Modal, Stack } from "@mui/material";
@@ -31,6 +32,8 @@ import { collection } from "firebase/firestore";
 import ConfirmAction from "./ConfirmAction";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 
 const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
@@ -99,6 +102,9 @@ const EventCard2 = (props) => {
     getFollowStatus();
   }, [userEvents]);
 
+  {
+    console.log("event card location type", props.locationType);
+  }
   if (eventPageLoad === false) {
     return (
       <>
@@ -114,7 +120,8 @@ const EventCard2 = (props) => {
             <CardMedia
               image={texture}
               sx={{
-                maxHeight: "55px",
+                minHeight: "55px",
+                maxHeight: "100px",
                 minWidth: "100%",
                 display: "flex",
               }}
@@ -122,31 +129,99 @@ const EventCard2 = (props) => {
               <CardContent
                 sx={{
                   minWidth: "100%",
+                  minHeight: "65px",
                   display: "flex",
                 }}
               >
                 {" "}
-                <Stack direction="row" spacing={1} sx={{ width: "100%" }}>
-                  <Box sx={{ width: "100%" }}>
-                    <Typography
-                      variant="h7"
-                      sx={{ color: "rgb(173, 173, 173)", paddingRight: "20%" }}
+                <Stack
+                  direction="row"
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "left",
+                  }}
+                >
+                  <ThemeProvider theme={privacyAndCategoryTheme}>
+                    <Box sx={{ marginTop: "1px" }}>
+                      <Button
+                        disableElevation
+                        disableRipple
+                        variant="text"
+                        color={
+                          props.privacy === "Public" ? "primary" : "secondary"
+                        }
+                        startIcon={
+                          props.privacy === "Public" ? (
+                            <PublicOutlinedIcon style={{ height: "15px" }} />
+                          ) : (
+                            <LockOutlinedIcon style={{ height: "15px" }} />
+                          )
+                        }
+                      >
+                        {props.privacy}
+                      </Button>
+                    </Box>
+                    <Box>
+                      <Button
+                        disableElevation
+                        disableRipple
+                        variant="text"
+                        color="primary"
+                        sx={{ marginTop: "1px" }}
+                      >
+                        {props.category === "Category"
+                          ? "General"
+                          : props.category}
+                      </Button>
+                    </Box>
+                  </ThemeProvider>
+                  <Box
+                    sx={{
+                      width: "100%",
+                      marginLeft: "10px",
+                    }}
+                  >
+                    <Stack
+                      direction="row"
+                      sx={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "left",
+                        marginTop: "6px",
+                      }}
                     >
-                      {props.locationDisplayName === undefined &&
-                      props.locationString === undefined ? (
-                        <></>
-                      ) : props.locationType === "Online" ? (
-                        <VideoCameraFrontOutlinedIcon />
-                      ) : (
-                        <LocationOnOutlinedIcon />
-                      )}
-                      {props.locationDisplayName === ""
-                        ? props.locationString
-                        : props.locationDisplayName}{" "}
-                    </Typography>
+                      <Typography
+                        // variant="h7"
+                        sx={{ color: "rgb(173, 173, 173)", paddingRight: "1%" }}
+                      >
+                        {props.locationDisplayName === undefined &&
+                        props.locationString === undefined ? (
+                          <></>
+                        ) : props.locationType === "Online" ? (
+                          <VideoCameraFrontOutlinedIcon
+                            style={{ height: "15px" }}
+                          />
+                        ) : (
+                          <LocationOnOutlinedIcon style={{ height: "15px" }} />
+                        )}
+                      </Typography>
+                      <Typography
+                        variant="h7"
+                        sx={{ color: "rgb(173, 173, 173)" }}
+                      >
+                        {props.locationDisplayName === ""
+                          ? props.locationString === ""
+                            ? props.locationType === "Online"
+                              ? "Online event"
+                              : "In person event"
+                            : props.locationString
+                          : props.locationDisplayName}{" "}
+                      </Typography>
+                    </Stack>
                   </Box>
                   <Box>
-                    <ThemeProvider theme={submitButtonTheme}>
+                    <ThemeProvider theme={privacyAndCategoryTheme}>
                       {isFollowing ? (
                         <Button
                           onClick={() => {
