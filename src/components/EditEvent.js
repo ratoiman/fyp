@@ -165,11 +165,6 @@ const EditEvent = (props) => {
   const { user } = useUserAuth();
   const today = new Date();
 
-  // Backend references
-  const eventsRef = collection(db, "events");
-
-  const navigate = useNavigate();
-
   //   Setting states using data passed from parent. props.eventDetails contains everything
   const getEventDetails = () => {
     // console.log(props.eventDetails["details"])
@@ -206,7 +201,7 @@ const EditEvent = (props) => {
     setTiktok(props.eventDetails["details"].tiktok);
     setFacebook(props.eventDetails["details"].facebook);
     setTwitter(props.eventDetails["details"].twitter);
-    console.log(props.eventDetails["activities"]);
+    // console.log(props.eventDetails["activities"]);
   };
 
   const formatDate = (date, setter, format) => {
@@ -406,7 +401,7 @@ const EditEvent = (props) => {
     });
 
     const temp2 = [...temp, activity];
-    console.log("temp2 ", temp2);
+    // console.log("temp2 ", temp2);
     // sorting in chronological order
     temp2.sort(function (a, b) {
       return (
@@ -630,7 +625,7 @@ const EditEvent = (props) => {
               location_display_name: activity.location_display_name,
               location_type: activity.location_type,
               marker: activity.marker,
-              meet_link: activity.meetLink,
+              meet_link: activity.meet_link,
             });
           });
         });
@@ -653,7 +648,7 @@ const EditEvent = (props) => {
     }
   };
 
-  //   console.log("details ", props.eventDetails);
+  // console.log("details ", props.eventDetails["activities"]);
   return (
     <>
       <Box

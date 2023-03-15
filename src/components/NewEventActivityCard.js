@@ -45,8 +45,7 @@ const NewEventActivityCard = (props) => {
 
   const handleEdit = (activity) => {
     const actArr = props.activities.find((x) => x.id === activity.id);
-    console.log("arr", actArr);
-
+    console.log("edit ", actArr)
     // const dateTo = stringToDate(actArr.startDate);
     // console.log(stringToDate(stringToDate(actArr.startDate)));
     props.setActivityID(activity.id);
@@ -64,6 +63,8 @@ const NewEventActivityCard = (props) => {
     props.setActivityLocationDisplayName(actArr.location_display_name);
     props.setActivityMarker(actArr.marker);
     props.setActivityMeetLink(actArr.meet_link);
+    console.log("arr", props.activities);
+
   };
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import Loading from "./Loading";
 import "@reach/combobox/styles.css";
 
 const GoogleMapsIntegration = (props) => {
+  
   const { isLoaded } = useLoadScript({
     googleMapsApiKey: process.env.REACT_APP_PUBLIC_API_KEY_MAPS,
     libraries: ["places"],

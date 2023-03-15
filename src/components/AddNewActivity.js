@@ -131,7 +131,7 @@ const AddNewActivity = (props) => {
   let activityDetails = new Object();
 
   const formatDate = (date, setter, format) => {
-    let formatted = null;
+    let formatted = "";
     try {
       if (date && typeof date !== Object) {
         const day = date.toDate().getDate().toString();
@@ -281,7 +281,7 @@ const AddNewActivity = (props) => {
     formatTime(endTime, setFormattedEndTime);
     activityDetails.title = title;
     activityDetails.start_date = formattedStartDate;
-    if (startDate !== null) {
+    if (startDate !== null && startDate !== undefined) {
       if (startDate["$d"] !== undefined) {
         activityDetails.start_date_day = startDate["$d"]
           .toString()
@@ -313,15 +313,14 @@ const AddNewActivity = (props) => {
     activityDetails.end_time = formattedEndTime;
     activityDetails.description = description;
     activityDetails.id = props.activityID;
-    activityDetails.locationType = locationType;
-    activityDetails.locationString = locationString;
+    activityDetails.location_type = locationType;
+    activityDetails.location_string = locationString;
     activityDetails.marker = marker;
-    activityDetails.locationDisplayName = locationDisplayName;
-    activityDetails.meetLink = meetLink;
+    activityDetails.location_display_name = locationDisplayName;
+    activityDetails.meet_link = meetLink;
   };
 
   const handleDelete = () => {
-    console.log("Handle delete", props.activityID);
     if (
       props.activityID === undefined ||
       props.activityID === "" ||
@@ -366,20 +365,23 @@ const AddNewActivity = (props) => {
       if (props.eventLocationType === "online") {
         setMeetLink(props.eventMeetLink);
       } else {
-        console.log("props ", props.locationString);
-        if (props.locationString === undefined || props.locationString === "") {
+        console.log("props ", props.eventLocationString);
+        if (
+          props.eventLocationString === undefined ||
+          props.eventLocationString === ""
+        ) {
           setLocationString("");
         } else {
-          setLocationString(props.locationString);
+          setLocationString(props.eventLocationString);
         }
 
         if (
-          props.locationDisplayName === undefined ||
-          props.locationDisplayName === ""
+          props.eventLocationDisplayName === undefined ||
+          props.eventLocationDisplayName === ""
         ) {
           setLocationDisplayName("");
         } else {
-          setLocationDisplayName(props.locationDisplayName);
+          setLocationDisplayName(props.eventLocationDisplayName);
         }
 
         if (props.marker === undefined || props.marker === "") {
@@ -448,8 +450,8 @@ const AddNewActivity = (props) => {
   };
 
   const handleSubmit = () => {
+    setLocationDefault();
     saveActivity();
-
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
     checkDateAndTime();
@@ -466,13 +468,19 @@ const AddNewActivity = (props) => {
       props.saveActivity(activityDetails);
 
       // Cleanup activity states from CreateEvent
-
+      // console.log("DATE", endDate);
       props.setActivityTitle("");
-      props.setActivityStartDate(null);
-      props.setActivityStartTime(null);
-      props.setActivityEndDate(null);
-      props.setActivityEndTime(null);
+      props.setActivityStartDate();
+      props.setActivityStartTime("");
+      props.setActivityEndDate("");
+      props.setActivityEndTime("");
       props.setActivityDescription("");
+      props.setActivityID("");
+      props.setActivityLocationType("");
+      props.setActivityLocationString("");
+      props.setActivityLocationDisplayName("");
+      props.setActivityMarker("");
+      props.setActivityMeetLink("");
       props.setTrigger(false);
     }
   };

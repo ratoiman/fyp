@@ -502,7 +502,7 @@ const CreateEvent = () => {
               "activities",
               activity.id
             );
-            console.log("act ",activity);
+            console.log("act ", activity);
             await setDoc(activitiesRef, {
               title: activity.title,
               start_date: activity.start_date,
@@ -525,7 +525,7 @@ const CreateEvent = () => {
               location_display_name: activity.location_display_name,
               location_type: activity.location_type,
               marker: activity.marker,
-              meet_link: activity.meetLink,
+              meet_link: activity.meet_link,
             });
           });
         });
@@ -542,10 +542,13 @@ const CreateEvent = () => {
       });
       navigate("/");
       console.log("SUCCESS");
+      console.log("act after submit", activities);
     } else {
       setShowError(true);
     }
   };
+
+  console.log("act ", activities);
 
   return (
     <>
@@ -1547,6 +1550,8 @@ const CreateEvent = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={isMobile ? popupStyleMobile : popupStyle}>
+                {console.log("act start date", activityStartDate)}
+
                 <AddNewActivity
                   type={"new"}
                   header={"Add New Activity"}
@@ -1609,6 +1614,8 @@ const CreateEvent = () => {
               aria-describedby="modal-modal-description"
             >
               <Box sx={popupStyle}>
+                {console.log("edit start date", editActivityStartDate)}
+
                 <AddNewActivity
                   //prop to identify if popup is edit or new activity
                   type={"edit"}

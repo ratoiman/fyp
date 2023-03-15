@@ -43,6 +43,8 @@ const MyEvents2 = (props) => {
   const [editEventDetails, setEditEventDetails] = useState(new Object());
 
   const getUserEvents = () => {
+    console.log("before getUserEvents ", userEvents)
+
     try {
       if (user !== null) {
         if (Object.keys(user).length !== 0) {
@@ -58,12 +60,14 @@ const MyEvents2 = (props) => {
           });
         }
       }
+    console.log("getUserEvents ", userEvents)
     } catch (e) {
       console.log(e);
     }
   };
 
   const getUserEventsDetails = () => {
+    console.log("before event details", userEventsDetails)
     userEventsArr.map(async (event) => {
       const found = userEventsDetails.find((ev) => ev["id"] === event.id);
 
@@ -108,9 +112,14 @@ const MyEvents2 = (props) => {
         setUserEventsDetails((eventDetails) => [...eventDetails, eventObj]);
       }
     });
+
+    console.log("after event details", userEventsDetails)
+
   };
 
   const getEditEventDetails = (id) => {
+    getUserEvents();
+    getUserEventsDetails();
     let arr = Array.from(userEventsDetails);
     let found = arr.find((ev) => ev["id"] === id);
     console.log("found ", id);
@@ -122,7 +131,7 @@ const MyEvents2 = (props) => {
 
   const loading = () => {
     if (userEventsDetails.length > 0) {
-      console.log("ue ", userEventsDetails)
+      console.log("ue ", userEventsDetails);
       setIsLoading(false);
     } else {
       setIsLoading(true);
@@ -165,7 +174,7 @@ const MyEvents2 = (props) => {
     loading();
   }, [userEventsDetails]);
 
-  console.log("Loading ", isLoading)
+  console.log("Loading ", isLoading);
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
