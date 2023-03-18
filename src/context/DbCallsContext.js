@@ -117,16 +117,16 @@ export const getEvents = (db, setIsLoading, setEvents) => {
   try {
     const eventsRef = collection(db, "events");
     onSnapshot(eventsRef, async () => {
-      //   const data = await getDocs(
-      //     query(
-      //       eventsRef,
-      //       orderBy("start_date"),
-      //       orderBy("start_time"),
-      //       orderBy("end_date"),
-      //       orderBy("end_time")
-      //     )
-      //   );
-      const data = await getDocs(eventsRef);
+        const data = await getDocs(
+          query(
+            eventsRef,
+            orderBy("start_date"),
+            orderBy("start_time"),
+            orderBy("end_date"),
+            orderBy("end_time")
+          )
+        );
+      // const data = await getDocs(eventsRef);
       if (data.docChanges().length === 0) {
         setIsLoading(false);
       }

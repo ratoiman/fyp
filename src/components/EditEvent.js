@@ -135,7 +135,7 @@ const EditEvent = (props) => {
   // Privacy and categories
   const [visibility, setVisibility] = useState("Public");
   const [category, setCategory] = useState("Category");
-  const categories = ["Music", "Improv", "Sports", "Drama", "Party"];
+  const categories = ["Music", "Improv", "Sports", "Drama", "Party", "General"];
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);
@@ -179,7 +179,11 @@ const EditEvent = (props) => {
     const changeDateFormat = (date) => {
       if (date) {
         const arr = date.split("/");
-        const newDate = arr[1] + "/" + arr[0] + "/" + arr[2];
+        let newDate = arr[1] + "/" + arr[0] + "/" + arr[2];
+
+        if (newDate === null) {
+          return "";
+        }
         return newDate;
       } else {
         return "";
@@ -189,13 +193,31 @@ const EditEvent = (props) => {
     setTitle(props.eventDetails["details"].title);
     setSubtitle(props.eventDetails["details"].subtitle);
     setStartDate(changeDateFormat(props.eventDetails["details"].start_date));
-    setStartTime(
-      `Tue Mar 14 2023 ${props.eventDetails["details"].start_time}:00 GMT+0000 (Greenwich Mean Time)`
-    );
+    if (
+      props.eventDetails["details"].start_time !== undefined &&
+      props.eventDetails["details"].start_time !== null &&
+      props.eventDetails["details"].start_time !== ""
+    ) {
+      setStartTime(
+        `Tue Mar 14 2023 ${props.eventDetails["details"].start_time}:00 GMT+0000 (Greenwich Mean Time)`
+      );
+    } else {
+      setStartTime("");
+    }
     setEndDate(changeDateFormat(props.eventDetails["details"].end_date));
-    setEndTime(
-      `Tue Mar 14 2023 ${props.eventDetails["details"].end_time}:00 GMT+0000 (Greenwich Mean Time)`
-    );
+    if (
+      props.eventDetails["details"].end_time !== undefined &&
+      props.eventDetails["details"].end_time !== null &&
+      props.eventDetails["details"].end_time !== ""
+    ) {
+      console.log("set", props.eventDetails["details"].end_time);
+      setEndTime(
+        `Tue Mar 14 2023 ${props.eventDetails["details"].end_time}:00 GMT+0000 (Greenwich Mean Time)`
+      );
+    } else {
+      setEndTime("");
+    }
+    console.log("editing....", props.eventDetails);
     setVisibility(props.eventDetails["details"].privacy);
     setCategory(props.eventDetails["details"].category);
     setLocationType(props.eventDetails["details"].location_type);
@@ -209,12 +231,20 @@ const EditEvent = (props) => {
     setTiktok(props.eventDetails["details"].tiktok);
     setFacebook(props.eventDetails["details"].facebook);
     setTwitter(props.eventDetails["details"].twitter);
-    setJoinCode(props.eventDetails["details"].join_code)
+    setJoinCode(props.eventDetails["details"].join_code);
+    if (
+      props.eventDetails["details"].join_code !== "" &&
+      props.eventDetails["details"].join_code !== undefined &&
+      props.eventDetails["details"].join_code !== null &&
+      props.eventDetails["details"].privacy === "Private"
+    ) {
+      setJoinByCodeOpen(true);
+    }
     // console.log(props.eventDetails["activities"]);
   };
 
   const formatDate = (date, setter, format) => {
-    let formatted = null;
+    let formatted = "";
     if (date) {
       if (typeof date === "string") {
         if (format === "DD/MM/YYYY") {
@@ -324,6 +354,7 @@ const EditEvent = (props) => {
     }
 
     if (!formattedEndDate && formattedEndTime) {
+      console.log("Ed ", formattedEndDate, formattedEndTime);
       isDateAndTimeValid = false;
       setEndDateError(true);
       setEndDateErrorMessage("Please, select a valid end date");
@@ -488,7 +519,6 @@ const EditEvent = (props) => {
   };
 
   const handlePrivacyConfig = (val) => {
-    console.log("poput ", configurePrivacyPopout);
     setConfigurePrivacyPopout(val);
   };
 
@@ -1006,6 +1036,7 @@ const EditEvent = (props) => {
                                 letterSpacing: "1.5px",
                               }}
                             >
+                              {console.log("code", joinCode)}
                               {joinCode !== "" ? joinCode : "privacy settings"}
                             </Button>
                           </Stack>

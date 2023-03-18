@@ -18,6 +18,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { submitButtonTheme } from "../ui_styles/MuiStyles";
 import Button from "@mui/material/Button";
 import EditEvent from "../components/EditEvent";
+import FilterSearchEvent from "../components/FilterSearchEvent";
 
 const Home = () => {
   const [events, setEvents] = useState(new Set());
@@ -28,6 +29,7 @@ const Home = () => {
   const [displayEvents, setDisplayEvents] = useState(true);
   const [editEventDetails, setEditEventDetails] = useState(new Object());
   const [editSelectedEvent, setEditSelectedEvent] = useState(false);
+  const [refreshSearch, setRefreshSearch] = useState(0);
 
   const { user } = useUserAuth();
 
@@ -62,6 +64,15 @@ const Home = () => {
     getEventsDetails(db, events, eventsDetails, setEventsDetails);
   };
 
+  const refreshSearchResult = () => {
+    setRefreshSearch(refreshSearch + 1);
+    console.log("refresh");
+    // setEvents(new Set());
+    setEventsDetails([]);
+    // getEvents(db, setIsLoading, setEvents);
+    // getEventsDetails(db, events, eventsDetails, setEventsDetails);
+  };
+
   const closeEvent = () => {
     // navigator("/event")
     setSelectedEventID(null);
@@ -79,7 +90,7 @@ const Home = () => {
 
   useEffect(() => {
     getEvents(db, setIsLoading, setEvents);
-  }, [user]);
+  }, [user, refreshSearch]);
 
   useEffect(() => {
     getEventsDetails(db, events, eventsDetails, setEventsDetails);
@@ -89,7 +100,7 @@ const Home = () => {
     loading();
   }, [eventsDetails]);
 
-  console.log("page load ", eventPageLoad, "edit ", editSelectedEvent);
+  // console.log("page load ", eventPageLoad, "edit ", editSelectedEvent);
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
@@ -136,6 +147,15 @@ const Home = () => {
                         </ThemeProvider>
                       </Box>
                     </Stack>
+                  </Box>
+                  <Box>
+                    <FilterSearchEvent
+                      eventsDetails={eventsDetails}
+                      searchType="general"
+                      events={events}
+                      setEventsDetails={setEventsDetails}
+                      refreshSearch={refreshSearchResult}
+                    />
                   </Box>
                   <Box display={displayEvents === true ? "" : "none"}>
                     {eventsDetails.map((eventDetails) => {
@@ -227,7 +247,11 @@ const Home = () => {
                   : "display-events-category-box"
               }
             >
-              <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
+              <EventPage
+                eventID={selectedEventID}
+                closeEvent={closeEvent}
+                refreshSearch={refreshSearchResult}
+              />
             </Box>
           </>
         );

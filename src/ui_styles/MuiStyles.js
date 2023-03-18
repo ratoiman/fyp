@@ -268,6 +268,7 @@ export const display_events_category_box_title_stack = {
   display: "flex",
   justifyContent: "center",
   marginLeft: "40px",
+  width:"100%"
 };
 
 export const card_action_style = {

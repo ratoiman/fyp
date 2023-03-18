@@ -133,7 +133,7 @@ const CreateEvent = () => {
   // Privacy and categories
   const [visibility, setVisibility] = useState("Public");
   const [category, setCategory] = useState("Category");
-  const categories = ["Music", "Improv", "Sports", "Drama", "Party"];
+  const categories = ["Music", "Improv", "Sports", "Drama", "Party", "General"];
   const [anchorEl, setAnchorEl] = useState(null);
   const [categoryAnchorEl, setCategoryAnchorEl] = useState(null);
   const [open, setOpen] = useState(false);

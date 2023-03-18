@@ -143,6 +143,7 @@ const EventPage = (props) => {
                 aria-label="close"
                 size="small"
                 onClick={() => {
+                  props.refreshSearch()
                   props.closeEvent();
                 }}
               >

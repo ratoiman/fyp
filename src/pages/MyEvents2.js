@@ -29,12 +29,14 @@ import Button from "@mui/material/Button";
 import { Navigate } from "react-router-dom";
 import EditEvent from "../components/EditEvent";
 import { isEqual } from "lodash";
+import FilterSearchEvent from "../components/FilterSearchEvent";
 
 const MyEvents2 = (props) => {
   const { user } = useUserAuth();
   const [userEvents, setUserEvents] = useState(new Set());
   const [userEventsArr, setUserEventsArr] = useState([]);
   const [userEventsDetails, setUserEventsDetails] = useState([]);
+  const [userEventsDetailsSorted, setUserEventsDetailsSorted] = useState([]);
   const [eventPageLoad, setEventPageLoad] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [displaySubscribed, setDisplaySubscribed] = useState(true);
@@ -42,6 +44,7 @@ const MyEvents2 = (props) => {
   const [selectedEventID, setSelectedEventID] = useState("");
   const [editSelectedEvent, setEditSelectedEvent] = useState(false);
   const [editEventDetails, setEditEventDetails] = useState(new Object());
+  const [refreshSearch, setRefreshSearch] = useState(0);
 
   const getUserEvents = () => {
     try {
@@ -67,8 +70,6 @@ const MyEvents2 = (props) => {
   const getUserEventsDetails = () => {
     userEventsArr.map(async (event) => {
       const found = userEventsDetails.find((ev) => ev["id"] === event.id);
-      console.log("user details ", userEventsDetails);
-
       if (!found) {
         let eventObj = new Object();
         let activities = [];
@@ -108,6 +109,7 @@ const MyEvents2 = (props) => {
         eventObj["id"] = event.id;
 
         setUserEventsDetails((eventDetails) => [...eventDetails, eventObj]);
+        // setUserEventsDetails(temp)
       }
     });
   };
@@ -139,7 +141,6 @@ const MyEvents2 = (props) => {
   };
 
   const handleEdit = (id) => {
-    console.log("id ", id);
     setSelectedEventID(id);
     getEditEventDetails(id);
     setEventPageLoad(true);
@@ -161,9 +162,20 @@ const MyEvents2 = (props) => {
     getUserEventsDetails();
   };
 
+  const refreshSearchResult = () => {
+    setRefreshSearch(refreshSearch + 1);
+    // setUserEvents(new Set());
+    // setUserEventsArr([]);
+    setUserEventsDetails([]);
+
+    // getUserEvents();
+    // getUserEventsDetails();
+    console.log("refresh");
+  };
+
   useEffect(() => {
     getUserEvents();
-  }, [user]);
+  }, [user, refreshSearch]);
 
   useEffect(() => {
     setUserEventsArr(Array.from(userEvents));
@@ -175,6 +187,18 @@ const MyEvents2 = (props) => {
 
   useEffect(() => {
     loading();
+  }, [userEventsDetails]);
+
+  useEffect(() => {
+    const temp = userEventsDetails.sort(function (a, b) {
+      return (
+        a["details"].start_date.localeCompare(b["details"].start_date) ||
+        a["details"].start_time.localeCompare(b["details"].start_time) ||
+        a["details"].end_date.localeCompare(b["details"].end_date) ||
+        a["details"].end_time.localeCompare(b["details"].end_time)
+      );
+    });
+    setUserEventsDetailsSorted(temp);
   }, [userEventsDetails]);
 
   if (user) {
@@ -190,7 +214,7 @@ const MyEvents2 = (props) => {
                     : "display-events-category-box"
                 }
               >
-                <Stack direction="column">
+                <Stack direction="column" sx={{ width: "100%" }}>
                   <Box className="my-events-page-category-title-box">
                     <Stack
                       direction="row"
@@ -226,10 +250,21 @@ const MyEvents2 = (props) => {
                   </Box>
 
                   <Box display={displayAdministrated === true ? "" : "none"}>
-                    {userEventsDetails.map((eventDetails) => {
+                    <FilterSearchEvent
+                      eventsDetails={userEventsDetailsSorted}
+                      searchType="admin"
+                      events={userEvents}
+                      setEventsDetails={setUserEventsDetails}
+                      refreshSearch={refreshSearchResult}
+                    />
+                  </Box>
+
+                  <Box display={displayAdministrated === true ? "" : "none"}>
+                    {userEventsDetailsSorted.map((eventDetails) => {
                       const found = userEvents.find(
                         (ev) => ev["id"] === eventDetails.id
                       );
+
                       if (found.status === "admin") {
                         return (
                           <EventCard2
@@ -273,6 +308,7 @@ const MyEvents2 = (props) => {
                             followingOnly={true}
                             handleEdit={handleEdit}
                             setEditSelectedEvent={setEditSelectedEvent}
+                            refreshSearch={refreshSearchResult}
                           />
                         );
                       }
@@ -323,7 +359,17 @@ const MyEvents2 = (props) => {
                     </Stack>
                   </Box>
                   <Box display={displaySubscribed === true ? "" : "none"}>
-                    {userEventsDetails.map((eventDetails) => {
+                    {/* {console.log("event det", userEventsDetails)} */}
+                    <FilterSearchEvent
+                      eventsDetails={userEventsDetailsSorted}
+                      searchType="guest"
+                      events={userEvents}
+                      setEventsDetails={setUserEventsDetails}
+                      refreshSearch={refreshSearchResult}
+                    />
+                  </Box>
+                  <Box display={displaySubscribed === true ? "" : "none"}>
+                    {userEventsDetailsSorted.map((eventDetails) => {
                       const found = userEvents.find(
                         (ev) => ev["id"] === eventDetails.id
                       );
@@ -370,6 +416,7 @@ const MyEvents2 = (props) => {
                             handleEdit={handleEdit}
                             setEditSelectedEvent={setEditSelectedEvent}
                             followingOnly={true}
+                            refreshSearch={refreshSearchResult}
                           />
                         );
                       }
@@ -408,7 +455,6 @@ const MyEvents2 = (props) => {
           </>
         );
       } else {
-        console.log("edit");
         return (
           <>
             <Box
@@ -418,7 +464,11 @@ const MyEvents2 = (props) => {
                   : "display-events-category-box"
               }
             >
-              <EventPage eventID={selectedEventID} closeEvent={closeEvent} />
+              <EventPage
+                eventID={selectedEventID}
+                closeEvent={closeEvent}
+                refreshSearch={refreshSearchResult}
+              />
             </Box>
           </>
         );

@@ -92,19 +92,19 @@ const EventCard2 = (props) => {
     console.log("Event ", props.eventID, " unfollowed");
   };
 
-  const handleEdit = () => {};
-
   useEffect(() => {
     getUserEvents();
   }, [user]);
 
   useEffect(() => {
+    const n = new Date();
+    console.log("follow", n.getTime());
     getFollowStatus();
   }, [userEvents]);
 
-  {
-    console.log("event card location type", props.locationType);
-  }
+  // {
+  //   console.log("event card location type", props.locationType);
+  // }
   if (eventPageLoad === false) {
     return (
       <>
