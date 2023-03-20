@@ -173,6 +173,8 @@ const MyEvents2 = (props) => {
 
   const refreshSearchResult = () => {
     setRefreshSearch(refreshSearch + 1);
+    setAdminFiltered(false);
+    setGuestFiltered(false);
     setUserEventsDetails([]);
 
     console.log("refresh");

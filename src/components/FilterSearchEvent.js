@@ -30,6 +30,7 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import TuneIcon from "@mui/icons-material/Tune";
+import { isMobile } from "react-device-detect";
 
 const FilterSearchEvent = (props) => {
   const [searchOpen, setSearchOpen] = useState(false);
@@ -206,406 +207,829 @@ const FilterSearchEvent = (props) => {
     loading();
   }, [props.eventsDetails]);
 
-
   useEffect(() => {
     displayClearAll();
   }, [selected, textValue, filterPrivacy, filterCategory]);
 
-  return (
-    <>
-      <Stack direction="row" sx={{ marginTop: 2 }}>
-        <Box
-          sx={{
-            width: "60%",
-            display: "flex",
-            marginBottom: 3,
-            marginLeft: 1.5,
-            marginRight: 1.5,
-          }}
-        >
-          <Autocomplete
-            freeSolo
-            onKeyDown={(event) => {
-              console.log("keydown", event.key);
-              if (event.key === "Escape") {
-                if (textValue !== "") {
-                  setTextValue("");
-                  setSelected("");
-                  // props.refreshSearch();
+  if (!isMobile) {
+    return (
+      <>
+        <Stack direction="row" sx={{ marginTop: 2 }}>
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              marginBottom: 3,
+              marginLeft: 1.5,
+              marginRight: 1.5,
+            }}
+          >
+            <Autocomplete
+              freeSolo
+              onKeyDown={(event) => {
+                console.log("keydown", event.key);
+                if (event.key === "Escape") {
+                  if (textValue !== "") {
+                    setTextValue("");
+                    setSelected("");
+                    // props.refreshSearch();
+                  } else {
+                    setTextValue("");
+                    setSelected("");
+                    props.refreshSearch();
+                  }
+                }
+              }}
+              onChange={(event, value) => {
+                if (value && typeof value === "object") {
+                  props.setFiltered(true);
+                  setTextValue(value["details"].title);
+                  props.setFilteredEventsDetails([value]);
                 } else {
                   setTextValue("");
                   setSelected("");
                   props.refreshSearch();
                 }
-              }
-            }}
-            onChange={(event, value) => {
-              if (value && typeof value === "object") {
-                props.setFiltered(true);
-                setTextValue(value["details"].title);
-                props.setFilteredEventsDetails([value]);
-              } else {
-                setTextValue("");
-                setSelected("");
-                props.refreshSearch();
-              }
-            }}
-            clearIcon={
-              <ThemeProvider theme={submitButtonTheme}>
-                <ClearIcon color="primary" />
-              </ThemeProvider>
-            }
-            open={searchOpen}
-            clearOnEscape
-            // autoComplete
-            sx={{ width: "100%", display: "flex" }}
-            onOpen={() => {
-              setSearchOpen(true);
-            }}
-            onClose={() => {
-              // setTextValue("")
-              setSearchOpen(false);
-            }}
-            options={Array.from(options)}
-            isOptionEqualToValue={(option, value) => {
-              if (value["details"]) {
-                return option["details"].title === value["details"].title;
-              }
-            }}
-            getOptionLabel={(option) => {
-              if (option["details"]) {
-                setSelected(option);
-                return option["details"].title;
-              } else return "";
-            }}
-            renderInput={(params) => (
-              <StyledTextField
-                onChange={(event) => {
-                  setTextValue(event.target.value);
-                }}
-                {...params}
-                label={"Search event"}
-                InputProps={{
-                  ...params.InputProps,
-                  startAdornment: (
-                    <React.Fragment>
-                      <ThemeProvider theme={submitButtonTheme}>
-                        <SearchIcon color="primary" />
-                      </ThemeProvider>
-                    </React.Fragment>
-                  ),
-                }}
-              />
-            )}
-          />
-        </Box>
-
-        {/* Privacy filter */}
-        <Box
-          sx={{
-            width: "20%",
-            display: "flex",
-            height: "57px",
-          }}
-        >
-          <ThemeProvider theme={privacyAndCategoryTheme}>
-            {/* Clear privacy selection */}
-            <Button
-              sx={{
-                width: "100%",
-                fontWeight: 600,
-                letterSpacing: "1px",
               }}
-              variant={filterPrivacy.size > 0 ? "contained" : "outlined"}
-              onClick={handlePrivacyClick}
-            >
-              {filterPrivacy.size > 0
-                ? `Privacy (${filterPrivacy.size})`
-                : "Privacy"}
-            </Button>
-          </ThemeProvider>
-          <Menu
-            id="group-menu"
-            anchorEl={anchorEl}
-            open={open}
-            // open={true}
-            onClose={() => handleClose(setAnchorEl, setOpen)}
-            aria-labelledby="group-demo-button"
+              clearIcon={
+                <ThemeProvider theme={submitButtonTheme}>
+                  <ClearIcon color="primary" />
+                </ThemeProvider>
+              }
+              open={searchOpen}
+              clearOnEscape
+              // autoComplete
+              sx={{ width: "100%", display: "flex" }}
+              onOpen={() => {
+                setSearchOpen(true);
+              }}
+              onClose={() => {
+                // setTextValue("")
+                setSearchOpen(false);
+              }}
+              options={Array.from(options)}
+              isOptionEqualToValue={(option, value) => {
+                if (value["details"]) {
+                  return option["details"].title === value["details"].title;
+                }
+              }}
+              getOptionLabel={(option) => {
+                if (option["details"]) {
+                  setSelected(option);
+                  return option["details"].title;
+                } else return "";
+              }}
+              renderInput={(params) => (
+                <StyledTextField
+                  onChange={(event) => {
+                    setTextValue(event.target.value);
+                  }}
+                  {...params}
+                  label={"Search event"}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <React.Fragment>
+                        <ThemeProvider theme={submitButtonTheme}>
+                          <SearchIcon color="primary" />
+                        </ThemeProvider>
+                      </React.Fragment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Box>
+
+          {/* Privacy filter */}
+          <Box
             sx={{
-              minWidth: "120px",
-              // minHeight: "150px",
-              fontWeight: "600",
-              "--List-decorator-size": "24px",
-              borderStyle: "none",
+              width: "20%",
+              display: "flex",
+              height: "57px",
             }}
           >
-            <Box
+            <ThemeProvider theme={privacyAndCategoryTheme}>
+              {/* Clear privacy selection */}
+              <Button
+                sx={{
+                  width: "100%",
+                  fontWeight: 600,
+                  letterSpacing: "1px",
+                }}
+                variant={filterPrivacy.size > 0 ? "contained" : "outlined"}
+                onClick={handlePrivacyClick}
+              >
+                {filterPrivacy.size > 0
+                  ? `Privacy (${filterPrivacy.size})`
+                  : "Privacy"}
+              </Button>
+            </ThemeProvider>
+            <Menu
+              id="group-menu"
+              anchorEl={anchorEl}
+              open={open}
+              // open={true}
+              onClose={() => handleClose(setAnchorEl, setOpen)}
+              aria-labelledby="group-demo-button"
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                borderRadius: "25px",
-                bgcolor: "#daa520",
-                zIndex: "2",
-                minHeight: "80px",
+                minWidth: "120px",
+                // minHeight: "150px",
+                fontWeight: "600",
+                "--List-decorator-size": "24px",
+                borderStyle: "none",
               }}
             >
-              <Stack direction="column">
-                {/* Clear all privacy */}
-                <Box
-                  className="menu-item"
-                  sx={new_event_menu_item_style}
-                  display={filterPrivacy.size > 0 ? "" : ""}
-                >
-                  <MenuItem
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  borderRadius: "25px",
+                  bgcolor: "#daa520",
+                  zIndex: "2",
+                  minHeight: "80px",
+                }}
+              >
+                <Stack direction="column">
+                  {/* Clear all privacy */}
+                  <Box
+                    className="menu-item"
                     sx={new_event_menu_item_style}
-                    onClick={(event) => {
-                      if (filterPrivacy.size > 0) {
-                        handlePrivacyFilterClear();
-                        handlePrivacyClick(event);
-                      }
-                    }}
+                    display={filterPrivacy.size > 0 ? "" : ""}
                   >
-                    <Stack direction="row" spacing={0}>
-                      <Box sx={{ transform: "translateY(2px)" }}>
-                        <ListItemDecorator>
-                          <ClearIcon fontSize="xs" />
-                        </ListItemDecorator>
-                      </Box>
-                      <Box>Clear</Box>
-                    </Stack>
-                  </MenuItem>
-                </Box>
+                    <MenuItem
+                      sx={new_event_menu_item_style}
+                      onClick={(event) => {
+                        if (filterPrivacy.size > 0) {
+                          handlePrivacyFilterClear();
+                          handlePrivacyClick(event);
+                        }
+                      }}
+                    >
+                      <Stack direction="row" spacing={0}>
+                        <Box sx={{ transform: "translateY(2px)" }}>
+                          <ListItemDecorator>
+                            <ClearIcon fontSize="xs" />
+                          </ListItemDecorator>
+                        </Box>
+                        <Box>Clear</Box>
+                      </Stack>
+                    </MenuItem>
+                  </Box>
 
-                {/* Public menu item */}
-                <Box
-                  className="menu-item"
-                  sx={
-                    filterPrivacy.has("Public")
-                      ? new_event_menu_item_style_selected1
-                      : {}
-                  }
-                >
-                  <MenuItem
-                    sx={new_event_menu_item_style}
-                    onClick={() => {
-                      handlePrivacySelection("Public");
-                      // handleClose(setAnchorEl, setOpen);
-                    }}
+                  {/* Public menu item */}
+                  <Box
+                    className="menu-item"
+                    sx={
+                      filterPrivacy.has("Public")
+                        ? new_event_menu_item_style_selected1
+                        : {}
+                    }
                   >
-                    <Stack direction="row" spacing={0}>
-                      <Box sx={{ transform: "translateY(2px)" }}>
-                        <ListItemDecorator>
-                          <PublicOutlinedIcon fontSize="xs" />
-                        </ListItemDecorator>
-                      </Box>
-                      <Box>Public</Box>
+                    <MenuItem
+                      sx={new_event_menu_item_style}
+                      onClick={() => {
+                        handlePrivacySelection("Public");
+                        // handleClose(setAnchorEl, setOpen);
+                      }}
+                    >
+                      <Stack direction="row" spacing={0}>
+                        <Box sx={{ transform: "translateY(2px)" }}>
+                          <ListItemDecorator>
+                            <PublicOutlinedIcon fontSize="xs" />
+                          </ListItemDecorator>
+                        </Box>
+                        <Box>Public</Box>
+                        <Box
+                          display={filterPrivacy.has("Public") ? "" : "none"}
+                          sx={{
+                            transform: "translate(3px, 2px)",
+                            marginLeft: 1,
+                          }}
+                        >
+                          <ListItemDecorator>
+                            <DoneOutlinedIcon fontSize="xs" />
+                          </ListItemDecorator>
+                        </Box>
+                      </Stack>
+                    </MenuItem>
+                  </Box>
+
+                  {/* Private menu item */}
+                  <Box
+                    className="menu-item"
+                    sx={
+                      filterPrivacy.has("Private")
+                        ? new_event_menu_item_style_selected
+                        : {}
+                    }
+                  >
+                    <MenuItem
+                      sx={new_event_menu_item_style}
+                      endIcon={<LockOutlinedIcon />}
+                      onClick={() => {
+                        handlePrivacySelection("Private");
+                      }}
+                    >
+                      <Stack direction="row" spacing={0}>
+                        <Box sx={{ transform: "translate(2px, 2px)" }}>
+                          <ListItemDecorator>
+                            <LockOutlinedIcon fontSize="xs" />
+                          </ListItemDecorator>
+                        </Box>
+                        <Box>Private</Box>
+                        <Box
+                          display={filterPrivacy.has("Private") ? "" : "none"}
+                          sx={{ transform: "translateY(2px)", marginLeft: 1 }}
+                        >
+                          <ListItemDecorator>
+                            <DoneOutlinedIcon fontSize="xs" />
+                          </ListItemDecorator>
+                        </Box>
+                      </Stack>
+                    </MenuItem>
+                  </Box>
+                </Stack>
+              </Box>
+              <ListDivider />
+            </Menu>
+          </Box>
+
+          {/* Category filter */}
+
+          <Box
+            sx={{
+              width: "20%",
+              display: "flex",
+              // marginBottom: 3,
+              marginLeft: 1.5,
+              marginRight: 1.5,
+              height: "57px",
+            }}
+          >
+            <ThemeProvider theme={privacyAndCategoryTheme}>
+              <Button
+                sx={{
+                  width: "100%",
+                  fontWeight: 600,
+                  letterSpacing: "1px",
+                }}
+                variant={filterCategory.size > 0 ? "contained" : "outlined"}
+                onClick={handleCategoryClick}
+              >
+                {filterCategory.size > 0
+                  ? `Category (${filterCategory.size})`
+                  : "Category"}
+              </Button>{" "}
+            </ThemeProvider>
+            <Menu
+              id="group-menu"
+              anchorEl={categoryAnchorEl}
+              open={openCategory}
+              // open={true}
+              onClose={() => handleClose(setCategoryAnchorEl, setOpenCategory)}
+              aria-labelledby="group-demo-button"
+              sx={{
+                width: "5%",
+                minWidth: "100px",
+                // display:"flex",
+                justifyContent: "center",
+                fontWeight: "600",
+                "--List-decorator-size": "24px",
+                borderStyle: "none",
+              }}
+            >
+              <Box
+                sx={{
+                  width: "100%",
+                  display: "flex",
+                  justifyContent: "center",
+                  borderRadius: "25px",
+                  bgcolor: "#daa520",
+                  zIndex: "2",
+                }}
+              >
+                <Stack
+                  direction="column"
+                  sx={{ paddingBottom: 1, paddingTop: 1 }}
+                >
+                  <Box
+                    className="menu-item"
+                    sx={new_event_menu_item_style}
+                    display={filterCategory.size > 0 ? "" : ""}
+                  >
+                    <MenuItem
+                      sx={new_event_menu_item_style}
+                      onClick={(event) => {
+                        if (filterCategory.size > 0) {
+                          handleCategoryFilterClear();
+                          handleCategoryClick(event);
+                        }
+                      }}
+                    >
+                      <Stack direction="row" spacing={0}>
+                        <Box sx={{ transform: "translateY(2px)" }}>
+                          <ListItemDecorator>
+                            <ClearIcon fontSize="xs" />
+                          </ListItemDecorator>
+                        </Box>
+                        <Box>Clear</Box>
+                      </Stack>
+                    </MenuItem>
+                  </Box>
+
+                  {categories.map((cat) => {
+                    return (
                       <Box
-                        display={filterPrivacy.has("Public") ? "" : "none"}
-                        sx={{ transform: "translate(3px, 2px)", marginLeft: 1 }}
+                        className="menu-item"
+                        sx={
+                          filterCategory.has(cat)
+                            ? categories.indexOf(cat) === categories.length - 1
+                              ? new_event_menu_item_style_selected
+                              : new_event_menu_item_style_selected1
+                            : {}
+                        }
                       >
-                        <ListItemDecorator>
-                          <DoneOutlinedIcon fontSize="xs" />
-                        </ListItemDecorator>
+                        <MenuItem
+                          sx={new_event_menu_item_style}
+                          onClick={() => {
+                            // setCategory(cat);
+                            handleCategorySelection(cat);
+                            // handleClose(setCategoryAnchorEl, setOpenCategory);
+                          }}
+                        >
+                          {cat}
+                        </MenuItem>
                       </Box>
-                    </Stack>
-                  </MenuItem>
-                </Box>
+                    );
+                  })}
+                </Stack>
+              </Box>
 
-                {/* Private menu item */}
-                <Box
-                  className="menu-item"
-                  sx={
-                    filterPrivacy.has("Private")
-                      ? new_event_menu_item_style_selected
-                      : {}
-                  }
-                >
-                  <MenuItem
-                    sx={new_event_menu_item_style}
-                    endIcon={<LockOutlinedIcon />}
-                    onClick={() => {
-                      handlePrivacySelection("Private");
-                    }}
-                  >
-                    <Stack direction="row" spacing={0}>
-                      <Box sx={{ transform: "translate(2px, 2px)" }}>
-                        <ListItemDecorator>
-                          <LockOutlinedIcon fontSize="xs" />
-                        </ListItemDecorator>
-                      </Box>
-                      <Box>Private</Box>
-                      <Box
-                        display={filterPrivacy.has("Private") ? "" : "none"}
-                        sx={{ transform: "translateY(2px)", marginLeft: 1 }}
-                      >
-                        <ListItemDecorator>
-                          <DoneOutlinedIcon fontSize="xs" />
-                        </ListItemDecorator>
-                      </Box>
-                    </Stack>
-                  </MenuItem>
-                </Box>
-              </Stack>
-            </Box>
-            <ListDivider />
-          </Menu>
-        </Box>
+              <ListDivider />
+            </Menu>
+          </Box>
 
-        {/* Category filter */}
+          <Box
+            sx={{
+              display:
+                filterCategory.size > 0 || filterPrivacy.size > 0 ? "" : "none",
+            }}
+          >
+            <ThemeProvider theme={privacyAndCategoryTheme}>
+              <Button
+                sx={{
+                  height: "56px",
+                  marginRight: 1.5,
+                  fontWeight: 600,
+                  letterSpacing: "1px",
+                }}
+                startIcon={appliedFilters ? <></> : <TuneIcon />}
+                onClick={handleApplyFilters}
+                variant={appliedFilters ? "contained" : "outlined"}
+              >
+                {appliedFilters
+                  ? `Active (${filterCategory.size + filterPrivacy.size})`
+                  : "Apply"}
+              </Button>
+            </ThemeProvider>
+          </Box>
 
-        <Box
+          <Box display={clearAllVisible ? "" : "none"}>
+            <ThemeProvider theme={privacyAndCategoryTheme}>
+              <Button
+                onClick={handleClearAll}
+                variant="outlined"
+                sx={{ height: "56px", marginRight: 1.5 }}
+                startIcon={<ClearIcon />}
+              >
+                all
+              </Button>
+            </ThemeProvider>
+          </Box>
+        </Stack>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <Stack
+          direction="column"
           sx={{
-            width: "20%",
-            display: "flex",
-            // marginBottom: 3,
             marginLeft: 1.5,
             marginRight: 1.5,
-            height: "57px",
+            marginTop: 1.5,
+            marginBottom: 1.5,
           }}
         >
-          <ThemeProvider theme={privacyAndCategoryTheme}>
-            <Button
-              sx={{
-                width: "100%",
-                fontWeight: 600,
-                letterSpacing: "1px",
-              }}
-              variant={filterCategory.size > 0 ? "contained" : "outlined"}
-              onClick={handleCategoryClick}
-            >
-              {filterCategory.size > 0
-                ? `Category (${filterCategory.size})`
-                : "Category"}
-            </Button>{" "}
-          </ThemeProvider>
-          <Menu
-            id="group-menu"
-            anchorEl={categoryAnchorEl}
-            open={openCategory}
-            // open={true}
-            onClose={() => handleClose(setCategoryAnchorEl, setOpenCategory)}
-            aria-labelledby="group-demo-button"
+          {/* Autocomplete */}
+          <Box
             sx={{
-              width: "5%",
-              minWidth: "100px",
-              // display:"flex",
-              justifyContent: "center",
-              fontWeight: "600",
-              "--List-decorator-size": "24px",
-              borderStyle: "none",
+              width: "100%",
+              display: "flex",
+              marginBottom: 1.5,
+              // marginLeft: 1.5,
+              // marginRight: 1.5,
             }}
           >
+            <Autocomplete
+              freeSolo
+              onKeyDown={(event) => {
+                console.log("keydown", event.key);
+                if (event.key === "Escape") {
+                  if (textValue !== "") {
+                    setTextValue("");
+                    setSelected("");
+                    // props.refreshSearch();
+                  } else {
+                    setTextValue("");
+                    setSelected("");
+                    props.refreshSearch();
+                  }
+                }
+              }}
+              onChange={(event, value) => {
+                if (value && typeof value === "object") {
+                  props.setFiltered(true);
+                  setTextValue(value["details"].title);
+                  props.setFilteredEventsDetails([value]);
+                } else {
+                  setTextValue("");
+                  setSelected("");
+                  props.refreshSearch();
+                }
+              }}
+              clearIcon={
+                <ThemeProvider theme={submitButtonTheme}>
+                  <ClearIcon color="primary" />
+                </ThemeProvider>
+              }
+              open={searchOpen}
+              clearOnEscape
+              // autoComplete
+              sx={{ width: "100%", display: "flex" }}
+              onOpen={() => {
+                setSearchOpen(true);
+              }}
+              onClose={() => {
+                // setTextValue("")
+                setSearchOpen(false);
+              }}
+              options={Array.from(options)}
+              isOptionEqualToValue={(option, value) => {
+                if (value["details"]) {
+                  return option["details"].title === value["details"].title;
+                }
+              }}
+              getOptionLabel={(option) => {
+                if (option["details"]) {
+                  setSelected(option);
+                  return option["details"].title;
+                } else return "";
+              }}
+              renderInput={(params) => (
+                <StyledTextField
+                  onChange={(event) => {
+                    setTextValue(event.target.value);
+                  }}
+                  {...params}
+                  label={"Search event"}
+                  InputProps={{
+                    ...params.InputProps,
+                    startAdornment: (
+                      <React.Fragment>
+                        <ThemeProvider theme={submitButtonTheme}>
+                          <SearchIcon color="primary" />
+                        </ThemeProvider>
+                      </React.Fragment>
+                    ),
+                  }}
+                />
+              )}
+            />
+          </Box>
+
+          <Stack direction="row">
+            {/* Privacy filter */}
             <Box
               sx={{
                 width: "100%",
                 display: "flex",
-                justifyContent: "center",
-                borderRadius: "25px",
-                bgcolor: "#daa520",
-                zIndex: "2",
+                height: "30px",
               }}
             >
-              <Stack
-                direction="column"
-                sx={{ paddingBottom: 1, paddingTop: 1 }}
+              <ThemeProvider theme={privacyAndCategoryTheme}>
+                {/* Clear privacy selection */}
+                <Button
+                  sx={{
+                    width: "100%",
+                    fontWeight: 600,
+                    letterSpacing: "1px",
+                  }}
+                  variant={filterPrivacy.size > 0 ? "contained" : "outlined"}
+                  onClick={handlePrivacyClick}
+                >
+                  {filterPrivacy.size > 0
+                    ? `Privacy (${filterPrivacy.size})`
+                    : "Privacy"}
+                </Button>
+              </ThemeProvider>
+              <Menu
+                id="group-menu"
+                anchorEl={anchorEl}
+                open={open}
+                // open={true}
+                onClose={() => handleClose(setAnchorEl, setOpen)}
+                aria-labelledby="group-demo-button"
+                sx={{
+                  minWidth: "120px",
+                  // minHeight: "150px",
+                  fontWeight: "600",
+                  "--List-decorator-size": "24px",
+                  borderStyle: "none",
+                }}
               >
                 <Box
-                  className="menu-item"
-                  sx={new_event_menu_item_style}
-                  display={filterCategory.size > 0 ? "" : ""}
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    borderRadius: "25px",
+                    bgcolor: "#daa520",
+                    zIndex: "2",
+                    minHeight: "80px",
+                  }}
                 >
-                  <MenuItem
-                    sx={new_event_menu_item_style}
-                    onClick={(event) => {
-                      if (filterCategory.size > 0) {
-                        handleCategoryFilterClear();
-                        handleCategoryClick(event);
-                      }
-                    }}
-                  >
-                    <Stack direction="row" spacing={0}>
-                      <Box sx={{ transform: "translateY(2px)" }}>
-                        <ListItemDecorator>
-                          <ClearIcon fontSize="xs" />
-                        </ListItemDecorator>
-                      </Box>
-                      <Box>Clear</Box>
-                    </Stack>
-                  </MenuItem>
-                </Box>
+                  <Stack direction="column">
+                    {/* Clear all privacy */}
+                    <Box
+                      className="menu-item"
+                      sx={new_event_menu_item_style}
+                      display={filterPrivacy.size > 0 ? "" : ""}
+                    >
+                      <MenuItem
+                        sx={new_event_menu_item_style}
+                        onClick={(event) => {
+                          if (filterPrivacy.size > 0) {
+                            handlePrivacyFilterClear();
+                            handlePrivacyClick(event);
+                          }
+                        }}
+                      >
+                        <Stack direction="row" spacing={0}>
+                          <Box sx={{ transform: "translateY(2px)" }}>
+                            <ListItemDecorator>
+                              <ClearIcon fontSize="xs" />
+                            </ListItemDecorator>
+                          </Box>
+                          <Box>Clear</Box>
+                        </Stack>
+                      </MenuItem>
+                    </Box>
 
-                {categories.map((cat) => {
-                  return (
+                    {/* Public menu item */}
                     <Box
                       className="menu-item"
                       sx={
-                        filterCategory.has(cat)
-                          ? categories.indexOf(cat) === categories.length - 1
-                            ? new_event_menu_item_style_selected
-                            : new_event_menu_item_style_selected1
+                        filterPrivacy.has("Public")
+                          ? new_event_menu_item_style_selected1
                           : {}
                       }
                     >
                       <MenuItem
                         sx={new_event_menu_item_style}
                         onClick={() => {
-                          // setCategory(cat);
-                          handleCategorySelection(cat);
-                          // handleClose(setCategoryAnchorEl, setOpenCategory);
+                          handlePrivacySelection("Public");
+                          // handleClose(setAnchorEl, setOpen);
                         }}
                       >
-                        {cat}
+                        <Stack direction="row" spacing={0}>
+                          <Box sx={{ transform: "translateY(2px)" }}>
+                            <ListItemDecorator>
+                              <PublicOutlinedIcon fontSize="xs" />
+                            </ListItemDecorator>
+                          </Box>
+                          <Box>Public</Box>
+                          <Box
+                            display={filterPrivacy.has("Public") ? "" : "none"}
+                            sx={{
+                              transform: "translate(3px, 2px)",
+                              marginLeft: 1,
+                            }}
+                          >
+                            <ListItemDecorator>
+                              <DoneOutlinedIcon fontSize="xs" />
+                            </ListItemDecorator>
+                          </Box>
+                        </Stack>
                       </MenuItem>
                     </Box>
-                  );
-                })}
-              </Stack>
+
+                    {/* Private menu item */}
+                    <Box
+                      className="menu-item"
+                      sx={
+                        filterPrivacy.has("Private")
+                          ? new_event_menu_item_style_selected
+                          : {}
+                      }
+                    >
+                      <MenuItem
+                        sx={new_event_menu_item_style}
+                        endIcon={<LockOutlinedIcon />}
+                        onClick={() => {
+                          handlePrivacySelection("Private");
+                        }}
+                      >
+                        <Stack direction="row" spacing={0}>
+                          <Box sx={{ transform: "translate(2px, 2px)" }}>
+                            <ListItemDecorator>
+                              <LockOutlinedIcon fontSize="xs" />
+                            </ListItemDecorator>
+                          </Box>
+                          <Box>Private</Box>
+                          <Box
+                            display={filterPrivacy.has("Private") ? "" : "none"}
+                            sx={{ transform: "translateY(2px)", marginLeft: 1 }}
+                          >
+                            <ListItemDecorator>
+                              <DoneOutlinedIcon fontSize="xs" />
+                            </ListItemDecorator>
+                          </Box>
+                        </Stack>
+                      </MenuItem>
+                    </Box>
+                  </Stack>
+                </Box>
+                <ListDivider />
+              </Menu>
             </Box>
 
-            <ListDivider />
-          </Menu>
-        </Box>
-
-        <Box
-          sx={{
-            display:
-              filterCategory.size > 0 || filterPrivacy.size > 0 ? "" : "none",
-          }}
-        >
-          <ThemeProvider theme={privacyAndCategoryTheme}>
-            <Button
+            {/* Category filter */}
+            <Box
               sx={{
-                height: "56px",
-                marginRight: 1.5,
-                fontWeight: 600,
-                letterSpacing: "1px",
+                width: "100%",
+                display: "flex",
+                // marginBottom: 3,
+                marginLeft: 1.5,
+                // marginRight: 1.5,
+                height: "30px",
               }}
-              startIcon={appliedFilters ? <></> : <TuneIcon />}
-              onClick={handleApplyFilters}
-              variant={appliedFilters ? "contained" : "outlined"}
             >
-              {appliedFilters
-                ? `Active (${filterCategory.size + filterPrivacy.size})`
-                : "Apply"}
-            </Button>
-          </ThemeProvider>
-        </Box>
+              <ThemeProvider theme={privacyAndCategoryTheme}>
+                <Button
+                  sx={{
+                    width: "100%",
+                    fontWeight: 600,
+                    letterSpacing: "1px",
+                  }}
+                  variant={filterCategory.size > 0 ? "contained" : "outlined"}
+                  onClick={handleCategoryClick}
+                >
+                  {filterCategory.size > 0
+                    ? `Category (${filterCategory.size})`
+                    : "Category"}
+                </Button>{" "}
+              </ThemeProvider>
+              <Menu
+                id="group-menu"
+                anchorEl={categoryAnchorEl}
+                open={openCategory}
+                // open={true}
+                onClose={() =>
+                  handleClose(setCategoryAnchorEl, setOpenCategory)
+                }
+                aria-labelledby="group-demo-button"
+                sx={{
+                  width: "5%",
+                  minWidth: "100px",
+                  // display:"flex",
+                  justifyContent: "center",
+                  fontWeight: "600",
+                  "--List-decorator-size": "24px",
+                  borderStyle: "none",
+                }}
+              >
+                <Box
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    borderRadius: "25px",
+                    bgcolor: "#daa520",
+                    zIndex: "2",
+                  }}
+                >
+                  <Stack
+                    direction="column"
+                    sx={{ paddingBottom: 1, paddingTop: 1 }}
+                  >
+                    <Box
+                      className="menu-item"
+                      sx={new_event_menu_item_style}
+                      display={filterCategory.size > 0 ? "" : ""}
+                    >
+                      <MenuItem
+                        sx={new_event_menu_item_style}
+                        onClick={(event) => {
+                          if (filterCategory.size > 0) {
+                            handleCategoryFilterClear();
+                            handleCategoryClick(event);
+                          }
+                        }}
+                      >
+                        <Stack direction="row" spacing={0}>
+                          <Box sx={{ transform: "translateY(2px)" }}>
+                            <ListItemDecorator>
+                              <ClearIcon fontSize="xs" />
+                            </ListItemDecorator>
+                          </Box>
+                          <Box>Clear</Box>
+                        </Stack>
+                      </MenuItem>
+                    </Box>
 
-        <Box display={clearAllVisible ? "" : "none"}>
-          <ThemeProvider theme={privacyAndCategoryTheme}>
-            <Button
-              onClick={handleClearAll}
-              variant="outlined"
-              sx={{ height: "56px", marginRight: 1.5 }}
-              startIcon={<ClearIcon />}
+                    {categories.map((cat) => {
+                      return (
+                        <Box
+                          className="menu-item"
+                          sx={
+                            filterCategory.has(cat)
+                              ? categories.indexOf(cat) ===
+                                categories.length - 1
+                                ? new_event_menu_item_style_selected
+                                : new_event_menu_item_style_selected1
+                              : {}
+                          }
+                        >
+                          <MenuItem
+                            sx={new_event_menu_item_style}
+                            onClick={() => {
+                              // setCategory(cat);
+                              handleCategorySelection(cat);
+                              // handleClose(setCategoryAnchorEl, setOpenCategory);
+                            }}
+                          >
+                            {cat}
+                          </MenuItem>
+                        </Box>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+
+                <ListDivider />
+              </Menu>
+            </Box>
+          </Stack>
+          <Stack direction="row" spacing={1.5} marginTop={1.5}>
+            {/* Apply filters */}
+            <Box
+              sx={{
+                display:
+                  filterCategory.size > 0 || filterPrivacy.size > 0
+                    ? ""
+                    : "none",
+                width: "100%",
+              }}
             >
-              all
-            </Button>
-          </ThemeProvider>
-        </Box>
-      </Stack>
-    </>
-  );
+              <ThemeProvider theme={privacyAndCategoryTheme}>
+                <Button
+                  sx={{
+                    width: "100%",
+                    height: "35px",
+                    marginRight: 1.5,
+                    fontWeight: 600,
+                    letterSpacing: "1px",
+                  }}
+                  startIcon={appliedFilters ? <></> : <TuneIcon />}
+                  onClick={handleApplyFilters}
+                  variant={appliedFilters ? "contained" : "outlined"}
+                >
+                  {appliedFilters
+                    ? `Active (${filterCategory.size + filterPrivacy.size})`
+                    : "Apply"}
+                </Button>
+              </ThemeProvider>
+            </Box>
+
+            {/* Clear all */}
+            <Box display={clearAllVisible ? "" : "none"} sx={{ width: "100%" }}>
+              <ThemeProvider theme={privacyAndCategoryTheme}>
+                <Button
+                  onClick={handleClearAll}
+                  variant="outlined"
+                  sx={{ height: "35px", marginRight: 1.5, width: "100%" }}
+                  startIcon={<ClearIcon />}
+                >
+                  all
+                </Button>
+              </ThemeProvider>
+            </Box>
+          </Stack>
+        </Stack>
+      </>
+    );
+  }
 };
 
 export default FilterSearchEvent;
