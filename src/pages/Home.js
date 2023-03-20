@@ -31,6 +31,7 @@ const Home = () => {
   const [editSelectedEvent, setEditSelectedEvent] = useState(false);
   const [refreshSearch, setRefreshSearch] = useState(0);
   const [filtered, setFiltered] = useState(false);
+  const [filteredEventsDetails, setFilteredEventsDetails] = useState([]);
 
   const { user } = useUserAuth();
 
@@ -105,6 +106,7 @@ const Home = () => {
     loading();
   }, [eventsDetails]);
 
+  console.log(events);
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
@@ -160,74 +162,155 @@ const Home = () => {
                       setEventsDetails={setEventsDetails}
                       refreshSearch={refreshSearchResult}
                       setFiltered={setFiltered}
+                      setFilteredEventsDetails={setFilteredEventsDetails}
                     />
                   </Box>
+
                   <Box display={displayEvents === true ? "" : "none"}>
                     {eventsDetails.length > 0 ? (
-                      eventsDetails.map((eventDetails) => {
-                        let admin = false;
-                        let following = false;
-                        let found = Array.from(eventDetails["users"]).find(
-                          (ev) => ev.id === user.uid
-                        );
+                      filtered ? (
+                        filteredEventsDetails.map((eventDetails) => {
+                          // Work around for a bug where follow status was not showing propperly after filtering
+                          let admin = false;
+                          let following = false;
 
-                        if (found) {
-                          if (found.status === "admin") {
-                            admin = true;
-                            following = true;
-                          } else {
-                            following = true;
+                          let found = Array.from(eventDetails["users"]).find(
+                            (ev) => ev.id === user.uid
+                          );
+
+                          if (found) {
+                            if (found.status === "admin") {
+                              admin = true;
+                              following = true;
+                            } else {
+                              following = true;
+                            }
                           }
-                        }
 
-                        return (
-                          <EventCard2
-                            filtered={filtered}
-                            title={eventDetails["details"].title}
-                            subtitle={eventDetails["details"].subtitle}
-                            start_date={eventDetails["details"].start_date}
-                            start_date_day={
-                              eventDetails["details"].start_date_day
+                          return (
+                            <EventCard2
+                              filtered={filtered}
+                              title={eventDetails["details"].title}
+                              subtitle={eventDetails["details"].subtitle}
+                              start_date={eventDetails["details"].start_date}
+                              start_date_day={
+                                eventDetails["details"].start_date_day
+                              }
+                              start_date_month={
+                                eventDetails["details"].start_date_month
+                              }
+                              start_time={eventDetails["details"].start_time}
+                              end_date={eventDetails["details"].end_date}
+                              end_date_day={
+                                eventDetails["details"].end_date_day
+                              }
+                              end_date_month={
+                                eventDetails["details"].end_date_month
+                              }
+                              end_time={eventDetails["details"].end_time}
+                              description={eventDetails["details"].description}
+                              author={eventDetails["details"].author_username}
+                              instagram={eventDetails["details"].instagram}
+                              tiktok={eventDetails["details"].tiktok}
+                              twitter={eventDetails["details"].twitter}
+                              facebook={eventDetails["details"].facebook}
+                              privacy={eventDetails["details"].privacy}
+                              category={eventDetails["details"].category}
+                              locationType={
+                                eventDetails["details"].location_type
+                              }
+                              locationString={
+                                eventDetails["details"].location_string
+                              }
+                              locationDisplayName={
+                                eventDetails["details"].location_display_name
+                              }
+                              marker={eventDetails["details"].marker}
+                              activities={eventDetails["activities"]}
+                              usersList={eventDetails["users"]}
+                              userEvents={events}
+                              eventID={eventDetails.id}
+                              handleEventLink={handleEventLink}
+                              isFollowing={following}
+                              isAdmin={admin}
+                              followingOnly={false}
+                              handleEdit={handleEdit}
+                              setEditSelectedEvent={setEditSelectedEvent}
+                            />
+                          );
+                        })
+                      ) : (
+                        eventsDetails.map((eventDetails) => {
+                          // Work around for a bug where follow status was not showing propperly after filtering
+                          let admin = false;
+                          let following = false;
+
+                          let found = Array.from(eventDetails["users"]).find(
+                            (ev) => ev.id === user.uid
+                          );
+
+                          if (found) {
+                            if (found.status === "admin") {
+                              admin = true;
+                              following = true;
+                            } else {
+                              following = true;
                             }
-                            start_date_month={
-                              eventDetails["details"].start_date_month
-                            }
-                            start_time={eventDetails["details"].start_time}
-                            end_date={eventDetails["details"].end_date}
-                            end_date_day={eventDetails["details"].end_date_day}
-                            end_date_month={
-                              eventDetails["details"].end_date_month
-                            }
-                            end_time={eventDetails["details"].end_time}
-                            description={eventDetails["details"].description}
-                            author={eventDetails["details"].author_username}
-                            instagram={eventDetails["details"].instagram}
-                            tiktok={eventDetails["details"].tiktok}
-                            twitter={eventDetails["details"].twitter}
-                            facebook={eventDetails["details"].facebook}
-                            privacy={eventDetails["details"].privacy}
-                            category={eventDetails["details"].category}
-                            locationType={eventDetails["details"].location_type}
-                            locationString={
-                              eventDetails["details"].location_string
-                            }
-                            locationDisplayName={
-                              eventDetails["details"].location_display_name
-                            }
-                            marker={eventDetails["details"].marker}
-                            activities={eventDetails["activities"]}
-                            usersList={eventDetails["users"]}
-                            userEvents={events}
-                            eventID={eventDetails.id}
-                            handleEventLink={handleEventLink}
-                            isFollowing={following}
-                            isAdmin={admin}
-                            followingOnly={false}
-                            handleEdit={handleEdit}
-                            setEditSelectedEvent={setEditSelectedEvent}
-                          />
-                        );
-                      })
+                          }
+
+                          return (
+                            <EventCard2
+                              filtered={filtered}
+                              title={eventDetails["details"].title}
+                              subtitle={eventDetails["details"].subtitle}
+                              start_date={eventDetails["details"].start_date}
+                              start_date_day={
+                                eventDetails["details"].start_date_day
+                              }
+                              start_date_month={
+                                eventDetails["details"].start_date_month
+                              }
+                              start_time={eventDetails["details"].start_time}
+                              end_date={eventDetails["details"].end_date}
+                              end_date_day={
+                                eventDetails["details"].end_date_day
+                              }
+                              end_date_month={
+                                eventDetails["details"].end_date_month
+                              }
+                              end_time={eventDetails["details"].end_time}
+                              description={eventDetails["details"].description}
+                              author={eventDetails["details"].author_username}
+                              instagram={eventDetails["details"].instagram}
+                              tiktok={eventDetails["details"].tiktok}
+                              twitter={eventDetails["details"].twitter}
+                              facebook={eventDetails["details"].facebook}
+                              privacy={eventDetails["details"].privacy}
+                              category={eventDetails["details"].category}
+                              locationType={
+                                eventDetails["details"].location_type
+                              }
+                              locationString={
+                                eventDetails["details"].location_string
+                              }
+                              locationDisplayName={
+                                eventDetails["details"].location_display_name
+                              }
+                              marker={eventDetails["details"].marker}
+                              activities={eventDetails["activities"]}
+                              usersList={eventDetails["users"]}
+                              userEvents={events}
+                              eventID={eventDetails.id}
+                              handleEventLink={handleEventLink}
+                              isFollowing={following}
+                              isAdmin={admin}
+                              followingOnly={false}
+                              handleEdit={handleEdit}
+                              setEditSelectedEvent={setEditSelectedEvent}
+                            />
+                          );
+                        })
+                      )
                     ) : (
                       <>
                         <Box color="gray" sx={{ paddingLeft: 1.5 }}>

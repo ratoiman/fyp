@@ -146,7 +146,6 @@ const FilterSearchEvent = (props) => {
 
   const displayClearAll = () => {
     if (textValue !== "" || filterCategory.size > 0 || filterPrivacy.size > 0) {
-      console.log("text", textValue);
       setClearAllVisible(true);
     } else {
       setClearAllVisible(false);
@@ -244,6 +243,7 @@ const FilterSearchEvent = (props) => {
             }}
             onChange={(event, value) => {
               if (value && typeof value === "object") {
+                console.log("value", value)
                 setTextValue(value["details"].title);
                 props.setEventsDetails([value]);
               } else {
