@@ -95,7 +95,6 @@ const EventCard2 = (props) => {
   }, [user]);
 
   useEffect(() => {
-    console.log("status");
     getFollowStatus();
   }, [userEvents, props.userEvents, props.filtered]);
 
@@ -117,7 +116,7 @@ const EventCard2 = (props) => {
             <CardMedia
               image={texture}
               sx={{
-                minHeight: "55px",
+                minHeight: "65px",
                 maxHeight: "100px",
                 minWidth: "100%",
                 display: "flex",
@@ -131,141 +130,314 @@ const EventCard2 = (props) => {
                 }}
               >
                 {" "}
-                <Stack
-                  direction="row"
-                  sx={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "left",
-                  }}
-                >
-                  <ThemeProvider theme={privacyAndCategoryTheme}>
-                    <Box sx={{ marginTop: "1px" }}>
-                      <Button
-                        disableElevation
-                        disableRipple
-                        variant="text"
-                        color={
-                          props.privacy === "Public" ? "primary" : "secondary"
-                        }
-                        startIcon={
-                          props.privacy === "Public" ? (
-                            <PublicOutlinedIcon style={{ height: "15px" }} />
-                          ) : (
-                            <LockOutlinedIcon style={{ height: "15px" }} />
-                          )
-                        }
-                      >
-                        {props.privacy}
-                      </Button>
-                    </Box>
-                    <Box>
-                      <Button
-                        disableElevation
-                        disableRipple
-                        variant="text"
-                        color="primary"
-                        sx={{ marginTop: "1px" }}
-                      >
-                        {props.category === "Category"
-                          ? "General"
-                          : props.category}
-                      </Button>
-                    </Box>
-                  </ThemeProvider>
-                  <Box
-                    sx={{
-                      width: "100%",
-                      marginLeft: "10px",
-                    }}
-                  >
+                {isMobile ? (
+                  <>
                     <Stack
-                      direction="row"
+                      direction="column"
                       sx={{
                         width: "100%",
                         display: "flex",
-                        justifyContent: "left",
-                        marginTop: "6px",
+                        justifyContent: "center",
+                        marginRight: "3%",
                       }}
                     >
-                      <Typography
-                        // variant="h7"
-                        sx={{ color: "rgb(173, 173, 173)", paddingRight: "1%" }}
+                      <Stack
+                        direction="row"
+                        sx={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                        }}
                       >
-                        {props.locationDisplayName === undefined &&
-                        props.locationString === undefined ? (
-                          <></>
-                        ) : props.locationType === "Online" ? (
-                          <VideoCameraFrontOutlinedIcon
-                            style={{ height: "15px" }}
-                          />
-                        ) : (
-                          <LocationOnOutlinedIcon style={{ height: "15px" }} />
-                        )}
-                      </Typography>
-                      <Typography
-                        variant="h7"
-                        sx={{ color: "rgb(173, 173, 173)" }}
-                      >
-                        {props.locationDisplayName === ""
-                          ? props.locationString === ""
-                            ? props.locationType === "Online"
-                              ? "Online event"
-                              : "In person event"
-                            : props.locationString
-                          : props.locationDisplayName}{" "}
-                      </Typography>
-                    </Stack>
-                  </Box>
-                  <Box>
-                    <ThemeProvider theme={privacyAndCategoryTheme}>
-                      {isFollowing ? (
-                        <Button
-                          onClick={() => {
-                            if (isAdmin) {
-                              props.handleEdit(props.eventID);
-                            } else {
-                              setUnfollowPopup(true);
-                            }
-                            console.log("id", props.eventID);
+                        <Stack
+                          direction="row"
+                          sx={{
+                            width: "100%",
+                            display: "flex",
+                            justifyContent: "left",
                           }}
-                          sx={following_button}
-                          variant="contained"
-                          startIcon={
-                            isAdmin ? (
-                              <EditOutlinedIcon />
+                        >
+                          {" "}
+                          <ThemeProvider theme={privacyAndCategoryTheme}>
+                            {/* Privacy */}
+                            <Box
+                              sx={{
+                                marginTop: "1px",
+                                width: "30px",
+                                marginRight: 2,
+                              }}
+                            >
+                              <Button
+                                disableElevation
+                                disableRipple
+                                variant="text"
+                                color={
+                                  props.privacy === "Public"
+                                    ? "primary"
+                                    : "secondary"
+                                }
+                                startIcon={
+                                  props.privacy === "Public" ? (
+                                    <PublicOutlinedIcon />
+                                  ) : (
+                                    <LockOutlinedIcon />
+                                  )
+                                }
+                              />
+                            </Box>
+
+                            <Box>
+                              <Button
+                                disableElevation
+                                disableRipple
+                                variant="text"
+                                color="primary"
+                                sx={{ marginTop: "1px" }}
+                              >
+                                {props.category === "Category"
+                                  ? "General"
+                                  : props.category}
+                              </Button>
+                            </Box>
+                          </ThemeProvider>
+                        </Stack>
+
+                        <Box>
+                          <ThemeProvider theme={privacyAndCategoryTheme}>
+                            {isFollowing ? (
+                              <Button
+                                onClick={() => {
+                                  if (isAdmin) {
+                                    props.handleEdit(props.eventID);
+                                  } else {
+                                    setUnfollowPopup(true);
+                                  }
+                                  console.log("id", props.eventID);
+                                }}
+                                sx={following_button}
+                                variant="contained"
+                                startIcon={
+                                  isAdmin ? (
+                                    <EditOutlinedIcon />
+                                  ) : (
+                                    <FavoriteOutlinedIcon />
+                                  )
+                                }
+                              >
+                                {isAdmin ? "Edit" : "following"}
+                              </Button>
                             ) : (
-                              <FavoriteOutlinedIcon />
+                              <Button
+                                onClick={() => {
+                                  handleFollow(
+                                    db,
+                                    props.eventID,
+                                    user.uid,
+                                    props.start_date,
+                                    props.start_time,
+                                    props.end_date,
+                                    props.end_time,
+                                    setIsFollowing
+                                  );
+                                  getFollowStatus();
+                                }}
+                                sx={follow_button}
+                                variant="outlined"
+                                startIcon={<FavoriteBorderOutlinedIcon />}
+                              >
+                                follow
+                              </Button>
+                            )}
+                          </ThemeProvider>
+                        </Box>
+                      </Stack>
+
+                      <Stack
+                        direction="row"
+                        sx={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "left",
+                          marginLeft: "4.5%",
+                        }}
+                      >
+                        <Typography
+                          // variant="h7"
+                          sx={{
+                            color: "rgb(173, 173, 173)",
+                            paddingRight: "1%",
+                          }}
+                        >
+                          {props.locationDisplayName === undefined &&
+                          props.locationString === undefined ? (
+                            <></>
+                          ) : props.locationType === "Online" ? (
+                            <VideoCameraFrontOutlinedIcon
+                              style={{ height: "15px" }}
+                            />
+                          ) : (
+                            <LocationOnOutlinedIcon
+                              style={{ height: "15px" }}
+                            />
+                          )}
+                        </Typography>
+                        <Typography
+                          variant="h7"
+                          sx={{ color: "rgb(173, 173, 173)" }}
+                        >
+                          {props.locationDisplayName === ""
+                            ? props.locationString === ""
+                              ? props.locationType === "Online"
+                                ? "Online event"
+                                : "In person event"
+                              : props.locationString
+                            : props.locationDisplayName}{" "}
+                        </Typography>
+                      </Stack>
+                    </Stack>
+                  </>
+                ) : (
+                  <Stack
+                    direction="row"
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "left",
+                    }}
+                  >
+                    <ThemeProvider theme={privacyAndCategoryTheme}>
+                      <Box sx={{ marginTop: "1px" }}>
+                        <Button
+                          disableElevation
+                          disableRipple
+                          variant="text"
+                          color={
+                            props.privacy === "Public" ? "primary" : "secondary"
+                          }
+                          startIcon={
+                            props.privacy === "Public" ? (
+                              <PublicOutlinedIcon style={{ height: "15px" }} />
+                            ) : (
+                              <LockOutlinedIcon style={{ height: "15px" }} />
                             )
                           }
                         >
-                          {isAdmin ? "Edit" : "following"}
+                          {props.privacy}
                         </Button>
-                      ) : (
+                      </Box>
+                      <Box>
                         <Button
-                          onClick={() => {
-                            handleFollow(
-                              db,
-                              props.eventID,
-                              user.uid,
-                              props.start_date,
-                              props.start_time,
-                              props.end_date,
-                              props.end_time,
-                              setIsFollowing
-                            );
-                            getFollowStatus();
-                          }}
-                          sx={follow_button}
-                          variant="outlined"
-                          startIcon={<FavoriteBorderOutlinedIcon />}
+                          disableElevation
+                          disableRipple
+                          variant="text"
+                          color="primary"
+                          sx={{ marginTop: "1px" }}
                         >
-                          follow
+                          {props.category === "Category"
+                            ? "General"
+                            : props.category}
                         </Button>
-                      )}
+                      </Box>
                     </ThemeProvider>
-                  </Box>
-                </Stack>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      <Stack
+                        direction="row"
+                        sx={{
+                          width: "100%",
+                          display: "flex",
+                          justifyContent: "left",
+                          marginTop: "6px",
+                        }}
+                      >
+                        <Typography
+                          // variant="h7"
+                          sx={{
+                            color: "rgb(173, 173, 173)",
+                            paddingRight: "1%",
+                          }}
+                        >
+                          {props.locationDisplayName === undefined &&
+                          props.locationString === undefined ? (
+                            <></>
+                          ) : props.locationType === "Online" ? (
+                            <VideoCameraFrontOutlinedIcon
+                              style={{ height: "15px" }}
+                            />
+                          ) : (
+                            <LocationOnOutlinedIcon
+                              style={{ height: "15px" }}
+                            />
+                          )}
+                        </Typography>
+                        <Typography
+                          variant="h7"
+                          sx={{ color: "rgb(173, 173, 173)" }}
+                        >
+                          {props.locationDisplayName === ""
+                            ? props.locationString === ""
+                              ? props.locationType === "Online"
+                                ? "Online event"
+                                : "In person event"
+                              : props.locationString
+                            : props.locationDisplayName}{" "}
+                        </Typography>
+                      </Stack>
+                    </Box>
+                    <Box>
+                      <ThemeProvider theme={privacyAndCategoryTheme}>
+                        {isFollowing ? (
+                          <Button
+                            onClick={() => {
+                              if (isAdmin) {
+                                props.handleEdit(props.eventID);
+                              } else {
+                                setUnfollowPopup(true);
+                              }
+                              console.log("id", props.eventID);
+                            }}
+                            sx={following_button}
+                            variant="contained"
+                            startIcon={
+                              isAdmin ? (
+                                <EditOutlinedIcon />
+                              ) : (
+                                <FavoriteOutlinedIcon />
+                              )
+                            }
+                          >
+                            {isAdmin ? "Edit" : "following"}
+                          </Button>
+                        ) : (
+                          <Button
+                            onClick={() => {
+                              handleFollow(
+                                db,
+                                props.eventID,
+                                user.uid,
+                                props.start_date,
+                                props.start_time,
+                                props.end_date,
+                                props.end_time,
+                                setIsFollowing
+                              );
+                              getFollowStatus();
+                            }}
+                            sx={follow_button}
+                            variant="outlined"
+                            startIcon={<FavoriteBorderOutlinedIcon />}
+                          >
+                            follow
+                          </Button>
+                        )}
+                      </ThemeProvider>
+                    </Box>
+                  </Stack>
+                )}
               </CardContent>
             </CardMedia>
             <CardActionArea

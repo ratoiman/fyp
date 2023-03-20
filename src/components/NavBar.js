@@ -65,52 +65,49 @@ const NavBar = () => {
 
   if (isMobile) {
     return (
-      <Box>
-        <Box>
-          <ThemeProvider theme={submitButtonTheme}>
-            <Box className="mt-1">
-              <Stack direction="row" spacing={3}>
-                <Button
-                  sx={topbar_buttons}
-                  variant="text"
-                  // startIcon={<StadiumIcon />}
-                  startIcon={<HomeOutlinedIcon />}
-                  onClick={handleHome}
-                >
-                  home
-                </Button>
-                <Button
-                  startIcon={<EventIcon />}
-                  variant="text"
-                  sx={topbar_buttons}
-                  onClick={handleMyEvents}
-                >
-                  My Events
-                </Button>
-                <Button
-                  startIcon={<AddToQueueOutlinedIcon />}
-                  variant="text"
-                  sx={topbar_buttons}
-                  onClick={handleNewEvent}
-                >
-                  New event
-                </Button>
-                <Button
-                  className="mb-2"
-                  startIcon={user === null ? <LoginIcon /> : <LogoutIcon />}
-                  // startIcon={<LoginIcon />}
-                  variant="text"
-                  sx={sidebar_buttons}
-                  onClick={user === null ? handleLogin : handleLogout}
-                >
-                  {user === null ? "Login" : "Logout"}
-                </Button>
-              </Stack>
-            </Box>
-            {/* </Stack> */}
-          </ThemeProvider>
-        </Box>
-      </Box>
+      <ThemeProvider theme={submitButtonTheme}>
+        <Stack
+          direction="row"
+          spacing={0}
+          sx={{ display: "flex", width: "100%", justifyContent: "center" }}
+        >
+          <Button
+            sx={topbar_buttons}
+            variant="text"
+            // startIcon={<StadiumIcon />}
+            startIcon={<HomeOutlinedIcon />}
+            onClick={handleHome}
+          >
+            home
+          </Button>
+          <Button
+            startIcon={<EventIcon />}
+            variant="text"
+            sx={topbar_buttons}
+            onClick={handleMyEvents}
+          >
+            My Events
+          </Button>
+          <Button
+            startIcon={<AddToQueueOutlinedIcon />}
+            variant="text"
+            sx={topbar_buttons}
+            onClick={handleNewEvent}
+          >
+            New event
+          </Button>
+          <Button
+            startIcon={user === null ? <LoginIcon /> : <LogoutIcon />}
+            // startIcon={<LoginIcon />}
+            variant="text"
+            sx={topbar_buttons}
+            onClick={user === null ? handleLogin : handleLogout}
+          >
+            {user === null ? "Login" : "Logout"}
+          </Button>
+        </Stack>
+        {/* </Stack> */}
+      </ThemeProvider>
     );
   } else {
     return (

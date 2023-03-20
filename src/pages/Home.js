@@ -68,7 +68,7 @@ const Home = () => {
 
   const refreshSearchResult = () => {
     setRefreshSearch(refreshSearch + 1);
-    console.log("refresh");
+    setFiltered(false);
     // setEvents(new Set());
     setEventsDetails([]);
     // getEvents(db, setIsLoading, setEvents);
@@ -110,6 +110,13 @@ const Home = () => {
     "events",
     eventsDetails.length,
     "filtered",
+    filteredEventsDetails.length
+  );
+
+  console.log(
+    "filtered",
+    filtered,
+    eventsDetails.length,
     filteredEventsDetails.length
   );
   if (user) {

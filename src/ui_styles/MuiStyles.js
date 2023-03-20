@@ -195,17 +195,16 @@ export const event_card_style_desktop = {
 };
 
 export const event_card_style_mobile = {
-  minWidth: "100%",
-  maxWidth: "100%",
+  width: "100%",
   borderColor: "#DAA520",
-  gap: 2,
-  "&:hover": {
-    boxShadow: "md",
-    borderColor: "#DAA520",
-    borderBlock: "2px solid",
-    borderBlockColor: "#DAA520",
-    textColor: "#DAA520",
-  },
+  // gap: 2,
+  // "&:hover": {
+  //   boxShadow: "md",
+  //   borderColor: "#DAA520",
+  //   borderBlock: "2px solid",
+  //   borderBlockColor: "#DAA520",
+  //   textColor: "#DAA520",
+  // },
   my: "2%",
 };
 
@@ -235,11 +234,12 @@ export const sidebar_buttons = {
 
 export const topbar_buttons = {
   display: "flex",
-  // minWidth: "110px",
-  minHeigth: "40px",
+  width: "25%",
+  // minHeigth: "40px",
   flexDirection: "column",
   justifyContent: "center",
-  size: "large",
+  // marginRight: 5,
+  // marginLeft: 5,
 };
 
 export const following_button = {

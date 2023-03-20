@@ -206,10 +206,6 @@ const FilterSearchEvent = (props) => {
     loading();
   }, [props.eventsDetails]);
 
-  useEffect(() => {
-    if (selected["details"]) {
-    }
-  }, [selected]);
 
   useEffect(() => {
     displayClearAll();
@@ -238,12 +234,14 @@ const FilterSearchEvent = (props) => {
                   // props.refreshSearch();
                 } else {
                   setTextValue("");
+                  setSelected("");
+                  props.refreshSearch();
                 }
               }
             }}
             onChange={(event, value) => {
               if (value && typeof value === "object") {
-                console.log("value", value)
+                props.setFiltered(true);
                 setTextValue(value["details"].title);
                 props.setFilteredEventsDetails([value]);
               } else {
@@ -576,7 +574,12 @@ const FilterSearchEvent = (props) => {
         >
           <ThemeProvider theme={privacyAndCategoryTheme}>
             <Button
-              sx={{ height: "56px", marginRight: 1.5, fontWeight:600, letterSpacing:"1px" }}
+              sx={{
+                height: "56px",
+                marginRight: 1.5,
+                fontWeight: 600,
+                letterSpacing: "1px",
+              }}
               startIcon={appliedFilters ? <></> : <TuneIcon />}
               onClick={handleApplyFilters}
               variant={appliedFilters ? "contained" : "outlined"}

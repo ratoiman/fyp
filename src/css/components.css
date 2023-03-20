@@ -56,26 +56,25 @@
 
 .topbar {
   position: sticky;
-  top: 20px;
-  align-self: flex-start;
+  top: 0;
+  /* align-self: flex-start; */
   z-index: 2;
   /* overflow: scroll; */
-  /* display: flex !important;
-  justify-content: center !important; */
+  display: flex !important;
+  justify-content: center !important;
   border-bottom-style: solid;
   border-top-style: solid;
   border-left-style: solid;
   border-right-style: solid;
-  transform: translateY(-20%);
+  /* transform: translateY(-20%); */
   /* transform: translateX(2%); */
-  border-left-width: 1px;
-  border-right-width: 1px;
+  border-left-width: 3px;
+  border-right-width: 3px;
   border-top-width: 3px;
   border-color: #daa520;
-  min-height: 100px;
-  margin-top: 20px;
-  min-width: 100%;
-  max-width: 98%;
+  min-height: 80px;
+  /* margin-top: 20px; */
+  width: 100%;
   background-color: rgb(25, 25, 25, 1);
   /* background-color: #DAA520;  */
 }
@@ -93,8 +92,8 @@
 .event-card-mobile {
   display: flex !important;
   justify-content: center !important;
-  min-width: 100%;
-  max-width: 750px;
+  width: 100%;
+  /* max-width: 750px; */
   /* background-color: "black"; */
   /* transform: translateX(-3%); */
 }
