@@ -46,6 +46,9 @@ const MyEvents2 = (props) => {
   const [editEventDetails, setEditEventDetails] = useState(new Object());
   const [refreshSearch, setRefreshSearch] = useState(0);
 
+  const [adminFiltered, setAdminFiltered] = useState(false);
+  const [guestFiltered, setGuestFiltered] = useState(false);
+
   const getUserEvents = () => {
     try {
       if (user !== null) {
@@ -130,7 +133,11 @@ const MyEvents2 = (props) => {
     if (userEventsDetails.length > 0) {
       setIsLoading(false);
     } else {
-      setIsLoading(true);
+      if (!adminFiltered && !guestFiltered) {
+        setIsLoading(true);
+      } else {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -164,12 +171,8 @@ const MyEvents2 = (props) => {
 
   const refreshSearchResult = () => {
     setRefreshSearch(refreshSearch + 1);
-    // setUserEvents(new Set());
-    // setUserEventsArr([]);
     setUserEventsDetails([]);
 
-    // getUserEvents();
-    // getUserEventsDetails();
     console.log("refresh");
   };
 
@@ -204,226 +207,277 @@ const MyEvents2 = (props) => {
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
-        if (userEventsDetails.length > 0) {
+        if (
+          userEventsDetails.length > 0 ||
+          adminFiltered === true ||
+          guestFiltered === true
+        ) {
           return (
             <>
-              <Box
-                className={
-                  isMobile
-                    ? "display-events-category-box-mobile"
-                    : "display-events-category-box"
-                }
-              >
-                <Stack direction="column" sx={{ width: "100%" }}>
-                  <Box className="my-events-page-category-title-box">
-                    <Stack
-                      direction="row"
-                      sx={display_events_category_box_title_stack}
-                    >
-                      <Typography
-                        variant={isMobile ? "h5" : "h4"}
-                        align="center"
-                        sx={display_events_category_box_title}
+              {(userEventsDetailsSorted.length > 0 || adminFiltered) &&
+              !guestFiltered ? (
+                <Box
+                  className={
+                    isMobile
+                      ? "display-events-category-box-mobile"
+                      : "display-events-category-box"
+                  }
+                >
+                  <Stack direction="column" sx={{ width: "100%" }}>
+                    <Box className="my-events-page-category-title-box">
+                      <Stack
+                        direction="row"
+                        sx={display_events_category_box_title_stack}
                       >
-                        {" "}
-                        Administrated events
-                      </Typography>
-                      <Box sx={{ justifyContent: "right" }}>
-                        <ThemeProvider theme={submitButtonTheme}>
-                          <Button
-                            sx={{ width: "35px", transform: "translateX(5px)" }}
-                            size="large"
-                            startIcon={
-                              displayAdministrated === false ? (
-                                <ExpandMoreIcon />
-                              ) : (
-                                <ExpandLessIcon />
-                              )
-                            }
-                            onClick={() =>
-                              setDisplayAdministrated(!displayAdministrated)
-                            }
-                          />
-                        </ThemeProvider>
-                      </Box>
-                    </Stack>
-                  </Box>
+                        <Typography
+                          variant={isMobile ? "h5" : "h4"}
+                          align="center"
+                          sx={display_events_category_box_title}
+                        >
+                          {" "}
+                          Administrated events
+                        </Typography>
+                        <Box sx={{ justifyContent: "right" }}>
+                          <ThemeProvider theme={submitButtonTheme}>
+                            <Button
+                              sx={{
+                                width: "35px",
+                                transform: "translateX(5px)",
+                              }}
+                              size="large"
+                              startIcon={
+                                displayAdministrated === false ? (
+                                  <ExpandMoreIcon />
+                                ) : (
+                                  <ExpandLessIcon />
+                                )
+                              }
+                              onClick={() =>
+                                setDisplayAdministrated(!displayAdministrated)
+                              }
+                            />
+                          </ThemeProvider>
+                        </Box>
+                      </Stack>
+                    </Box>
 
-                  <Box display={displayAdministrated === true ? "" : "none"}>
-                    <FilterSearchEvent
-                      eventsDetails={userEventsDetailsSorted}
-                      searchType="admin"
-                      events={userEvents}
-                      setEventsDetails={setUserEventsDetails}
-                      refreshSearch={refreshSearchResult}
-                    />
-                  </Box>
+                    <Box display={displayAdministrated === true ? "" : "none"}>
+                      <FilterSearchEvent
+                        eventsDetails={userEventsDetailsSorted}
+                        searchType="admin"
+                        events={userEvents}
+                        setEventsDetails={setUserEventsDetails}
+                        refreshSearch={refreshSearchResult}
+                        setFiltered={setAdminFiltered}
+                      />
+                    </Box>
 
-                  <Box display={displayAdministrated === true ? "" : "none"}>
-                    {userEventsDetailsSorted.map((eventDetails) => {
-                      const found = userEvents.find(
-                        (ev) => ev["id"] === eventDetails.id
-                      );
+                    <Box display={displayAdministrated === true ? "" : "none"}>
+                      {console.log("ued", userEventsDetails)}
+                      {console.log("sorted", userEventsDetailsSorted)}
+                      {userEventsDetailsSorted.length > 0 ? (
+                        userEventsDetailsSorted.map((eventDetails) => {
+                          const found = userEvents.find(
+                            (ev) => ev["id"] === eventDetails.id
+                          );
 
-                      if (found.status === "admin") {
-                        return (
-                          <EventCard2
-                            title={eventDetails["details"].title}
-                            subtitle={eventDetails["details"].subtitle}
-                            start_date={eventDetails["details"].start_date}
-                            start_date_day={
-                              eventDetails["details"].start_date_day
+                          if (found && found !== undefined) {
+                            if (found.status === "admin") {
+                              return (
+                                <EventCard2
+                                  title={eventDetails["details"].title}
+                                  subtitle={eventDetails["details"].subtitle}
+                                  start_date={
+                                    eventDetails["details"].start_date
+                                  }
+                                  start_date_day={
+                                    eventDetails["details"].start_date_day
+                                  }
+                                  start_date_month={
+                                    eventDetails["details"].start_date_month
+                                  }
+                                  start_time={
+                                    eventDetails["details"].start_time
+                                  }
+                                  end_date={eventDetails["details"].end_date}
+                                  end_date_day={
+                                    eventDetails["details"].end_date_day
+                                  }
+                                  end_date_month={
+                                    eventDetails["details"].end_date_month
+                                  }
+                                  end_time={eventDetails["details"].end_time}
+                                  description={
+                                    eventDetails["details"].description
+                                  }
+                                  author={
+                                    eventDetails["details"].author_username
+                                  }
+                                  instagram={eventDetails["details"].instagram}
+                                  tiktok={eventDetails["details"].tiktok}
+                                  twitter={eventDetails["details"].twitter}
+                                  facebook={eventDetails["details"].facebook}
+                                  privacy={eventDetails["details"].privacy}
+                                  category={eventDetails["details"].category}
+                                  locationType={
+                                    eventDetails["details"].location_type
+                                  }
+                                  locationString={
+                                    eventDetails["details"].location_string
+                                  }
+                                  locationDisplayName={
+                                    eventDetails["details"]
+                                      .location_display_name
+                                  }
+                                  marker={eventDetails["details"].marker}
+                                  activities={eventDetails["activities"]}
+                                  usersList={eventDetails["users"]}
+                                  eventID={eventDetails.id}
+                                  userEventsDetails={userEventsDetails}
+                                  handleEventLink={handleEventLink}
+                                  followingOnly={true}
+                                  handleEdit={handleEdit}
+                                  setEditSelectedEvent={setEditSelectedEvent}
+                                  refreshSearch={refreshSearchResult}
+                                />
+                              );
                             }
-                            start_date_month={
-                              eventDetails["details"].start_date_month
-                            }
-                            start_time={eventDetails["details"].start_time}
-                            end_date={eventDetails["details"].end_date}
-                            end_date_day={eventDetails["details"].end_date_day}
-                            end_date_month={
-                              eventDetails["details"].end_date_month
-                            }
-                            end_time={eventDetails["details"].end_time}
-                            description={eventDetails["details"].description}
-                            author={eventDetails["details"].author_username}
-                            instagram={eventDetails["details"].instagram}
-                            tiktok={eventDetails["details"].tiktok}
-                            twitter={eventDetails["details"].twitter}
-                            facebook={eventDetails["details"].facebook}
-                            privacy={eventDetails["details"].privacy}
-                            category={eventDetails["details"].category}
-                            locationType={eventDetails["details"].location_type}
-                            locationString={
-                              eventDetails["details"].location_string
-                            }
-                            locationDisplayName={
-                              eventDetails["details"].location_display_name
-                            }
-                            marker={eventDetails["details"].marker}
-                            activities={eventDetails["activities"]}
-                            usersList={eventDetails["users"]}
-                            eventID={eventDetails.id}
-                            userEventsDetails={userEventsDetails}
-                            handleEventLink={handleEventLink}
-                            followingOnly={true}
-                            handleEdit={handleEdit}
-                            setEditSelectedEvent={setEditSelectedEvent}
-                            refreshSearch={refreshSearchResult}
-                          />
-                        );
-                      }
-                    })}
-                  </Box>
-                </Stack>
-              </Box>
-
-              <Box
-                className={
-                  isMobile
-                    ? "display-events-category-box-mobile"
-                    : "display-events-category-box"
-                }
-              >
-                <Stack direction="column">
-                  <Box className="my-events-page-category-title-box">
-                    <Stack
-                      direction="row"
-                      sx={display_events_category_box_title_stack}
-                    >
-                      <Typography
-                        variant={isMobile ? "h5" : "h4"}
-                        align="center"
-                        sx={display_events_category_box_title}
+                          }
+                        })
+                      ) : (
+                        <Box color="gray" sx={{ paddingLeft: 1.5 }}>
+                          {adminFiltered
+                            ? "No results, try changing the filter settings"
+                            : `You are not currently administrating any events. Try creating one in the ${"New Events"} page`}
+                        </Box>
+                      )}
+                    </Box>
+                  </Stack>
+                </Box>
+              ) : (
+                <></>
+              )}
+              {(userEventsDetailsSorted.length > 0 || guestFiltered) &&
+              !adminFiltered ? (
+                <Box
+                  className={
+                    isMobile
+                      ? "display-events-category-box-mobile"
+                      : "display-events-category-box"
+                  }
+                >
+                  <Stack direction="column">
+                    <Box className="my-events-page-category-title-box">
+                      <Stack
+                        direction="row"
+                        sx={display_events_category_box_title_stack}
                       >
-                        {" "}
-                        Events that you follow
-                      </Typography>
-                      <Box sx={{ justifyContent: "right" }}>
-                        <ThemeProvider theme={submitButtonTheme}>
-                          <Button
-                            sx={{ width: "35px" }}
-                            size="large"
-                            startIcon={
-                              displaySubscribed === false ? (
-                                <ExpandMoreIcon />
-                              ) : (
-                                <ExpandLessIcon />
-                              )
-                            }
-                            onClick={() =>
-                              setDisplaySubscribed(!displaySubscribed)
-                            }
-                          />
-                        </ThemeProvider>
-                      </Box>
-                    </Stack>
-                  </Box>
-                  <Box display={displaySubscribed === true ? "" : "none"}>
-                    {/* {console.log("event det", userEventsDetails)} */}
-                    <FilterSearchEvent
-                      eventsDetails={userEventsDetailsSorted}
-                      searchType="guest"
-                      events={userEvents}
-                      setEventsDetails={setUserEventsDetails}
-                      refreshSearch={refreshSearchResult}
-                    />
-                  </Box>
-                  <Box display={displaySubscribed === true ? "" : "none"}>
-                    {userEventsDetailsSorted.map((eventDetails) => {
-                      const found = userEvents.find(
-                        (ev) => ev["id"] === eventDetails.id
-                      );
-                      if (found.status === "guest") {
-                        return (
-                          <EventCard2
-                            title={eventDetails["details"].title}
-                            subtitle={eventDetails["details"].subtitle}
-                            start_date={eventDetails["details"].start_date}
-                            start_date_day={
-                              eventDetails["details"].start_date_day
-                            }
-                            start_date_month={
-                              eventDetails["details"].start_date_month
-                            }
-                            start_time={eventDetails["details"].start_time}
-                            end_date={eventDetails["details"].end_date}
-                            end_date_day={eventDetails["details"].end_date_day}
-                            end_date_month={
-                              eventDetails["details"].end_date_month
-                            }
-                            end_time={eventDetails["details"].end_time}
-                            description={eventDetails["details"].description}
-                            author={eventDetails["details"].author_username}
-                            instagram={eventDetails["details"].instagram}
-                            tiktok={eventDetails["details"].tiktok}
-                            twitter={eventDetails["details"].twitter}
-                            facebook={eventDetails["details"].facebook}
-                            privacy={eventDetails["details"].privacy}
-                            category={eventDetails["details"].category}
-                            locationType={eventDetails["details"].location_type}
-                            locationString={
-                              eventDetails["details"].location_string
-                            }
-                            locationDisplayName={
-                              eventDetails["details"].location_display_name
-                            }
-                            marker={eventDetails["details"].marker}
-                            activities={eventDetails["activities"]}
-                            usersList={eventDetails["users"]}
-                            eventID={eventDetails.id}
-                            userEventsDetails={userEventsDetails}
-                            handleEventLink={handleEventLink}
-                            handleEdit={handleEdit}
-                            setEditSelectedEvent={setEditSelectedEvent}
-                            followingOnly={true}
-                            refreshSearch={refreshSearchResult}
-                          />
+                        <Typography
+                          variant={isMobile ? "h5" : "h4"}
+                          align="center"
+                          sx={display_events_category_box_title}
+                        >
+                          {" "}
+                          Events that you follow
+                        </Typography>
+                        <Box sx={{ justifyContent: "right" }}>
+                          <ThemeProvider theme={submitButtonTheme}>
+                            <Button
+                              sx={{ width: "35px" }}
+                              size="large"
+                              startIcon={
+                                displaySubscribed === false ? (
+                                  <ExpandMoreIcon />
+                                ) : (
+                                  <ExpandLessIcon />
+                                )
+                              }
+                              onClick={() =>
+                                setDisplaySubscribed(!displaySubscribed)
+                              }
+                            />
+                          </ThemeProvider>
+                        </Box>
+                      </Stack>
+                    </Box>
+                    <Box display={displaySubscribed === true ? "" : "none"}>
+                      {/* {console.log("event det", userEventsDetails)} */}
+                      <FilterSearchEvent
+                        eventsDetails={userEventsDetailsSorted}
+                        searchType="guest"
+                        events={userEvents}
+                        setEventsDetails={setUserEventsDetails}
+                        refreshSearch={refreshSearchResult}
+                        setFiltered={setGuestFiltered}
+                      />
+                    </Box>
+                    <Box display={displaySubscribed === true ? "" : "none"}>
+                      {userEventsDetailsSorted.map((eventDetails) => {
+                        const found = userEvents.find(
+                          (ev) => ev["id"] === eventDetails.id
                         );
-                      }
-                    })}
-                  </Box>
-                </Stack>
-              </Box>
+                        if (found && found !== undefined) {
+                          if (found.status === "guest") {
+                            return (
+                              <EventCard2
+                                title={eventDetails["details"].title}
+                                subtitle={eventDetails["details"].subtitle}
+                                start_date={eventDetails["details"].start_date}
+                                start_date_day={
+                                  eventDetails["details"].start_date_day
+                                }
+                                start_date_month={
+                                  eventDetails["details"].start_date_month
+                                }
+                                start_time={eventDetails["details"].start_time}
+                                end_date={eventDetails["details"].end_date}
+                                end_date_day={
+                                  eventDetails["details"].end_date_day
+                                }
+                                end_date_month={
+                                  eventDetails["details"].end_date_month
+                                }
+                                end_time={eventDetails["details"].end_time}
+                                description={
+                                  eventDetails["details"].description
+                                }
+                                author={eventDetails["details"].author_username}
+                                instagram={eventDetails["details"].instagram}
+                                tiktok={eventDetails["details"].tiktok}
+                                twitter={eventDetails["details"].twitter}
+                                facebook={eventDetails["details"].facebook}
+                                privacy={eventDetails["details"].privacy}
+                                category={eventDetails["details"].category}
+                                locationType={
+                                  eventDetails["details"].location_type
+                                }
+                                locationString={
+                                  eventDetails["details"].location_string
+                                }
+                                locationDisplayName={
+                                  eventDetails["details"].location_display_name
+                                }
+                                marker={eventDetails["details"].marker}
+                                activities={eventDetails["activities"]}
+                                usersList={eventDetails["users"]}
+                                eventID={eventDetails.id}
+                                userEventsDetails={userEventsDetails}
+                                handleEventLink={handleEventLink}
+                                handleEdit={handleEdit}
+                                setEditSelectedEvent={setEditSelectedEvent}
+                                followingOnly={true}
+                                refreshSearch={refreshSearchResult}
+                              />
+                            );
+                          }
+                        }
+                      })}
+                    </Box>
+                  </Stack>
+                </Box>
+              ) : (
+                <></>
+              )}
             </>
           );
         } else {

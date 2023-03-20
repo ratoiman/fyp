@@ -239,7 +239,7 @@ const EditEvent = (props) => {
       props.eventDetails["details"].privacy === "Private"
     ) {
       setJoinByCodeOpen(true);
-    }
+    } 
     // console.log(props.eventDetails["activities"]);
   };
 

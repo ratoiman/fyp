@@ -39,8 +39,8 @@ const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
   const [eventPageLoad, setEventPageLoad] = useState(false);
   const [selectedEventID, setSelectedEventID] = useState(null);
-  const [isFollowing, setIsFollowing] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(props.isFollowing);
+  const [isAdmin, setIsAdmin] = useState(props.isAdmin);
   const [unfollowPopup, setUnfollowPopup] = useState(false);
   const { user } = useUserAuth();
 
@@ -62,11 +62,12 @@ const EventCard2 = (props) => {
   };
 
   const getFollowStatus = () => {
-    // console.log("user list ", props.usersList);
-
     let arr = Array.from(userEvents);
     let found = arr.find((ev) => ev["id"] === props.eventID);
 
+    if (found !== undefined) {
+      console.log("user events", userEvents, found.id);
+    }
     if (found) {
       setIsFollowing(true);
       if (found.status === "admin") {
@@ -97,14 +98,9 @@ const EventCard2 = (props) => {
   }, [user]);
 
   useEffect(() => {
-    const n = new Date();
-    console.log("follow", n.getTime());
     getFollowStatus();
-  }, [userEvents]);
+  }, [userEvents, props.userEvents, props.filtered]);
 
-  // {
-  //   console.log("event card location type", props.locationType);
-  // }
   if (eventPageLoad === false) {
     return (
       <>
@@ -222,6 +218,7 @@ const EventCard2 = (props) => {
                   </Box>
                   <Box>
                     <ThemeProvider theme={privacyAndCategoryTheme}>
+                      {console.log("test", props.isFollowing)}
                       {isFollowing ? (
                         <Button
                           onClick={() => {

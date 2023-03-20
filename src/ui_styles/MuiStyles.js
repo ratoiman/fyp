@@ -175,8 +175,8 @@ export const privacyAndCategoryTheme = createTheme({
 });
 
 export const joinCodeBoxStyle = {
-  borderStyle:""
-}
+  borderStyle: "",
+};
 
 export const event_card_style_desktop = {
   minWidth: "100%",
@@ -244,7 +244,7 @@ export const topbar_buttons = {
 
 export const following_button = {
   width: "110px",
-  height:"30px",
+  height: "30px",
   fontWeight: "bold",
   // backgroundColor: "rgb(17,17,17)",
   fontSize: "12px",
@@ -252,7 +252,7 @@ export const following_button = {
 
 export const follow_button = {
   width: "120px",
-  height:"30px",
+  height: "30px",
   backgroundColor: "rgb(17,17,17)",
   fontWeight: "bold",
   fontSize: "12px",
@@ -268,7 +268,7 @@ export const display_events_category_box_title_stack = {
   display: "flex",
   justifyContent: "center",
   marginLeft: "40px",
-  width:"100%"
+  width: "100%",
 };
 
 export const card_action_style = {
@@ -322,8 +322,31 @@ export const event_page_card_desktop = {
 
 export const new_event_menu_item_style = {
   width: "100%",
-  display: "flex",
+  // display: "flex",
   justifyContent: "center",
+  borderRadius: "25px",
+  fontWeight: 600,
+  letterSpacing: "1px",
+};
+
+export const new_event_menu_item_style_selected1 = {
+  width: "100%",
+  // display: "flex",
+  justifyContent: "center",
+  backgroundColor: "#a67e18",
+  // borderRadius: "25px",
+  // borderTopLeftRadius: "25px",
+  // borderTopRightRadius: "25px",
+};
+
+export const new_event_menu_item_style_selected = {
+  width: "100%",
+  // display: "flex",
+  justifyContent: "center",
+  backgroundColor: "#a67e18",
+  // borderRadius: "25px",
+  borderBottomLeftRadius: "25px",
+  borderBottomRightRadius: "25px",
 };
 
 export const new_event_social_media_box = {
