@@ -64,10 +64,6 @@ const EventCard2 = (props) => {
   const getFollowStatus = () => {
     let arr = Array.from(userEvents);
     let found = arr.find((ev) => ev["id"] === props.eventID);
-
-    if (found !== undefined) {
-      console.log("user events", userEvents, found.id);
-    }
     if (found) {
       setIsFollowing(true);
       if (found.status === "admin") {
@@ -103,8 +99,8 @@ const EventCard2 = (props) => {
     getFollowStatus();
   }, [userEvents, props.userEvents, props.filtered]);
 
-  if(isAdmin !== props.isAdmin && props.isADmin !== undefined){
-    setIsAdmin(props.isAdmin)
+  if (isAdmin !== props.isAdmin && props.isADmin !== undefined) {
+    setIsAdmin(props.isAdmin);
   }
   if (eventPageLoad === false) {
     return (
@@ -223,14 +219,6 @@ const EventCard2 = (props) => {
                   </Box>
                   <Box>
                     <ThemeProvider theme={privacyAndCategoryTheme}>
-                      {console.log(
-                        props.title,
-                        "props admin",
-                        props.isAdmin,
-                        "comp admin",
-
-                        isAdmin
-                      )}
                       {isFollowing ? (
                         <Button
                           onClick={() => {

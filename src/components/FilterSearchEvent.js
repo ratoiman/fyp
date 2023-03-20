@@ -182,7 +182,7 @@ const FilterSearchEvent = (props) => {
     });
     setAppliedFilters(true);
     props.setFiltered(true);
-    props.setEventsDetails(filteredEvents);
+    props.setFilteredEventsDetails(filteredEvents);
   };
 
   const handlePrivacyFilterClear = () => {
@@ -245,7 +245,7 @@ const FilterSearchEvent = (props) => {
               if (value && typeof value === "object") {
                 console.log("value", value)
                 setTextValue(value["details"].title);
-                props.setEventsDetails([value]);
+                props.setFilteredEventsDetails([value]);
               } else {
                 setTextValue("");
                 setSelected("");
@@ -576,13 +576,13 @@ const FilterSearchEvent = (props) => {
         >
           <ThemeProvider theme={privacyAndCategoryTheme}>
             <Button
-              sx={{ height: "56px", marginRight: 1.5 }}
+              sx={{ height: "56px", marginRight: 1.5, fontWeight:600, letterSpacing:"1px" }}
               startIcon={appliedFilters ? <></> : <TuneIcon />}
               onClick={handleApplyFilters}
               variant={appliedFilters ? "contained" : "outlined"}
             >
               {appliedFilters
-                ? `${filterCategory.size + filterPrivacy.size} Active`
+                ? `Active (${filterCategory.size + filterPrivacy.size})`
                 : "Apply"}
             </Button>
           </ThemeProvider>
