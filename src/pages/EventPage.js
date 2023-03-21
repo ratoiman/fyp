@@ -26,12 +26,13 @@ import {
   event_page_card_dates_box,
 } from "../ui_styles/MuiStyles";
 import EventPageActivityCard from "../components/EventPageActivityCard";
-import {  ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { editButtonStyle, submitButtonTheme } from "../ui_styles/MuiStyles";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import IconButton from "@mui/material/IconButton";
+import EventPageLocation from "../components/EventPageLocation";
 
 const EventPage = (props) => {
   const { user } = useUserAuth();
@@ -138,24 +139,24 @@ const EventPage = (props) => {
             variant="outlined"
             sx={isMobile ? event_page_card_mobile : event_page_card_desktop}
           >
-            <div className="close-button">
+            <Box className="close-button">
               <IconButton
                 aria-label="close"
                 size="small"
                 onClick={() => {
-                  props.refreshSearch()
+                  props.refreshSearch();
                   props.closeEvent();
                 }}
               >
                 {/* using same style as edit button, no need to create new style */}
                 <CloseOutlinedIcon sx={editButtonStyle} />
               </IconButton>
-            </div>
+            </Box>
             <CardContent>
               <Box color="white" className="">
-                <Box className="w-100" sx={event_page_card_title_box}>
+                <Box sx={event_page_card_title_box}>
                   <Box className="">
-                    <Typography  textAlign="center" variant="h4">
+                    <Typography textAlign="center" variant="h4">
                       {eventData["details"].title}
                     </Typography>
                   </Box>
@@ -165,8 +166,8 @@ const EventPage = (props) => {
                     </Typography>
                   </Box>
                 </Box>
-                <h1></h1>
-                <Box className="w-100" sx={event_page_card_dates_box}>
+
+                <Box sx={event_page_card_dates_box}>
                   <Typography variant="h6">
                     Starts: {startDate} {eventData["details"].start_time}
                   </Typography>
@@ -175,6 +176,16 @@ const EventPage = (props) => {
                     Ends: {endDate} {eventData["details"].end_time}
                   </Typography>
                 </Box>
+
+                <EventPageLocation
+                  locationType={eventData["details"].location_type}
+                  locationDisplayName={
+                    eventData["details"].location_display_name
+                  }
+                  locationString={eventData["details"].location_string}
+                  meetLink={eventData["details"].meet_link}
+                  marker={eventData["details"].marker}
+                />
 
                 <Typography variant="h5">
                   <br />
@@ -185,7 +196,11 @@ const EventPage = (props) => {
                 </Typography>
 
                 <Box className="mt-4">
-                  <Typography className="mb-2" variant="h5">
+                  <Typography
+                    className="mb-2"
+                    variant="h5"
+                    display={eventData["activities"].length === 0 ? "none" : ""}
+                  >
                     {" "}
                     What's on?{" "}
                     <ThemeProvider theme={submitButtonTheme}>

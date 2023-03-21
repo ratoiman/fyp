@@ -529,12 +529,6 @@ const CreateEvent = () => {
               end_time: activity.end_time,
               description: activity.description,
               id: activity.id,
-              // location_string: activity.locationString,
-              // location_display_name: activity.locationDisplayName,
-              // location_type: activity.locationType,
-              // marker: activity.marker,
-              // meet_link: activity.meetLink,
-
               location_string: activity.location_string,
               location_display_name: activity.location_display_name,
               location_type: activity.location_type,

@@ -216,11 +216,13 @@ export const event_page_card_title_box = {
 };
 
 export const event_page_card_dates_box = {
+  width: "100%",
   border: "1px",
   borderBottomStyle: "solid",
   borderColor: "#DAA520",
   textAlign: "center",
   p: 1,
+  width: "100%",
 };
 
 export const sidebar_buttons = {
@@ -307,17 +309,12 @@ export const event_page_card_mobile = {
 export const event_page_card_desktop = {
   display: "flex",
   justifyContent: "center",
-  minWidth: "100%",
-  maxWidth: "100%",
-  maxHeight: "50%",
+  width: "100%",
   border: "solid",
   borderWidth: "2px",
   borderColor: "#DAA520",
-  backgroundColor: "rgb(22, 22, 22, 0.4)",
-  // backgroundImage: `url(${cardbg})`,
-  // backgroundSize: "cover",
-  // backgroundRepeat: "no-repeat",
-  // backgroundPosition: "center center",
+  backgroundColor: "rgb(22, 22, 22, 0.6)",
+  
 };
 
 export const new_event_menu_item_style = {

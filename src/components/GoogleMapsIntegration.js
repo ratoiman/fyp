@@ -45,7 +45,7 @@ const GoogleMapsIntegration = (props) => {
           <GoogleMap
             zoom={15}
             center={
-              props.marker !== ""
+              props.marker !== "" && props.marker !== undefined
                 ? props.marker
                 : (userLocation === null ? { lat: 51.500942, lng: -0.177498 } : userLocation)
             }

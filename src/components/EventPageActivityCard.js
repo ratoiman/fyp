@@ -18,6 +18,7 @@ import "../css/components.css";
 import Button from "@mui/material/Button";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import EventPageActivityLocation from "./EventPageActivityLocation";
 
 const EventPageActivityCard = (activity) => {
   let activityDetails = activity["activity"];
@@ -50,26 +51,23 @@ const EventPageActivityCard = (activity) => {
             </Typography>
           </Typography>
         </Box>
+        <Box>
+          {/* <Typography> {activityDetails.location_display_name}</Typography>
+           */}
+
+          <EventPageActivityLocation
+            locationType={activityDetails.location_type}
+            locationDisplayName={activityDetails.location_display_name}
+            locationString={activityDetails.location_string}
+            meetLink={activityDetails.meet_link}
+            marker={activityDetails.marker}
+          />
+        </Box>
 
         <Box display={expand === true ? "" : "none"}>
           <Box>
             <Typography variant="h7">{activityDetails.description}</Typography>
           </Box>
-          {/* <Box>
-            <Typography variant="h7">{activityDetails.description}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="h7">{activityDetails.description}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="h7">{activityDetails.description}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="h7">{activityDetails.description}</Typography>
-          </Box>
-          <Box>
-            <Typography variant="h7">{activityDetails.description}</Typography>
-          </Box> */}
         </Box>
 
         <Box className="event-page-activity-card-expand">

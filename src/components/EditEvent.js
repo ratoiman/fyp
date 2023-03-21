@@ -399,11 +399,13 @@ const EditEvent = (props) => {
     activities.map((activity) => {
       if (activity.locationType === "Same as event") {
         if (locationType === "Online") {
+          activity.locationType = "Online"
           activity.locationString = "";
           activity.marker = "";
           activity.locationDisplayName = "";
           activity.meetLink = meetLink;
         } else {
+          activity.locationType = "In person"
           activity.locationString = locationString;
           activity.marker = marker;
           activity.locationDisplayName = locationDisplayName;
@@ -418,6 +420,32 @@ const EditEvent = (props) => {
         activity.locationDisplayName = "";
       }
     });
+
+    
+    // activities.map((activity) => {
+    //   if (activity.locationType === "Same as event") {
+    //     if (locationType === "Online") {
+    //       activity.locationType = "Online"
+    //       activity.locationString = "";
+    //       activity.marker = "";
+    //       activity.locationDisplayName = "";
+    //       activity.meetLink = meetLink;
+    //     } else {
+    //       activity.locationType = "In person"
+    //       activity.locationString = locationString;
+    //       activity.marker = marker;
+    //       activity.locationDisplayName = locationDisplayName;
+    //       activity.meetLink = "";
+    //     }
+    //   }
+
+    //   // Checking if all online activities have the correct location
+    //   if (activity.locationType === "Online") {
+    //     activity.locationString = "";
+    //     activity.marker = "";
+    //     activity.locationDisplayName = "";
+    //   }
+    // });
 
     // Checking if event location corresponds with location type
     if (locationType === "Online") {
@@ -543,7 +571,7 @@ const EditEvent = (props) => {
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
     checkLocation();
-    console.log("end date ", formattedEndDate, endDate);
+    console.log("check ", activities);
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
       if (category === "Category") {

@@ -183,6 +183,7 @@ const FilterSearchEvent = (props) => {
     });
     setAppliedFilters(true);
     props.setFiltered(true);
+    setOptions(filteredEvents)
     props.setFilteredEventsDetails(filteredEvents);
   };
 

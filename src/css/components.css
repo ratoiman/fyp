@@ -103,8 +103,8 @@
   justify-content: center !important;
   min-width: 100%;
   margin-bottom: 2%;
-  /* background-color: rgb(22, 22, 22, 0.4);
-   */
+  /* padding: 10; */
+  
 }
 
 .display-events-category-box {
@@ -113,7 +113,6 @@
   width: 80%;
   margin-top: 50px;
   /* background-color: #161616; */
-
 }
 @media only screen and (max-width: 1200px) {
   .display-events-category-box {
@@ -179,6 +178,28 @@
   margin-top: 2%;
   border-style: solid;
   border-color: #daa520;
+}
+
+.map-container-event-page {
+  /* display: flex;
+  justify-content: center; */
+  width: 80%;
+  height: 400px;
+  margin-top: 2%;
+  border-style: solid;
+  border-color: #daa520;
+  margin-left:10%
+}
+
+.map-container-event-page-mobile {
+  /* display: flex;
+  justify-content: center; */
+  width: 100%;
+  height: 250px;
+  margin-top: 2%;
+  border-style: solid;
+  border-color: #daa520;
+  /* margin-left:10% */
 }
 
 .combobox-container {
