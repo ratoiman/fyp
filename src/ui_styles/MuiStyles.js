@@ -48,7 +48,7 @@ export const pickerStyle = {
 // Add new activity popup style
 export const popupStyle = {
   position: "absolute",
-  top: "9%",
+  top: "15%",
   left: "21%",
   width: "58%",
   bgcolor: "#161616",
@@ -79,8 +79,8 @@ export const linkPopupStyleMobile = {
   // display:"flex",
   // justifyContent:"center",
   top: "40%",
-  // left: "34.5%",
-  width: "95%",
+  left: "5%",
+  width: "90%",
   bgcolor: "black",
   border: "2px solid #DAA520",
   boxShadow: 24,

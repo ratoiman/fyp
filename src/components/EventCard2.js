@@ -34,6 +34,7 @@ import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
+import JoinByCode from "./JoinByCode";
 
 const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
@@ -42,6 +43,8 @@ const EventCard2 = (props) => {
   const [isFollowing, setIsFollowing] = useState(props.isFollowing);
   const [isAdmin, setIsAdmin] = useState(props.isAdmin);
   const [unfollowPopup, setUnfollowPopup] = useState(false);
+  const [codePopup, setCodePopup] = useState(false);
+
   const { user } = useUserAuth();
 
   const getUserEvents = () => {
@@ -87,6 +90,27 @@ const EventCard2 = (props) => {
     }
     setUnfollowPopup(false);
     console.log("Event ", props.eventID, " unfollowed");
+    props.refreshEdit();
+  };
+
+  const closeCodePopup = () => {
+    setCodePopup(false);
+  };
+
+  const joinedByCode = () => {
+    handleFollow(
+      db,
+      props.eventID,
+      user.uid,
+      props.start_date,
+      props.start_time,
+      props.end_date,
+      props.end_time,
+      setIsFollowing
+    );
+    getFollowStatus();
+
+    // props.refreshEdit();
   };
 
   useEffect(() => {
@@ -228,18 +252,22 @@ const EventCard2 = (props) => {
                             ) : (
                               <Button
                                 onClick={() => {
-                                  console.log(props.privacy);
-                                  handleFollow(
-                                    db,
-                                    props.eventID,
-                                    user.uid,
-                                    props.start_date,
-                                    props.start_time,
-                                    props.end_date,
-                                    props.end_time,
-                                    setIsFollowing
-                                  );
-                                  getFollowStatus();
+                                  if (props.privacy === "Public") {
+                                    handleFollow(
+                                      db,
+                                      props.eventID,
+                                      user.uid,
+                                      props.start_date,
+                                      props.start_time,
+                                      props.end_date,
+                                      props.end_time,
+                                      setIsFollowing
+                                    );
+                                    getFollowStatus();
+                                  } else {
+                                    console.log("Alert");
+                                    setCodePopup(true);
+                                  }
                                 }}
                                 sx={follow_button}
                                 variant="outlined"
@@ -427,8 +455,9 @@ const EventCard2 = (props) => {
                                   setIsFollowing
                                 );
                                 getFollowStatus();
-                              }else{
-                                console.log("Alert")
+                              } else {
+                                console.log("Alert");
+                                setCodePopup(true);
                               }
                             }}
                             sx={follow_button}
@@ -521,6 +550,21 @@ const EventCard2 = (props) => {
                 setUnfollowPopup={setUnfollowPopup}
                 message={"Unfollow event?"}
               />
+            </Box>
+          </Modal>
+
+          <Modal
+            sx={{ overflow: "auto" }}
+            open={codePopup}
+            aria-labelledby="modal-modal-title"
+            aria-describedby="modal-modal-description"
+          >
+            <Box>
+              <JoinByCode
+                joinedByCode={joinedByCode}
+                joinCode={props.joinCode}
+                closePopup={closeCodePopup}
+              />{" "}
             </Box>
           </Modal>
         </Container>

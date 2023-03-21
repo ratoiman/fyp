@@ -39,11 +39,13 @@ const Home = () => {
 
   const handleEventLink = (id) => {
     // navigator("/event")
-    console.log(userEvents)
+    console.log(userEvents);
     if (userEvents.has(id)) {
       setSelectedEventID(id);
       setEventPageLoad(true);
-    } else {console.log("Alert")}
+    } else {
+      console.log("Alert");
+    }
   };
 
   const getUserEvents = () => {
@@ -52,14 +54,9 @@ const Home = () => {
         if (Object.keys(user).length !== 0) {
           const usersRef = collection(db, "users", user.uid, "events");
           onSnapshot(usersRef, async (snap) => {
-            // if (snap.docChanges().length === 0) {
-            //   setIsLoading(false);
-            // }
-
-            snap.docs.map((doc) => {setUserEvents((users) => new Set([...users, doc.id]))})
-            // setUserEvents(
-            //   snap.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-            // );
+            snap.docs.map((doc) => {
+              setUserEvents((users) => new Set([...users, doc.id]));
+            });
           });
         }
       }
@@ -87,6 +84,8 @@ const Home = () => {
   };
 
   const refreshEdit = () => {
+    console.log("refresh");
+    setUserEvents(new Set());
     setEvents(new Set());
     setEventsDetails([]);
     getEvents(db, setIsLoading, setEvents);
@@ -127,7 +126,7 @@ const Home = () => {
 
   useEffect(() => {
     getUserEvents();
-  }, [user, events]);
+  }, [user, events, eventsDetails]);
 
   useEffect(() => {
     getEventsDetails(db, events, eventsDetails, setEventsDetails);
@@ -269,6 +268,8 @@ const Home = () => {
                                 followingOnly={false}
                                 handleEdit={handleEdit}
                                 setEditSelectedEvent={setEditSelectedEvent}
+                                joinCode={eventDetails["details"].join_code}
+                                refreshEdit={refreshEdit}
                               />
                             );
                           })
@@ -349,6 +350,8 @@ const Home = () => {
                               followingOnly={false}
                               handleEdit={handleEdit}
                               setEditSelectedEvent={setEditSelectedEvent}
+                              joinCode={eventDetails["details"].join_code}
+                              refreshEdit={refreshEdit}
                             />
                           );
                         })
