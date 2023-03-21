@@ -5,7 +5,7 @@ import GuestLandingPage from "./GuestLandingPage";
 import EventCard2 from "../components/EventCard2";
 import EventPage from "./EventPage";
 import Loading from "../components/Loading";
-import { Box, Stack, Typography } from "@mui/material";
+import { Alert, Box, Stack, Typography } from "@mui/material";
 import { getEventsDetails, getEvents } from "../context/DbCallsContext";
 import { isMobile } from "react-device-detect";
 import {
@@ -19,6 +19,7 @@ import { submitButtonTheme } from "../ui_styles/MuiStyles";
 import Button from "@mui/material/Button";
 import EditEvent from "../components/EditEvent";
 import FilterSearchEvent from "../components/FilterSearchEvent";
+import { collection, onSnapshot } from "firebase/firestore";
 
 const Home = () => {
   const [events, setEvents] = useState(new Set());
@@ -32,13 +33,39 @@ const Home = () => {
   const [refreshSearch, setRefreshSearch] = useState(0);
   const [filtered, setFiltered] = useState(false);
   const [filteredEventsDetails, setFilteredEventsDetails] = useState([]);
+  const [userEvents, setUserEvents] = useState(new Set());
 
   const { user } = useUserAuth();
 
   const handleEventLink = (id) => {
     // navigator("/event")
-    setSelectedEventID(id);
-    setEventPageLoad(true);
+    console.log(userEvents)
+    if (userEvents.has(id)) {
+      setSelectedEventID(id);
+      setEventPageLoad(true);
+    } else {console.log("Alert")}
+  };
+
+  const getUserEvents = () => {
+    try {
+      if (user !== null) {
+        if (Object.keys(user).length !== 0) {
+          const usersRef = collection(db, "users", user.uid, "events");
+          onSnapshot(usersRef, async (snap) => {
+            // if (snap.docChanges().length === 0) {
+            //   setIsLoading(false);
+            // }
+
+            snap.docs.map((doc) => {setUserEvents((users) => new Set([...users, doc.id]))})
+            // setUserEvents(
+            //   snap.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+            // );
+          });
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   const getEditEventDetails = (id) => {
@@ -99,6 +126,10 @@ const Home = () => {
   }, [user, refreshSearch]);
 
   useEffect(() => {
+    getUserEvents();
+  }, [user, events]);
+
+  useEffect(() => {
     getEventsDetails(db, events, eventsDetails, setEventsDetails);
   }, [events]);
 
@@ -106,19 +137,6 @@ const Home = () => {
     loading();
   }, [eventsDetails]);
 
-  console.log(
-    "events",
-    eventsDetails.length,
-    "filtered",
-    filteredEventsDetails.length
-  );
-
-  console.log(
-    "filtered",
-    filtered,
-    eventsDetails.length,
-    filteredEventsDetails.length
-  );
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {

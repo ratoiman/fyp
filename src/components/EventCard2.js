@@ -86,7 +86,6 @@ const EventCard2 = (props) => {
       props.userEventsDetails.splice(objInd, 1);
     }
     setUnfollowPopup(false);
-    props.following = false;
     console.log("Event ", props.eventID, " unfollowed");
   };
 
@@ -229,6 +228,7 @@ const EventCard2 = (props) => {
                             ) : (
                               <Button
                                 onClick={() => {
+                                  console.log(props.privacy);
                                   handleFollow(
                                     db,
                                     props.eventID,
@@ -415,17 +415,21 @@ const EventCard2 = (props) => {
                         ) : (
                           <Button
                             onClick={() => {
-                              handleFollow(
-                                db,
-                                props.eventID,
-                                user.uid,
-                                props.start_date,
-                                props.start_time,
-                                props.end_date,
-                                props.end_time,
-                                setIsFollowing
-                              );
-                              getFollowStatus();
+                              if (props.privacy === "Public") {
+                                handleFollow(
+                                  db,
+                                  props.eventID,
+                                  user.uid,
+                                  props.start_date,
+                                  props.start_time,
+                                  props.end_date,
+                                  props.end_time,
+                                  setIsFollowing
+                                );
+                                getFollowStatus();
+                              }else{
+                                console.log("Alert")
+                              }
                             }}
                             sx={follow_button}
                             variant="outlined"
@@ -504,6 +508,7 @@ const EventCard2 = (props) => {
               </CardContent>
             </CardActionArea>
           </Card>
+
           <Modal
             sx={{ overflow: "auto" }}
             open={unfollowPopup}

@@ -308,23 +308,25 @@ const CreateEvent = () => {
     activities.map((activity) => {
       if (activity.locationType === "Same as event") {
         if (locationType === "Online") {
-          activity.locationString = "";
+          activity.location_type = "Online";
+          activity.location_string = "";
           activity.marker = "";
-          activity.locationDisplayName = "";
-          activity.meetLink = meetLink;
+          activity.location_display_name = "";
+          activity.meet_link = meetLink;
         } else {
-          activity.locationString = locationString;
+          activity.location_type = "In person";
+          activity.location_string = locationString;
           activity.marker = marker;
-          activity.locationDisplayName = locationDisplayName;
-          activity.meetLink = "";
+          activity.location_display_name = locationDisplayName;
+          activity.meet_link = "";
         }
       }
 
       // Checking if all online activities have the correct location
-      if (activity.locationType === "Online") {
-        activity.locationString = "";
+      if (activity.location_type === "Online") {
+        activity.location_string = "";
         activity.marker = "";
-        activity.locationDisplayName = "";
+        activity.location_display_name = "";
       }
     });
 
@@ -505,7 +507,7 @@ const CreateEvent = () => {
           marker: marker,
           meet_link: meetLink,
           privacy: visibility,
-          join_code:joinCode,
+          join_code: joinCode,
           category: category,
         }).then(async function () {
           activities.map(async (activity) => {
@@ -1743,7 +1745,7 @@ const CreateEvent = () => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={popupStyle}>
+              <Box sx={isMobile ? popupStyleMobile : popupStyle}>
                 {/* {console.log("edit start date", editActivityStartDate)} */}
 
                 <AddNewActivity

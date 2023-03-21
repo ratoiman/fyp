@@ -1,4 +1,11 @@
-import { Box, Link, Stack, ThemeProvider, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Link,
+  Stack,
+  ThemeProvider,
+  Typography,
+} from "@mui/material";
 import React from "react";
 import { useState } from "react";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -7,7 +14,11 @@ import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOu
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
-import { submitButtonTheme } from "../ui_styles/MuiStyles";
+import {
+  event_location_stack_mobile_style,
+  event_location_stack_style,
+  submitButtonTheme,
+} from "../ui_styles/MuiStyles";
 import GoogleMapsIntegration from "./GoogleMapsIntegration";
 import { isMobile } from "react-device-detect";
 
@@ -16,7 +27,7 @@ const EventPageActivityLocation = (props) => {
 
   const OnlineEvent = () => {
     return (
-      <Box>
+      <Box sx={isMobile ? { marginLeft: 0 } : { marginLeft: 3 }}>
         <Link
           target="_blank"
           href={props.meetLink}
@@ -29,9 +40,13 @@ const EventPageActivityLocation = (props) => {
             <ThemeProvider theme={submitButtonTheme}>
               <VideoCameraFrontOutlinedIcon
                 color="primary"
-                sx={{ marginTop: 0.5, marginRight: 1 }}
+                sx={{ marginTop: 0.25, marginRight: 1, fontSize: "18px" }}
               />
-              <Typography variant="h6" color="primary">
+              <Typography
+                variant="h6"
+                color="primary"
+                sx={{ fontSize: "15px" }}
+              >
                 Online Event (click for meeting link)
               </Typography>
             </ThemeProvider>
@@ -53,30 +68,53 @@ const EventPageActivityLocation = (props) => {
     };
 
     // console.log("marker", props.locationString.split(",")[0].replaceAll(" ", "+"));
-    console.log(
-      "string",
-      locationToLink(props.locationString),
-      process.env.REACT_APP_PUBLIC_API_KEY_MAPS
-    );
+
     return (
       <Box>
         <Stack
           direction="row"
-          sx={{ marginTop: 3, display: "flex", justifyContent: "center" }}
+          sx={
+            isMobile
+              ? event_location_stack_mobile_style
+              : event_location_stack_style
+          }
         >
           <ThemeProvider theme={submitButtonTheme}>
             <LocationOnOutlinedIcon
               color="primary"
-              sx={{ marginTop: 0.5, marginRight: 1 }}
+              sx={{ marginTop: 0.5, marginRight: 1, fontSize: "18px" }}
             />
-            <Typography variant="h6" color="primary">
+            <Typography
+              variant="h6"
+              color="primary"
+              sx={{ fontSize: "15px", marginTop: 0.25 }}
+            >
               {props.locationDisplayName === ""
                 ? props.locationString
                 : props.locationDisplayName}
             </Typography>
+            <Box sx={{ marginLeft: 1 }}>
+              <Button
+                disableRipple
+                endIcon={displayMap ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                variant="text"
+                color="primary"
+                onClick={() => setDisplayMap(!displayMap)}
+                sx={{ fontSize: "10px", width: "100px" }}
+              >
+                {displayMap ? "hide map" : "view map"}
+              </Button>
+            </Box>
           </ThemeProvider>
         </Stack>
-        <Box className={isMobile ? "map-container-event-page-mobile" : "map-container-event-page"}>
+        <Box
+          className={
+            isMobile
+              ? "map-container-event-page-mobile"
+              : "map-container-event-page"
+          }
+          display={displayMap ? "" : "none"}
+        >
           <iframe
             src={locationToLink(props.locationString)}
             width="100%"
@@ -86,7 +124,31 @@ const EventPageActivityLocation = (props) => {
             referrerpolicy="no-referrer-when-downgrade"
           />
         </Box>
-        {/* <GoogleMapsIntegration marker={props.marker} /> */}
+      </Box>
+    );
+  };
+
+  const InPersonNoMap = () => {
+    return (
+      <Box>
+        <Stack
+          direction="row"
+          sx={
+            isMobile
+              ? { marginLeft: 0, marginTop: 1.5 }
+              : { marginLeft: 3, marginTop: 1.5 }
+          }
+        >
+          <ThemeProvider theme={submitButtonTheme}>
+            <LocationOnOutlinedIcon
+              color="primary"
+              sx={{ marginTop: 0.25, marginRight: 1, fontSize: "18px" }}
+            />
+            <Typography variant="h6" color="primary" sx={{ fontSize: "15px" }}>
+              In Person Event
+            </Typography>
+          </ThemeProvider>
+        </Stack>
       </Box>
     );
   };
@@ -100,7 +162,9 @@ const EventPageActivityLocation = (props) => {
           </>
         ) : props.locationType === "in person" &&
           props.locationString === "" ? (
-          <>No map</>
+          <>
+            <InPersonNoMap />
+          </>
         ) : (
           <>
             <InPersonWithLocation />

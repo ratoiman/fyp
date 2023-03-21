@@ -148,7 +148,7 @@ const AddSocialMediaLinks = (props) => {
                   }}
                   onClick={handleInsta}
                 >
-                  {hoverInstaText}
+                  {isMobile ? "Instagram" : hoverInstaText}
                 </Button>
               </Box>
 
@@ -181,7 +181,7 @@ const AddSocialMediaLinks = (props) => {
                   }}
                   onClick={handleTiktok}
                 >
-                  {hoverTiktokText}
+                  {isMobile ? "TikTok" : hoverTiktokText}
                 </Button>
               </Box>
             </Box>
@@ -216,7 +216,7 @@ const AddSocialMediaLinks = (props) => {
                   }}
                   onClick={handleTwitter}
                 >
-                  {hoverTwitterText}
+                  {isMobile ? "Twitter" : hoverTwitterText}
                 </Button>
               </Box>
               <Box
@@ -248,7 +248,7 @@ const AddSocialMediaLinks = (props) => {
                   }}
                   onClick={handleFacebook}
                 >
-                  {hoverFacebookText}
+                  {isMobile ? "Facebook" : hoverFacebookText}
                 </Button>
               </Box>
             </Box>

@@ -239,7 +239,7 @@ const EditEvent = (props) => {
       props.eventDetails["details"].privacy === "Private"
     ) {
       setJoinByCodeOpen(true);
-    } 
+    }
     // console.log(props.eventDetails["activities"]);
   };
 
@@ -396,32 +396,33 @@ const EditEvent = (props) => {
   // Checking if all online activities have the correct location
   const checkLocation = () => {
     // Checking if all activities that have location as "Same as event" have accurate locations
+    console.log("location", activities);
     activities.map((activity) => {
-      if (activity.locationType === "Same as event") {
+      if (activity.location_type === "Same as event") {
         if (locationType === "Online") {
-          activity.locationType = "Online"
-          activity.locationString = "";
+          console.log("I AM HERE")
+          activity.location_type = "Online";
+          activity.location_string = "";
           activity.marker = "";
-          activity.locationDisplayName = "";
-          activity.meetLink = meetLink;
+          activity.location_display_name = "";
+          activity.meet_link = meetLink;
         } else {
-          activity.locationType = "In person"
-          activity.locationString = locationString;
+          activity.location_type = "In person";
+          activity.location_string = locationString;
           activity.marker = marker;
-          activity.locationDisplayName = locationDisplayName;
-          activity.meetLink = "";
+          activity.location_display_name = locationDisplayName;
+          activity.meet_link = "";
         }
       }
 
       // Checking if all online activities have the correct location
-      if (activity.locationType === "Online") {
-        activity.locationString = "";
+      if (activity.location_type === "Online") {
+        activity.location_string = "";
         activity.marker = "";
-        activity.locationDisplayName = "";
+        activity.location_display_name = "";
       }
     });
 
-    
     // activities.map((activity) => {
     //   if (activity.locationType === "Same as event") {
     //     if (locationType === "Online") {
@@ -571,7 +572,7 @@ const EditEvent = (props) => {
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
     checkLocation();
-    console.log("check ", activities);
+    
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
       if (category === "Category") {
@@ -663,6 +664,7 @@ const EditEvent = (props) => {
           join_code: joinCode,
           category: category,
         }).then(async function () {
+          console.log("check ", activities);
           activities.map(async (activity) => {
             const activitiesRef = doc(
               db,
@@ -1925,7 +1927,7 @@ const EditEvent = (props) => {
               aria-labelledby="modal-modal-title"
               aria-describedby="modal-modal-description"
             >
-              <Box sx={popupStyle}>
+              <Box sx={isMobile ? popupStyleMobile : popupStyle}>
                 <AddNewActivity
                   //prop to identify if popup is edit or new activity
                   type={"edit"}

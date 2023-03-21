@@ -314,7 +314,32 @@ export const event_page_card_desktop = {
   borderWidth: "2px",
   borderColor: "#DAA520",
   backgroundColor: "rgb(22, 22, 22, 0.6)",
-  
+  // paddingLeft: 10,
+};
+
+export const event_location_stack_style = {
+  marginTop: 3,
+  display: "flex",
+  justifyContent: "left",
+  marginLeft: 3,
+};
+
+export const event_location_button = {
+  marginLeft: 0,
+  marginTop: 0.5,
+};
+
+export const event_location_button_mobile = {
+  marginLeft: 1,
+  marginTop: 0.5,
+};
+
+export const event_location_stack_mobile_style = {
+  marginTop: 1.5,
+  display: "flex",
+  justifyContent: "left",
+  width: "100%",
+  // marginLeft: 3,
 };
 
 export const new_event_menu_item_style = {
@@ -390,10 +415,41 @@ export const new_event_social_media_inner_box_mobile_disabled = {
 
 export const new_event_social_media_button = {
   width: "100%",
+  // width: "140px",
   margin: "2%",
   position: "relative",
   top: "0",
   left: "0",
+};
+
+export const event_page_social_media_box = {
+  marginTop: 3,
+  marginBottom: 3,
+  marginLeft: 1.5,
+  marginRight: 1.5,
+};
+
+export const event_page_social_media_button = {
+  width: "100%",
+  // minWidth: "150px",
+  // width: "140px",
+  // marginTop: "2%",
+  // position: "relative",
+  // top: "0",
+  // left: "0",
+};
+
+export const event_page_social_media_button_mobile = {
+  minWidth: "150px",
+  maxWidth: "100%",
+  borderBottom: "solid",
+  borderWidth: "1px",
+  // minWidth: "150px",
+  // width: "140px",
+  // marginTop: "2%",
+  // position: "relative",
+  // top: "0",
+  // left: "0",
 };
 
 export const socialMediaButtonTheme = createTheme({
