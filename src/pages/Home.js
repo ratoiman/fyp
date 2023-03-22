@@ -136,6 +136,7 @@ const Home = () => {
     loading();
   }, [eventsDetails]);
 
+  console.log(eventsDetails)
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {

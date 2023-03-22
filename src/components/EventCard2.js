@@ -35,6 +35,7 @@ import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOu
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import JoinByCode from "./JoinByCode";
+import { RichTextDisplay } from "./RichTextEditor";
 
 const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
@@ -111,6 +112,76 @@ const EventCard2 = (props) => {
     getFollowStatus();
 
     // props.refreshEdit();
+  };
+
+  const DisplayDates = () => {
+    if (props.start_date === props.end_date) {
+      return (
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Stack direction="row" spacing={1} marginRight={1}>
+              <Typography variant="h6" color="white">
+                {props.start_date_day} {props.start_date.split("/")[0]}{" "}
+                {props.start_date_month}
+              </Typography>
+              <Typography variant="h6" color="#DAA520">
+                {props.start_time}
+              </Typography>
+              <Typography
+                color="#DAA520"
+                variant="h6"
+                display={
+                  props.end_time !== undefined && props.end_time !== ""
+                    ? ""
+                    : "none"
+                }
+              >
+                -
+              </Typography>
+              <Typography variant="h6" color="#DAA520">
+                {props.end_time}
+              </Typography>
+            </Stack>
+          </Box>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Stack direction="row" spacing={1} marginRight={1}>
+              <Typography variant="h6" color="white">
+                {props.start_date_day} {props.start_date.split("/")[0]}{" "}
+                {props.start_date_month}
+              </Typography>
+              <Typography variant="h6" color="#DAA520">
+                {props.start_time}
+              </Typography>
+            </Stack>
+            <Typography
+              variant="h6"
+              color="#DAA520"
+              display={
+                props.end_time !== undefined && props.end_time !== ""
+                  ? ""
+                  : "none"
+              }
+            >
+              -
+            </Typography>
+            <Stack direction="row" spacing={1} marginLeft={1}>
+              <Typography variant="h6" color="#DAA520">
+                {props.end_time}
+              </Typography>
+              <Typography variant="h6" color="white">
+                {props.end_date_day} {props.end_date.split("/")[0]}{" "}
+                {props.end_date_month}
+              </Typography>
+            </Stack>
+          </Box>
+        </>
+      );
+    }
   };
 
   useEffect(() => {
@@ -280,7 +351,7 @@ const EventCard2 = (props) => {
                         </Box>
                       </Stack>
 
-                      <Stack
+                      {/* <Stack
                         direction="row"
                         sx={{
                           width: "100%",
@@ -321,7 +392,7 @@ const EventCard2 = (props) => {
                               : props.locationString
                             : props.locationDisplayName}{" "}
                         </Typography>
-                      </Stack>
+                      </Stack> */}
                     </Stack>
                   </>
                 ) : (
@@ -372,50 +443,7 @@ const EventCard2 = (props) => {
                         width: "100%",
                         marginLeft: "10px",
                       }}
-                    >
-                      <Stack
-                        direction="row"
-                        sx={{
-                          width: "100%",
-                          display: "flex",
-                          justifyContent: "left",
-                          marginTop: "6px",
-                        }}
-                      >
-                        <Typography
-                          // variant="h7"
-                          sx={{
-                            color: "rgb(173, 173, 173)",
-                            paddingRight: "1%",
-                          }}
-                        >
-                          {props.locationDisplayName === undefined &&
-                          props.locationString === undefined ? (
-                            <></>
-                          ) : props.locationType === "Online" ? (
-                            <VideoCameraFrontOutlinedIcon
-                              style={{ height: "15px" }}
-                            />
-                          ) : (
-                            <LocationOnOutlinedIcon
-                              style={{ height: "15px" }}
-                            />
-                          )}
-                        </Typography>
-                        <Typography
-                          variant="h7"
-                          sx={{ color: "rgb(173, 173, 173)" }}
-                        >
-                          {props.locationDisplayName === ""
-                            ? props.locationString === ""
-                              ? props.locationType === "Online"
-                                ? "Online event"
-                                : "In person event"
-                              : props.locationString
-                            : props.locationDisplayName}{" "}
-                        </Typography>
-                      </Stack>
-                    </Box>
+                    ></Box>
                     <Box>
                       <ThemeProvider theme={privacyAndCategoryTheme}>
                         {isFollowing ? (
@@ -501,8 +529,6 @@ const EventCard2 = (props) => {
                   >
                     {props.title}
                   </Typography>
-                  {/* </CardContent> */}
-                  {/* <CardContent> */}
                   <Typography textAlign="left" color={"white"}>
                     {props.subtitle}
                   </Typography>
@@ -510,30 +536,54 @@ const EventCard2 = (props) => {
               </CardContent>
 
               <CardContent>
-                <Typography marginLeft={4} color={"white"}>
-                  Starts: {props.start_date_day}{" "}
-                  {props.start_date.split("/")[0]} {props.start_date_month}
-                </Typography>
-                <Typography marginLeft={4} color={"white"}>
-                  {props.end_date !== null
-                    ? `Ends: ${props.end_date_day} ${
-                        props.end_date.split("/")[0]
-                      } ${props.end_date_month}`
-                    : ""}
-                </Typography>
+                <DisplayDates />
               </CardContent>
 
               <CardContent>
-                <Typography
-                  variant="h6"
-                  fontSize="md"
-                  mt={1}
-                  marginLeft={4}
-                  marginRight={2}
-                  color={"white"}
-                >
-                  {props.description}
-                </Typography>
+                {/* Location */}
+                <Box sx={isMobile ? { marginLeft: 1.8 } : { marginLeft: 0 }}>
+                  <Stack
+                    direction="row"
+                    sx={{
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "left",
+                    }}
+                  >
+                    <Typography
+                      variant="h4"
+                      sx={{
+                        color: "rgb(173, 173, 173)",
+                        paddingRight: "1%",
+                      }}
+                    >
+                      {props.locationDisplayName === undefined &&
+                      props.locationString === undefined ? (
+                        <></>
+                      ) : props.locationType === "Online" ? (
+                        <VideoCameraFrontOutlinedIcon
+                          style={{ height: "20px", color: "#DAA520" }}
+                        />
+                      ) : (
+                        <LocationOnOutlinedIcon
+                          style={{ height: "20px", color: "#DAA520" }}
+                        />
+                      )}
+                    </Typography>
+                    <Typography
+                      variant="h6"
+                      sx={{ color: "#DAA520", marginTop: 1.1 }}
+                    >
+                      {props.locationDisplayName === ""
+                        ? props.locationString === ""
+                          ? props.locationType === "Online"
+                            ? "Online event"
+                            : "In person event"
+                          : props.locationString
+                        : props.locationDisplayName}{" "}
+                    </Typography>
+                  </Stack>
+                </Box>
               </CardContent>
             </CardActionArea>
           </Card>

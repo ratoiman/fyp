@@ -145,7 +145,7 @@ const EventPageActivityLocation = (props) => {
               sx={{ marginTop: 0.25, marginRight: 1, fontSize: "18px" }}
             />
             <Typography variant="h6" color="primary" sx={{ fontSize: "15px" }}>
-              In Person Event
+              In Person Activity
             </Typography>
           </ThemeProvider>
         </Stack>
@@ -160,7 +160,7 @@ const EventPageActivityLocation = (props) => {
           <>
             <OnlineEvent />
           </>
-        ) : props.locationType === "in person" &&
+        ) : props.locationType === "In person" &&
           props.locationString === "" ? (
           <>
             <InPersonNoMap />

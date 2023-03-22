@@ -21,9 +21,6 @@ import { IconButton } from "@mui/material";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { editButtonStyle } from "../ui_styles/MuiStyles";
 import { isMobile } from "react-device-detect";
-import { useEffect } from "react";
-import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
-import QRCode from "react-qr-code";
 import Switch from "@mui/material/Switch";
 import { v4 as uuid } from "uuid";
 import ContentCopyOutlinedIcon from "@mui/icons-material/ContentCopyOutlined";
@@ -35,7 +32,7 @@ const PrivacySettingConfigPopover = (props) => {
 
   const handleJoinCode = () => {
     if (code === "") {
-      setCode(uuid().slice(0, 8));
+      setCode((uuid().slice(0, 8)).toUpperCase());
     }
     setJoinByCode(!joinByCode);
   };

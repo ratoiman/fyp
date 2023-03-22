@@ -166,7 +166,7 @@ const MyEvents2 = (props) => {
     setUserEvents(new Set());
     setUserEventsArr([]);
     setUserEventsDetails([]);
-
+    setIsLoading(true);
     getUserEvents();
     getUserEventsDetails();
   };
@@ -199,9 +199,33 @@ const MyEvents2 = (props) => {
   useEffect(() => {
     const temp = userEventsDetails.sort(function (a, b) {
       return (
-        a["details"].start_date.localeCompare(b["details"].start_date) ||
+        (
+          a["details"].start_date.split("/")[1] +
+          "/" +
+          a["details"].start_date.split("/")[0] +
+          "/" +
+          a["details"].start_date.split("/")[2]
+        ).localeCompare(
+          b["details"].start_date.split("/")[1] +
+            "/" +
+            b["details"].start_date.split("/")[0] +
+            "/" +
+            b["details"].start_date.split("/")[2]
+        ) ||
         a["details"].start_time.localeCompare(b["details"].start_time) ||
-        a["details"].end_date.localeCompare(b["details"].end_date) ||
+        (
+          a["details"].end_date.split("/")[1] +
+          "/" +
+          a["details"].end_date.split("/")[0] +
+          "/" +
+          a["details"].end_date.split("/")[2]
+        ).end_date.localeCompare(
+          b["details"].end_date.split("/")[1] +
+            "/" +
+            b["details"].end_date.split("/")[0] +
+            "/" +
+            b["details"].end_date.split("/")[2]
+        ) ||
         a["details"].end_time.localeCompare(b["details"].end_time)
       );
     });

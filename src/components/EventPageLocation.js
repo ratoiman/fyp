@@ -133,14 +133,14 @@ const EventPageLocation = (props) => {
 
   const InPersonNoMap = () => {
     return (
-      <Box>
+      <Box sx={{minWidth:"84vw"}}>
         <Stack direction="row" sx={{ marginTop: 1.5, marginLeft: 3 }}>
           <ThemeProvider theme={submitButtonTheme}>
             <LocationOnOutlinedIcon
               color="primary"
               sx={{ marginTop: 0.5, marginRight: 1 }}
             />
-            <Typography variant="h6" color="primary">
+            <Typography variant="h6" color="primary" sx={{display:"flex"}}>
               In Person Event
             </Typography>
           </ThemeProvider>

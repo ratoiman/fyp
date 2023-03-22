@@ -38,6 +38,7 @@ import GoogleMapsIntegration from "./GoogleMapsIntegration";
 import { isMobile } from "react-device-detect";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import RichTextEditor from "./RichTextEditor";
 
 const AddNewActivity = (props) => {
   // Format event dates to MM/DD/YYYY so they can be passed to DatePicker as default values
@@ -73,6 +74,7 @@ const AddNewActivity = (props) => {
 
   const [title, setTitle] = useState(props.activityTitle);
   const [description, setDescription] = useState(props.activityDescription);
+  const [displayDescription, setDisplayDescription] = useState(true);
 
   const [startDate, setStartDate] = useState(props.activityStartDate);
   const [formattedStartDate, setFormattedStartDate] = useState("");
@@ -500,7 +502,7 @@ const AddNewActivity = (props) => {
           <CloseOutlinedIcon sx={editButtonStyle} />
         </IconButton>
       </div>
-      
+
       <Container className="justify-content-center">
         <h1 style={{ color: "#DAA520" }}>{props.header}</h1>
 
@@ -1170,24 +1172,42 @@ const AddNewActivity = (props) => {
         )}
 
         {/* Description */}
-        <StyledTextField
-          className="mt-3 mb-3 w-100 text-light"
-          required
-          multiline
-          id="outline-basic"
-          label="Event Description"
-          defaultValue={description}
-          error={showError === true ? descriptionError : false}
-          helperText={
-            descriptionError === true && showError === true
-              ? descriptionErrorMessage
-              : ""
-          }
-          onChange={(e) => {
-            props.setActivityDescription(e.target.value);
-            setDescription(e.target.value);
-          }}
-        />
+
+        <Stack direction="column" marginBottom={3} marginTop={3}>
+          <Stack
+            direction="row"
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              marginBottom: 1.5,
+              transform: "translateX(-4%)",
+            }}
+          >
+            <ThemeProvider theme={submitButtonTheme}>
+              <Button
+                size="large"
+                startIcon={
+                  displayDescription === false ? (
+                    <ExpandMoreIcon />
+                  ) : (
+                    <ExpandLessIcon />
+                  )
+                }
+                onClick={() => setDisplayDescription(!displayDescription)}
+              />
+            </ThemeProvider>
+            <Typography variant="h5" color="white">
+              Event description
+            </Typography>
+          </Stack>
+          <Box display={displayDescription ? "" : "none"}>
+            <RichTextEditor
+              description={description}
+              setDescription={setDescription}
+            />
+          </Box>
+        </Stack>
+      
       </Container>
       <Container style={{ margin: "0px", paddingLeft: "3px" }}>
         <Row>

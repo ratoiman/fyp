@@ -3,7 +3,7 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
-import { collection, addDoc, setDoc, doc, getDoc } from "firebase/firestore";
+import { collection, addDoc, setDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -47,6 +47,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PrivacySettingConfigPopover from "./PrivacySettingConfigPopover";
+import RichTextEditor from "./RichTextEditor";
 
 const EditEvent = (props) => {
   // const [error, setError] = useState("");
@@ -55,6 +56,7 @@ const EditEvent = (props) => {
   const [description, setDescription] = useState("");
   const [showEndDate, setShowEndDate] = useState("");
   const [expandDate, setExpandDate] = useState(true);
+  const [displayDescription, setDisplayDescription] = useState(true);
   const [currentDate, setCurrentDate] = useState("");
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
@@ -172,6 +174,16 @@ const EditEvent = (props) => {
 
   const { user } = useUserAuth();
   const today = new Date();
+
+  const deleteEvent = async () => {
+    const userRef = doc(db, "users", user.uid, "events", props.eventID);
+    const eventRef = doc(db, "events", props.eventID);
+    await deleteDoc(userRef);
+    await deleteDoc(eventRef);
+    props.refreshEdit();
+    props.setEditSelectedEvent(false);
+    props.closeEvent();
+  };
 
   //   Setting states using data passed from parent. props.eventDetails contains everything
   const getEventDetails = () => {
@@ -400,7 +412,7 @@ const EditEvent = (props) => {
     activities.map((activity) => {
       if (activity.location_type === "Same as event") {
         if (locationType === "Online") {
-          console.log("I AM HERE")
+          console.log("I AM HERE");
           activity.location_type = "Online";
           activity.location_string = "";
           activity.marker = "";
@@ -572,7 +584,7 @@ const EditEvent = (props) => {
     checkField(title, setTitleError);
     checkField(description, setDescriptionError);
     checkLocation();
-    
+
     if (!titleError && !descriptionError && isDateAndTimeValid) {
       console.log("VALID EVENT");
       if (category === "Category") {
@@ -733,14 +745,44 @@ const EditEvent = (props) => {
           className="card p-4 box mt-4  square rounded-9 border border-2"
           style={{ width: "100%", backgroundColor: "#161616" }}
         >
-          <Row>
-            <Col style={{ transform: "translateX(0%)" }}>
+          <Stack direction="row" display="flex" justifyContent="center">
+            <ThemeProvider theme={submitButtonTheme}>
+              <Button
+                color="secondary"
+                sx={
+                  isMobile
+                    ? {
+                        height: "30px",
+                        // marginLeft: 1.7,
+                        marginTop: 0.5,
+                        marginRight: "5%",
+                      }
+                    : {
+                        height: "40px",
+                        marginLeft: 1.7,
+                        marginTop: 1,
+                        marginRight: "24%",
+                      }
+                }
+                startIcon={<DeleteOutlineOutlinedIcon />}
+                variant={isMobile ? "text" : "outlined"}
+                onClick={() => {
+                  console.log("delete");
+                  deleteEvent();
+                }}
+              >
+                {isMobile ? "" : "delete"}
+              </Button>
+            </ThemeProvider>
+            {/* <Col style={{ transform: "translateX(0%)" }}> */}
+            <Box display="flex" justifyContent="center">
               <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
                 Edit event
               </h1>{" "}
-            </Col>
+            </Box>
+            {/* </Col> */}
             <Col
-              md="auto"
+              // md="auto"
               style={{ width: "10px", transform: "translateY(-5%)" }}
               className="close-button"
             >
@@ -749,16 +791,16 @@ const EditEvent = (props) => {
                 aria-label="close"
                 size="small"
                 onClick={() => {
+                  props.refreshEdit();
                   props.setEditSelectedEvent(false);
                   props.closeEvent();
-                  props.refreshEdit();
                 }}
               >
                 <CloseOutlinedIcon sx={editButtonStyle} />
               </IconButton>
               {/* </div> */}
             </Col>
-          </Row>
+          </Stack>
           <Container className="mt-4 d-flex flex-column justify-content-center">
             <Box>
               {/* Event title */}
@@ -1767,26 +1809,44 @@ const EditEvent = (props) => {
               </Row>
 
               {/* Description */}
-              <StyledTextField
-                className="mt-3 mb-3 w-100 text-light"
-                required
-                multiline
-                id="outline-basic"
-                label="Event Description"
-                value={description}
-                error={showError === true ? descriptionError : false}
-                helperText={
-                  descriptionError === true && showError === true
-                    ? descriptionErrorMessage
-                    : ""
-                }
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
-              />
+
+              <Stack direction="column" marginBottom={1.5}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: 1.5,
+                    transform: "translateX(-4%)",
+                  }}
+                >
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      size="large"
+                      startIcon={
+                        displayDescription === false ? (
+                          <ExpandMoreIcon />
+                        ) : (
+                          <ExpandLessIcon />
+                        )
+                      }
+                      onClick={() => setDisplayDescription(!displayDescription)}
+                    />
+                  </ThemeProvider>
+                  <Typography variant="h5" color="white">
+                    Event description
+                  </Typography>
+                </Stack>
+                <Box display={displayDescription ? "" : "none"}>
+                  <RichTextEditor
+                    description={description}
+                    setDescription={setDescription}
+                  />
+                </Box>
+              </Stack>
 
               {/* Social media links */}
-              <Box className="mt-3">
+              <Box marginTop={3}>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <ThemeProvider theme={submitButtonTheme}>
                     <Button

@@ -42,7 +42,7 @@ import { Instagram } from "react-bootstrap-icons";
 import { Facebook } from "react-bootstrap-icons";
 import { Twitter } from "react-bootstrap-icons";
 import { Link, Stack } from "@mui/material";
-
+import { RichTextDisplay } from "../components/RichTextEditor";
 const EventPage = (props) => {
   const { user } = useUserAuth();
 
@@ -221,6 +221,75 @@ const EventPage = (props) => {
     }
   }, [instaProfile, tiktokProfile, twitterProfile, facebookProfile]);
 
+  const DisplayDates = () => {
+    if (startDate === endDate) {
+      return (
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Stack direction="row" spacing={1} marginRight={1}>
+              <Typography variant="h6" color="white">
+                {startDate}
+              </Typography>
+              <Typography variant="h6" color="#DAA520">
+                {eventData["details"].start_time}
+              </Typography>
+              <Typography
+                color="#DAA520"
+                variant="h6"
+                display={
+                  eventData["details"].end_time !== undefined &&
+                  eventData["details"].end_time !== ""
+                    ? ""
+                    : "none"
+                }
+              >
+                -
+              </Typography>
+              <Typography variant="h6" color="#DAA520">
+                {eventData["details"].end_time}
+              </Typography>
+            </Stack>
+          </Box>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Stack direction="row" spacing={1} marginRight={1}>
+              <Typography variant="h6" color="white">
+                {startDate}
+              </Typography>
+              <Typography variant="h6" color="#DAA520">
+                {eventData["details"].start_time}
+              </Typography>
+            </Stack>
+            <Typography
+              variant="h6"
+              color="#DAA520"
+              display={
+                eventData["details"].end_time !== undefined &&
+                eventData["details"].end_time !== ""
+                  ? ""
+                  : "none"
+              }
+            >
+              -
+            </Typography>
+            <Stack direction="row" spacing={1} marginLeft={1}>
+              <Typography variant="h6" color="#DAA520">
+                {eventData["details"].end_time}
+              </Typography>
+              <Typography variant="h6" color="white">
+                {endDate}
+              </Typography>
+            </Stack>
+          </Box>
+        </>
+      );
+    }
+  };
+
   if (!isLoading) {
     return (
       <>
@@ -258,13 +327,7 @@ const EventPage = (props) => {
                 </Box>
 
                 <Box sx={event_page_card_dates_box}>
-                  <Typography variant="h6">
-                    Starts: {startDate} {eventData["details"].start_time}
-                  </Typography>
-
-                  <Typography variant="h6">
-                    Ends: {endDate} {eventData["details"].end_time}
-                  </Typography>
+                  <DisplayDates />
                 </Box>
 
                 <EventPageLocation
@@ -280,10 +343,19 @@ const EventPage = (props) => {
                 <Typography variant="h5" marginTop={3}>
                   Details{" "}
                 </Typography>
-                <Typography variant="h6">
-                  {eventData["details"].description}
-                </Typography>
 
+                <Box
+                  sx={{
+                    borderStyle: "solid",
+                    borderColor: "#daa520",
+                    borderWidth: "1px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <RichTextDisplay
+                    description={eventData["details"].description}
+                  />
+                </Box>
                 <Box
                   sx={event_page_social_media_box}
                   display={socialMediaPresent ? "" : "none"}

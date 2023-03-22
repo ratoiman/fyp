@@ -46,6 +46,8 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PrivacySettingConfigPopover from "./PrivacySettingConfigPopover";
 
+import RichTextEditor from "./RichTextEditor";
+
 const CreateEvent = () => {
   // const [error, setError] = useState("");
   const [title, setTitle] = useState("");
@@ -53,6 +55,7 @@ const CreateEvent = () => {
   const [description, setDescription] = useState("");
   const [showEndDate, setShowEndDate] = useState("d-none");
   const [expandDate, setExpandDate] = useState(false);
+  const [displayDescription, setDisplayDescription] = useState(true)
   const [currentDate, setCurrentDate] = useState("");
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
@@ -86,7 +89,7 @@ const CreateEvent = () => {
 
   const [activities, setActivities] = useState([]);
   const [displayActivities, setDisplayActivities] = useState(true);
-  const [displaySocialLinks, setDisplaySocialLinks] = useState(false);
+  const [displaySocialLinks, setDisplaySocialLinks] = useState(true);
 
   // States to use when editing an activity, to avoid overwritting an unfinished activity
   const [editActivityPopout, setEditActivityPopout] = useState(false);
@@ -557,8 +560,6 @@ const CreateEvent = () => {
       setShowError(true);
     }
   };
-
-  // console.log("act ", activities);
 
   return (
     <>
@@ -1515,8 +1516,6 @@ const CreateEvent = () => {
                       }
                       onClick={() => setDisplayActivities(!displayActivities)}
                     />
-                    {/* See
-                      </Button> */}
                   </ThemeProvider>
                   <Typography
                     sx={
@@ -1583,26 +1582,46 @@ const CreateEvent = () => {
               </Row>
 
               {/* Description */}
-              <StyledTextField
-                className="mt-3 mb-3 w-100 text-light"
-                required
-                multiline
-                id="outline-basic"
-                label="Event Description"
-                defaultValue=""
-                error={showError === true ? descriptionError : false}
-                helperText={
-                  descriptionError === true && showError === true
-                    ? descriptionErrorMessage
-                    : ""
-                }
-                onChange={(e) => {
-                  setDescription(e.target.value);
-                }}
-              />
+
+              <Stack direction="column" marginBottom={1.5}>
+                <Stack
+                  direction="row"
+                  sx={{
+                    display: "flex",
+                    justifyContent: "center",
+                    marginBottom: 1.5,
+                    transform:"translateX(-4%)"
+                  }}
+                >
+                  <ThemeProvider theme={submitButtonTheme}>
+                    <Button
+                      size="large"
+                      startIcon={
+                        displayDescription === false ? (
+                          <ExpandMoreIcon
+                          />
+                        ) : (
+                          <ExpandLessIcon
+                          />
+                        )
+                      }
+                      onClick={() => setDisplayDescription(!displayDescription)}
+                    />
+                  </ThemeProvider>
+                  <Typography variant="h5" color="white">
+                    Event description
+                  </Typography>
+                </Stack>
+                <Box display={displayDescription ? "" : "none"}> 
+                  <RichTextEditor
+                    description={description}
+                    setDescription={setDescription}
+                  />
+                </Box>
+              </Stack>
 
               {/* Social media links */}
-              <Box className="mt-3">
+              <Box marginTop={3}>
                 <Box sx={{ display: "flex", justifyContent: "center" }}>
                   <ThemeProvider theme={submitButtonTheme}>
                     <Button
@@ -1652,6 +1671,12 @@ const CreateEvent = () => {
                   />
                 </Box>
               </Box>
+
+              {/* Description with rich text editor */}
+              {/* <RichTextEditor
+                description={description}
+                setDescription={setDescription}
+              /> */}
 
               {/* Confirm */}
               <div className="d-flex justify-content-center">
