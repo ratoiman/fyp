@@ -34,6 +34,7 @@ const Home = () => {
   const [filtered, setFiltered] = useState(false);
   const [filteredEventsDetails, setFilteredEventsDetails] = useState([]);
   const [userEvents, setUserEvents] = useState(new Set());
+  const [eventsDetailsSorted, setEventsDetailsSorted] = useState([]);
 
   const { user } = useUserAuth();
 
@@ -136,7 +137,43 @@ const Home = () => {
     loading();
   }, [eventsDetails]);
 
-  console.log(eventsDetails)
+  useEffect(() => {
+    const temp = eventsDetails.sort(function (a, b) {
+      return (
+        (
+          a["details"].start_date.split("/")[1] +
+          "/" +
+          a["details"].start_date.split("/")[0] +
+          "/" +
+          a["details"].start_date.split("/")[2]
+        ).localeCompare(
+          b["details"].start_date.split("/")[1] +
+            "/" +
+            b["details"].start_date.split("/")[0] +
+            "/" +
+            b["details"].start_date.split("/")[2]
+        ) ||
+        a["details"].start_time.localeCompare(b["details"].start_time) ||
+        (
+          a["details"].end_date.split("/")[1] +
+          "/" +
+          a["details"].end_date.split("/")[0] +
+          "/" +
+          a["details"].end_date.split("/")[2]
+        ).end_date.localeCompare(
+          b["details"].end_date.split("/")[1] +
+            "/" +
+            b["details"].end_date.split("/")[0] +
+            "/" +
+            b["details"].end_date.split("/")[2]
+        ) ||
+        a["details"].end_time.localeCompare(b["details"].end_time)
+      );
+    });
+    setEventsDetailsSorted(temp);
+  });
+
+  console.log(eventsDetailsSorted);
   if (user) {
     if (eventPageLoad === false) {
       if (!isLoading) {
