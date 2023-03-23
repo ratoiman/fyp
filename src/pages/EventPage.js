@@ -253,47 +253,84 @@ const EventPage = (props) => {
         </>
       );
     } else {
-      return (
-        <>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Stack direction="row" spacing={1} marginRight={1}>
-              <Typography variant="h6" color="white">
-                {startDate}
-              </Typography>
-              <Typography variant="h6" color="#DAA520">
-                {eventData["details"].start_time}
-              </Typography>
-            </Stack>
-            <Typography
-              variant="h6"
-              color="#DAA520"
-              display={
-                eventData["details"].end_time !== undefined &&
-                eventData["details"].end_time !== ""
-                  ? ""
-                  : "none"
-              }
+      if (isMobile) {
+        return (
+          <>
+            <Stack
+              direction="column"
+              sx={{ display: "flex", justifyContent: "center" }}
             >
-              -
-            </Typography>
-            <Stack direction="row" spacing={1} marginLeft={1}>
-              <Typography variant="h6" color="#DAA520">
-                {eventData["details"].end_time}
-              </Typography>
-              <Typography variant="h6" color="white">
-                {endDate}
-              </Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Typography variant="h6" color="white">
+                  {startDate}
+                </Typography>
+                <Typography variant="h6" color="#DAA520">
+                  {eventData["details"].start_time}
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Typography variant="h6" color="white">
+                  {endDate}
+                </Typography>{" "}
+                <Typography variant="h6" color="#DAA520">
+                  {eventData["details"].end_time}
+                </Typography>
+              </Stack>
             </Stack>
-          </Box>
-        </>
-      );
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Stack direction="row" spacing={1} marginRight={1}>
+                <Typography variant="h6" color="white">
+                  {startDate}
+                </Typography>
+                <Typography variant="h6" color="#DAA520">
+                  {eventData["details"].start_time}
+                </Typography>
+              </Stack>
+              <Typography
+                variant="h6"
+                color="#DAA520"
+                display={
+                  eventData["details"].end_time !== undefined &&
+                  eventData["details"].end_time !== ""
+                    ? ""
+                    : "none"
+                }
+              >
+                -
+              </Typography>
+              <Stack direction="row" spacing={1} marginLeft={1}>
+                <Typography variant="h6" color="#DAA520">
+                  {eventData["details"].end_time}
+                </Typography>
+                <Typography variant="h6" color="white">
+                  {endDate}
+                </Typography>
+              </Stack>
+            </Box>
+          </>
+        );
+      }
     }
   };
 
   if (!isLoading) {
     return (
       <>
-        <Box className={isMobile ? "event-card-mobile" : "event-page-card"}>
+        <Box className={isMobile ? "event-page-mobile" : "event-page-card"}>
           <Card
             variant="outlined"
             sx={isMobile ? event_page_card_mobile : event_page_card_desktop}
@@ -312,15 +349,15 @@ const EventPage = (props) => {
               </IconButton>
             </Box>
             <CardContent>
-              <Box color="white" className="">
+              <Box color="white" className="" >
                 <Box sx={event_page_card_title_box}>
                   <Box className="">
                     <Typography textAlign="center" variant="h4">
                       {eventData["details"].title}
                     </Typography>
                   </Box>
-                  <Box className="mt-2" sx={{ marginLeft: 4 }}>
-                    <Typography variant="subtitle2">
+                  <Box className="" sx={{ marginLeft: 3, marginBottom:2, marginTop:1 }}>
+                    <Typography variant="subtitle1">
                       {eventData["details"].subtitle}
                     </Typography>
                   </Box>
@@ -340,17 +377,35 @@ const EventPage = (props) => {
                   marker={eventData["details"].marker}
                 />
 
-                <Typography variant="h5" marginTop={3}>
+                <Typography
+                  variant="h5"
+                  marginTop={4}
+                  marginLeft={isMobile ? 1.5 : 3}
+                  marginBottom={3}
+                >
                   Details{" "}
                 </Typography>
 
                 <Box
-                  sx={{
-                    borderStyle: "solid",
-                    borderColor: "#daa520",
-                    borderWidth: "1px",
-                    borderRadius: "10px",
-                  }}
+                  sx={
+                    isMobile
+                      ? {
+                          borderStyle: "solid",
+                          borderColor: "#daa520",
+                          borderWidth: "1px",
+                          borderRadius: "10px",
+                          // marginLeft: 3,
+                          // marginRight: 3,
+                        }
+                      : {
+                          borderStyle: "solid",
+                          borderColor: "#daa520",
+                          borderWidth: "1px",
+                          borderRadius: "10px",
+                          marginLeft: 3,
+                          marginRight: 3,
+                        }
+                  }
                 >
                   <RichTextDisplay
                     description={eventData["details"].description}
@@ -360,8 +415,12 @@ const EventPage = (props) => {
                   sx={event_page_social_media_box}
                   display={socialMediaPresent ? "" : "none"}
                 >
-                  <Stack direction="row">
-                    <Typography variant="h5" color="white">
+                  <Stack direction="row" marginTop={4}>
+                    <Typography
+                      variant="h5"
+                      color="white"
+                      marginLeft={isMobile ? 0 : 1.5}
+                    >
                       Social media
                     </Typography>
                     <ThemeProvider theme={socialMediaButtonTheme}>
@@ -630,9 +689,9 @@ const EventPage = (props) => {
                   )}
                 </Box>
 
-                <Box className="mt-4">
+                <Box className="" marginTop={4}>
                   <Typography
-                    marginLeft={1.5}
+                    marginLeft={3}
                     className="mb-2"
                     variant="h5"
                     display={eventData["activities"].length === 0 ? "none" : ""}
@@ -655,7 +714,9 @@ const EventPage = (props) => {
                       </Button> */}
                     </ThemeProvider>
                   </Typography>
-                  <Box display={displayActivities === true ? "" : "none"}>
+                  <Box
+                    display={displayActivities === true ? "" : "none"}
+                  >
                     {startDateSet.map((sd) => {
                       return (
                         <>

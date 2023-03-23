@@ -39,6 +39,12 @@
 .login-container {
   justify-content: center;
   max-width: 70vh;
+  margin-top: 5.1%;
+}
+
+.login-container-mobile{
+  /* display: flex; */
+  width: 100%;
 }
 
 .login-buttons{

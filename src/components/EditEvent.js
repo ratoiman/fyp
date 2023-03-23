@@ -3,7 +3,14 @@ import { Col, Container, Row } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
-import { collection, addDoc, setDoc, doc, getDoc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  setDoc,
+  doc,
+  getDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -66,6 +73,9 @@ const EditEvent = (props) => {
   const [endTime, setEndTime] = useState("");
   const [formattedStartTime, setFormattedStartTime] = useState("");
   const [formattedStartDate, setFormattedStartDate] = useState("");
+  const [formattedStartDateInversed, setFormattedStartDateInversed] =
+    useState("");
+  const [formattedEndDateInversed, setFormattedEndDateInversed] = useState("");
   const [formattedEndTime, setFormattedEndTime] = useState("");
   const [formattedEndDate, setFormattedEndDate] = useState("");
 
@@ -255,8 +265,9 @@ const EditEvent = (props) => {
     // console.log(props.eventDetails["activities"]);
   };
 
-  const formatDate = (date, setter, format) => {
+  const formatDate = (date, setter, setterInversed, format) => {
     let formatted = "";
+    let formattedInversed = "";
     if (date) {
       if (typeof date === "string") {
         if (format === "DD/MM/YYYY") {
@@ -266,8 +277,11 @@ const EditEvent = (props) => {
             date.split("/")[0] +
             "/" +
             date.split("/")[2];
+
+          formattedInversed = date;
         } else {
           formatted = date;
+          formattedInversed = date;
         }
       } else {
         const day = date.toDate().getDate().toString();
@@ -277,16 +291,22 @@ const EditEvent = (props) => {
         if (format === "DD/MM/YYYY") {
           formatted =
             day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+          formattedInversed =
+            month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
         }
 
         if (format === "MM/DD/YYYY") {
           formatted =
             month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+
+          formattedInversed =
+            day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
         }
       }
     }
 
     setter(formatted);
+    setterInversed(formattedInversed);
   };
 
   const formatTime = (time, setter) => {
@@ -340,7 +360,12 @@ const EditEvent = (props) => {
       setStartDateErrorMessage("Please select a start date");
     }
 
-    if (formattedStartDate < currentDate) {
+    if (formattedStartDateInversed < inversedCurrentDate) {
+      console.log(
+        "date",
+        formattedStartDateInversed,
+        formattedStartDateInversed < inversedCurrentDate
+      );
       isDateAndTimeValid = false;
       setStartDateError(true);
       setStartDateErrorMessage("Start date can't be in the past");
@@ -349,7 +374,7 @@ const EditEvent = (props) => {
     if (formattedStartTime) {
       if (
         formattedStartTime < currentTime &&
-        formattedStartDate === currentDate
+        formattedStartDateInversed === inversedCurrentDate
       ) {
         isDateAndTimeValid = false;
         setStartTimeError(true);
@@ -357,23 +382,22 @@ const EditEvent = (props) => {
       }
     }
 
-    if (formattedEndDate) {
-      if (formattedEndDate < formattedStartDate) {
+    if (formattedEndDateInversed) {
+      if (formattedEndDateInversed < formattedStartDateInversed) {
         isDateAndTimeValid = false;
         setEndDateError(true);
         setEndDateErrorMessage("End date can't be before start date");
       }
     }
 
-    if (!formattedEndDate && formattedEndTime) {
-      console.log("Ed ", formattedEndDate, formattedEndTime);
+    if (!formattedEndDateInversed && formattedEndTime) {
       isDateAndTimeValid = false;
       setEndDateError(true);
       setEndDateErrorMessage("Please, select a valid end date");
     }
 
     if (
-      formattedEndDate === formattedStartDate &&
+      formattedEndDateInversed === formattedStartDateInversed &&
       formattedStartTime &&
       formattedEndTime &&
       formattedEndTime < formattedStartTime
@@ -527,11 +551,21 @@ const EditEvent = (props) => {
   }, [description]);
 
   useEffect(() => {
-    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
+    formatDate(
+      startDate,
+      setFormattedStartDate,
+      setFormattedStartDateInversed,
+      "DD/MM/YYYY"
+    );
   }, [startDate]);
 
   useEffect(() => {
-    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+    formatDate(
+      endDate,
+      setFormattedEndDate,
+      setFormattedEndDateInversed,
+      "DD/MM/YYYY"
+    );
   }, [endDate]);
 
   useEffect(() => {
@@ -743,47 +777,68 @@ const EditEvent = (props) => {
       >
         <Container
           className="card p-4 box mt-4  square rounded-9 border border-2"
-          style={{ width: "100%", backgroundColor: "#161616" }}
+          style={{ width: "100%", backgroundColor: "#161616", display: "flex" }}
         >
           <Stack direction="row" display="flex" justifyContent="center">
             <ThemeProvider theme={submitButtonTheme}>
-              <Button
-                color="secondary"
-                sx={
-                  isMobile
-                    ? {
-                        height: "30px",
-                        // marginLeft: 1.7,
-                        marginTop: 0.5,
-                        marginRight: "5%",
-                      }
-                    : {
-                        height: "40px",
-                        marginLeft: 1.7,
-                        marginTop: 1,
-                        marginRight: "24%",
-                      }
-                }
-                startIcon={<DeleteOutlineOutlinedIcon />}
-                variant={isMobile ? "text" : "outlined"}
-                onClick={() => {
-                  console.log("delete");
-                  deleteEvent();
-                }}
-              >
-                {isMobile ? "" : "delete"}
-              </Button>
+              <Box width={"25%"}>
+                <Button
+                  color="secondary"
+                  sx={
+                    isMobile
+                      ? {
+                          height: "30px",
+                          // marginLeft: 1.7,
+                          marginTop: 0.5,
+                          marginRight: "5%",
+                        }
+                      : {
+                          height: "40px",
+                          marginLeft: 1.7,
+                          marginTop: 1,
+                          // marginRight: "24%",
+                          width: "100px",
+                        }
+                  }
+                  startIcon={<DeleteOutlineOutlinedIcon />}
+                  variant={isMobile ? "text" : "outlined"}
+                  onClick={() => {
+                    console.log("delete");
+                    deleteEvent();
+                  }}
+                >
+                  {isMobile ? "" : "delete"}
+                </Button>
+              </Box>
             </ThemeProvider>
             {/* <Col style={{ transform: "translateX(0%)" }}> */}
-            <Box display="flex" justifyContent="center">
-              <h1 className="d-flex mb-3 fw-bold text-light justify-content-center">
+            <Box
+              sx={{
+                fontWeight: 600,
+                display: "flex",
+                justifyContent: "center",
+                width: "50%",
+              }}
+            >
+              {/* <h1 className="d-flex mb-3 fw-bold text-light justify-content-center"> */}
+              <Typography
+                variant="h3"
+                color="white"
+                sx={{
+                  fontWeight: 600,
+                  display: "flex",
+                  justifyContent: "center",
+                }}
+              >
+                {" "}
                 Edit event
-              </h1>{" "}
+              </Typography>
+              {/* </h1>{" "} */}
             </Box>
             {/* </Col> */}
             <Col
               // md="auto"
-              style={{ width: "10px", transform: "translateY(-5%)" }}
+              style={{ width: "25%", transform: "translateY(-5%)" }}
               className="close-button"
             >
               {/* <div className="close-button"> */}
@@ -801,6 +856,7 @@ const EditEvent = (props) => {
               {/* </div> */}
             </Col>
           </Stack>
+
           <Container className="mt-4 d-flex flex-column justify-content-center">
             <Box>
               {/* Event title */}

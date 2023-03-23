@@ -5,6 +5,8 @@ import { Button, Col } from "react-bootstrap";
 import { useUserAuth } from "../context/UserAuthContext";
 import { EyeFill, EyeSlashFill, Google } from "react-bootstrap-icons";
 import "../App.css";
+import { isMobile } from "react-device-detect";
+import { Box, Stack } from "@mui/material";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -46,7 +48,7 @@ const Login = () => {
 
   if (user != null) {
     if (Object.keys(user).length !== 0) {
-      console.log("message from login: ",user, " logged in");
+      console.log("message from login: ", user, " logged in");
 
       if (localStorage.getItem("user") === null) {
         localStorage.setItem("user", JSON.stringify(user));
@@ -54,85 +56,177 @@ const Login = () => {
       return <Navigate to="/home" />;
     }
   } else {
-    return (
-      <Container className="login-container">
-        <div className="card p-4 box mt-4">
-          <h2 className="mb-3 text-body">DuckyEvents Login</h2>
-          {error && (
-            <Alert variant="danger">
-              Authentication Failed, please check email and password
-            </Alert>
-          )}
-          <Form onSubmit={handleSubmit}>
-            <Form.Group className="mb-3" controlId="formBasicEmail">
-              <Form.Control
-                type="email"
-                placeholder="Email address"
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </Form.Group>
-
-            <Form.Group className="mb-3" controlId="formBasicPassword">
-              <InputGroup className="mb-3">
+    if (!isMobile) {
+      return (
+        <Container className="login-container">
+          <div className="card p-4 box mt-4">
+            <h2 className="mb-3 text-body">DuckyEvents Login</h2>
+            {error && (
+              <Alert variant="danger">
+                Authentication Failed, please check email and password
+              </Alert>
+            )}
+            <Form onSubmit={handleSubmit}>
+              <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Control
-                  type={passwordType}
-                  placeholder="Password"
-                  onChange={handlePasswordChange}
-                  value={password}
-                  name="password"
-                  className="form-control"
+                  type="email"
+                  placeholder="Email address"
+                  onChange={(e) => setEmail(e.target.value)}
                 />
-                <Button
-                  variant="outline-secondary"
-                  id="button-addon2"
-                  onClick={togglePassword}
-                >
-                  {passwordType === "password" ? (
-                    <i>
-                      <EyeFill />
-                    </i>
-                  ) : (
-                    <i>
-                      <EyeSlashFill />
-                    </i>
-                  )}
-                </Button>
-              </InputGroup>
-            </Form.Group>
+              </Form.Group>
 
-            <div className="d-flex justify-content-center">
-              <Button className="login-buttons" variant="primary" type="Submit">
-                Log In
-              </Button>
-            </div>
-          </Form>
-          <hr />
-          <div>
-            <div className="d-flex justify-content-center">
-              <Button
-                className="login-buttons"
-                type="dark"
-                variant="primary"
-                onClick={handleGoogleSignIn}
-              >
-                <Row className="justify-content-md-center">
-                  <Col md="auto">Sign in with Google</Col>
-                  <Col xs={2}>
-                    <i>
-                      {" "}
-                      <Google />
-                    </i>
-                  </Col>
-                </Row>
-              </Button>
+              <Form.Group className="mb-3" controlId="formBasicPassword">
+                <InputGroup className="mb-3">
+                  <Form.Control
+                    type={passwordType}
+                    placeholder="Password"
+                    onChange={handlePasswordChange}
+                    value={password}
+                    name="password"
+                    className="form-control"
+                  />
+                  <Button
+                    variant="outline-secondary"
+                    id="button-addon2"
+                    onClick={togglePassword}
+                  >
+                    {passwordType === "password" ? (
+                      <i>
+                        <EyeFill />
+                      </i>
+                    ) : (
+                      <i>
+                        <EyeSlashFill />
+                      </i>
+                    )}
+                  </Button>
+                </InputGroup>
+              </Form.Group>
+
+              <div className="d-flex justify-content-center">
+                <Button
+                  className="login-buttons"
+                  variant="primary"
+                  type="Submit"
+                >
+                  Log In
+                </Button>
+              </div>
+            </Form>
+            <hr />
+            <div>
+              <div className="d-flex justify-content-center">
+                <Button
+                  className="login-buttons"
+                  type="dark"
+                  variant="primary"
+                  onClick={handleGoogleSignIn}
+                >
+                  <Row className="justify-content-md-center">
+                    <Col md="auto">Sign in with Google</Col>
+                    <Col xs={2}>
+                      <i>
+                        {" "}
+                        <Google />
+                      </i>
+                    </Col>
+                  </Row>
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
-        <div className="card p-1 box mt-3 text-center text-muted">
-          Don't have an account? <Link to="/signup">Sign up</Link>
-        </div>
-      </Container>
-    );
+          <div className="card p-1 box mt-3 text-center text-muted">
+            Don't have an account? <Link to="/signup">Sign up</Link>
+          </div>
+        </Container>
+      );
+    } else {
+      return (
+        <Container className="login-container-mobile">
+          <Stack direction="column" sx={{display:"flex", width:"100%"}}>
+            <Box className="card p-4 box mt-4" sx={{display:"flex", width:"100%"}}>
+              <h2 className="mb-3 text-body">DuckyEvents Login</h2>
+              {error && (
+                <Alert variant="danger">
+                  Authentication Failed, please check email and password
+                </Alert>
+              )}
+              <Form onSubmit={handleSubmit}>
+                <Form.Group className="mb-3" controlId="formBasicEmail">
+                  <Form.Control
+                    type="email"
+                    placeholder="Email address"
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3" controlId="formBasicPassword">
+                  <InputGroup className="mb-3">
+                    <Form.Control
+                      type={passwordType}
+                      placeholder="Password"
+                      onChange={handlePasswordChange}
+                      value={password}
+                      name="password"
+                      className="form-control"
+                    />
+                    <Button
+                      variant="outline-secondary"
+                      id="button-addon2"
+                      onClick={togglePassword}
+                    >
+                      {passwordType === "password" ? (
+                        <i>
+                          <EyeFill />
+                        </i>
+                      ) : (
+                        <i>
+                          <EyeSlashFill />
+                        </i>
+                      )}
+                    </Button>
+                  </InputGroup>
+                </Form.Group>
+
+                <div className="d-flex justify-content-center">
+                  <Button
+                    className="login-buttons"
+                    variant="primary"
+                    type="Submit"
+                  >
+                    Log In
+                  </Button>
+                </div>
+              </Form>
+              <hr />
+              <div>
+                <div className="d-flex justify-content-center">
+                  <Button
+                    className="login-buttons"
+                    type="dark"
+                    variant="primary"
+                    onClick={handleGoogleSignIn}
+                  >
+                    <Row className="justify-content-md-center">
+                      <Col md="auto">Sign in with Google</Col>
+                      <Col xs={2}>
+                        <i>
+                          {" "}
+                          <Google />
+                        </i>
+                      </Col>
+                    </Row>
+                  </Button>
+                </div>
+              </div>
+            </Box>
+            <div className="card p-1 box mt-3 text-center text-muted w-100">
+              Don't have an account? <Link to="/signup">Sign up</Link>
+            </div>
+          </Stack>
+        </Container>
+      );
+    }
   }
 };
 

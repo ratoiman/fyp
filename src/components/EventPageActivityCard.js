@@ -4,6 +4,7 @@ import {
   eventActivityCardStyle,
   editButtonStyle,
   submitButtonTheme,
+  eventActivityCardStyleMobile,
 } from "../ui_styles/MuiStyles";
 import Card from "@mui/joy/Card";
 import CardOverflow from "@mui/joy/CardOverflow";
@@ -20,6 +21,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import EventPageActivityLocation from "./EventPageActivityLocation";
 import { RichTextDisplay } from "./RichTextEditor";
+import { isMobile } from "react-device-detect";
 
 const EventPageActivityCard = (activity) => {
   let activityDetails = activity["activity"];
@@ -109,7 +111,9 @@ const EventPageActivityCard = (activity) => {
 
   return (
     <>
-      <Card sx={eventActivityCardStyle}>
+      <Card
+        sx={isMobile ? eventActivityCardStyleMobile : eventActivityCardStyle}
+      >
         <Box className="event-page-activity-card-title">
           <Typography variant="h5"> {activityDetails.title} </Typography>
         </Box>

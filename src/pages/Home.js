@@ -38,14 +38,14 @@ const Home = () => {
 
   const { user } = useUserAuth();
 
-  const handleEventLink = (id) => {
+  const handleEventLink = (id, privacy) => {
     // navigator("/event")
     console.log(userEvents);
-    if (userEvents.has(id)) {
+    if (userEvents.has(id) || privacy === "Public") {
       setSelectedEventID(id);
       setEventPageLoad(true);
     } else {
-      console.log("Alert");
+      console.log("Alertssss", privacy, id);
     }
   };
 
@@ -86,6 +86,7 @@ const Home = () => {
 
   const refreshEdit = () => {
     console.log("refresh");
+    setIsLoading(true);
     setUserEvents(new Set());
     setEvents(new Set());
     setEventsDetails([]);

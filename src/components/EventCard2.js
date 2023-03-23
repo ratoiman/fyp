@@ -146,41 +146,85 @@ const EventCard2 = (props) => {
         </>
       );
     } else {
-      return (
-        <>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Stack direction="row" spacing={1} marginRight={1}>
-              <Typography variant="h6" color="white">
-                {props.start_date_day} {props.start_date.split("/")[0]}{" "}
-                {props.start_date_month}
-              </Typography>
-              <Typography variant="h6" color="#DAA520">
-                {props.start_time}
-              </Typography>
-            </Stack>
-            <Typography
-              variant="h6"
-              color="#DAA520"
-              display={
-                props.end_time !== undefined && props.end_time !== ""
-                  ? ""
-                  : "none"
-              }
+      if (isMobile) {
+        return (
+          <>
+            <Stack
+              direction="column"
+              sx={{ display: "flex", justifyContent: "center" }}
             >
-              -
-            </Typography>
-            <Stack direction="row" spacing={1} marginLeft={1}>
-              <Typography variant="h6" color="#DAA520">
-                {props.end_time}
-              </Typography>
-              <Typography variant="h6" color="white">
-                {props.end_date_day} {props.end_date.split("/")[0]}{" "}
-                {props.end_date_month}
-              </Typography>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Typography variant="h6" color="white">
+                  {props.start_date_day} {props.start_date.split("/")[0]}{" "}
+                  {props.start_date_month}
+                </Typography>
+                <Typography variant="h6" color="#DAA520">
+                  {props.start_time}
+                </Typography>
+              </Stack>
+              <Stack
+                direction="row"
+                spacing={1}
+                sx={{ display: "flex", justifyContent: "center" }}
+              >
+                <Typography variant="h6" color="white">
+                  {props.end_date_day} {props.end_date.split("/")[0]}{" "}
+                  {props.end_date_month}
+                </Typography>
+                <Typography variant="h6" color="#DAA520">
+                  {props.end_time}
+                </Typography>
+              </Stack>
             </Stack>
-          </Box>
-        </>
-      );
+          </>
+        );
+      } else {
+        return (
+          <>
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <Stack direction="row" spacing={1} marginRight={1}>
+                <Typography variant="h6" color="white">
+                  {props.start_date_day} {props.start_date.split("/")[0]}{" "}
+                  {props.start_date_month}
+                </Typography>
+                <Typography variant="h6" color="#DAA520">
+                  {props.start_time}
+                </Typography>
+              </Stack>
+              <Typography
+                variant="h6"
+                color="#DAA520"
+                display={
+                  props.end_time !== undefined && props.end_time !== ""
+                    ? ""
+                    : "none"
+                }
+              >
+                -
+              </Typography>
+              <Stack direction="row" spacing={1} marginLeft={1}>
+                <Typography variant="h6" color="#DAA520">
+                  {props.end_time}
+                </Typography>
+                {props.end_date !== null &&
+                props.end_date !== "" &&
+                props.end_date !== undefined ? (
+                  <Typography variant="h6" color="white">
+                    {props.end_date_day} {props.end_date.split("/")[0]}{" "}
+                    {props.end_date_month} 
+                  </Typography>
+                ) : (
+                  <></>
+                )}
+              </Stack>
+            </Box>
+          </>
+        );
+      }
     }
   };
 
@@ -344,7 +388,7 @@ const EventCard2 = (props) => {
                                 variant="outlined"
                                 startIcon={<FavoriteBorderOutlinedIcon />}
                               >
-                                follow
+                                {props.privacy === "Public" ? "follow" : "join"}
                               </Button>
                             )}
                           </ThemeProvider>
@@ -503,7 +547,9 @@ const EventCard2 = (props) => {
             </CardMedia>
             <CardActionArea
               sx={isMobile ? card_action_style_mobile : card_action_style}
-              onClick={() => props.handleEventLink(props.eventID)}
+              onClick={() =>
+                props.handleEventLink(props.eventID, props.privacy)
+              }
             >
               <CardContent
                 sx={{

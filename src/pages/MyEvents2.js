@@ -163,6 +163,7 @@ const MyEvents2 = (props) => {
   };
 
   const refreshEdit = () => {
+    console.log("refresh my events");
     setUserEvents(new Set());
     setUserEventsArr([]);
     setUserEventsDetails([]);

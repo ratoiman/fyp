@@ -113,6 +113,21 @@ export const eventActivityCardStyle = {
   borderColor: "#DAA520",
   fontWeight: 600,
   color: "white",
+  marginLeft: 3,
+  marginRight: 3,
+  marginBottom: 3,
+};
+
+export const eventActivityCardStyleMobile = {
+  bgcolor: "transparent",
+  border: "solid",
+  borderWidth: "1px",
+  borderColor: "#DAA520",
+  fontWeight: 600,
+  color: "white",
+  marginBottom: 2,
+  // marginLeft: 3,
+  // marginRight: 3,
 };
 
 export const editButtonStyle = {
@@ -300,6 +315,7 @@ export const event_page_card_mobile = {
   borderWidth: "1px",
   borderColor: "#DAA520",
 
+  // paddingBottom: "100px",
   // backgroundImage: `url(${cardbg_rotated})`,
   // backgroundSize: "cover",
   // backgroundRepeat: "no-repeat",
@@ -314,7 +330,7 @@ export const event_page_card_desktop = {
   borderWidth: "2px",
   borderColor: "#DAA520",
   backgroundColor: "rgb(22, 22, 22, 0.6)",
-  // paddingLeft: 10,
+  // paddingLeft: 3,
 };
 
 export const event_location_stack_style = {

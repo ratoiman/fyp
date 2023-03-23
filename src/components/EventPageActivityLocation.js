@@ -160,7 +160,8 @@ const EventPageActivityLocation = (props) => {
           <>
             <OnlineEvent />
           </>
-        ) : props.locationType === "In person" &&
+        ) : (props.locationType === "In person" ||
+            props.locationType === "in person") &&
           props.locationString === "" ? (
           <>
             <InPersonNoMap />

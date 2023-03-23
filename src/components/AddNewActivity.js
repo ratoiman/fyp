@@ -78,12 +78,14 @@ const AddNewActivity = (props) => {
 
   const [startDate, setStartDate] = useState(props.activityStartDate);
   const [formattedStartDate, setFormattedStartDate] = useState("");
-
+  const [formattedStartDateInversed, setFormattedStartDateInversed] =
+    useState("");
   const [startTime, setStartTime] = useState(props.activityStartTime);
   const [formattedStartTime, setFormattedStartTime] = useState("");
 
   const [endDate, setEndDate] = useState(props.activityEndDate);
   const [formattedEndDate, setFormattedEndDate] = useState("");
+  const [formattedEndDateInversed, setFormattedEndDateInversed] = useState("");
 
   const [endTime, setEndTime] = useState(props.activityEndTime);
   const [formattedEndTime, setFormattedEndTime] = useState("");
@@ -132,8 +134,10 @@ const AddNewActivity = (props) => {
 
   let activityDetails = new Object();
 
-  const formatDate = (date, setter, format) => {
+  const formatDate = (date, setter, setterInversed, format) => {
     let formatted = "";
+    let formattedInversed = "";
+
     try {
       if (date && typeof date !== Object) {
         const day = date.toDate().getDate().toString();
@@ -143,11 +147,15 @@ const AddNewActivity = (props) => {
         if (format === "DD/MM/YYYY") {
           formatted =
             day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+          formattedInversed =
+            month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
         }
 
         if (format === "MM/DD/YYYY") {
           formatted =
             month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+          formattedInversed =
+            day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
         }
       }
     } catch (e) {
@@ -159,16 +167,21 @@ const AddNewActivity = (props) => {
         if (format === "DD/MM/YYYY") {
           formatted =
             day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+          formattedInversed =
+            month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
         }
 
         if (format === "MM/DD/YYYY") {
           formatted =
             month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+          formattedInversed =
+            day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
         }
       }
     }
 
     setter(formatted);
+    setterInversed(formattedInversed);
   };
 
   const formatTime = (time, setter) => {
@@ -212,7 +225,7 @@ const AddNewActivity = (props) => {
       setStartDateErrorMessage("Please select a start date");
     }
 
-    if (formattedStartDate < props.currentDate) {
+    if (formattedStartDateInversed < props.inversedCurrentDate) {
       isDateAndTimeValid = false;
       setStartDateError(true);
       setStartDateErrorMessage("Start date can't be in the past");
@@ -221,7 +234,7 @@ const AddNewActivity = (props) => {
     if (formattedStartTime) {
       if (
         formattedStartTime < props.currentTime &&
-        formattedStartDate === props.currentDate
+        formattedStartDateInversed === props.inversedCurrentDate
       ) {
         isDateAndTimeValid = false;
         setStartTimeError(true);
@@ -229,22 +242,22 @@ const AddNewActivity = (props) => {
       }
     }
 
-    if (formattedEndDate) {
-      if (formattedEndDate < formattedStartDate) {
+    if (formattedEndDateInversed) {
+      if (formattedEndDateInversed < formattedStartDateInversed) {
         isDateAndTimeValid = false;
         setEndDateError(true);
         setEndDateErrorMessage("End date can't be before start date");
       }
     }
 
-    if (!formattedEndDate && formattedEndTime) {
+    if (!formattedEndDateInversed && formattedEndTime) {
       isDateAndTimeValid = false;
       setEndDateError(true);
       setEndDateErrorMessage("Please, select a valid end date");
     }
 
     if (
-      formattedEndDate === formattedStartDate &&
+      formattedEndDateInversed === formattedStartDateInversed &&
       formattedStartTime &&
       formattedEndTime &&
       formattedEndTime < formattedStartTime
@@ -277,8 +290,18 @@ const AddNewActivity = (props) => {
   };
 
   const saveActivity = () => {
-    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
-    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+    formatDate(
+      startDate,
+      setFormattedStartDate,
+      setFormattedStartDateInversed,
+      "DD/MM/YYYY"
+    );
+    formatDate(
+      endDate,
+      setFormattedEndDate,
+      setFormattedEndDateInversed,
+      "DD/MM/YYYY"
+    );
     formatTime(startTime, setFormattedStartTime);
     formatTime(endTime, setFormattedEndTime);
     activityDetails.title = title;
@@ -412,11 +435,23 @@ const AddNewActivity = (props) => {
   }, [title, startDate, endDate, startTime, endTime, description]);
 
   useEffect(() => {
-    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
+    const typeDate = "start";
+    formatDate(
+      startDate,
+      setFormattedStartDate,
+      setFormattedStartDateInversed,
+      "DD/MM/YYYY"
+    );
   }, [startDate]);
 
   useEffect(() => {
-    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+    const typeDate = "end";
+    formatDate(
+      endDate,
+      setFormattedEndDate,
+      setFormattedEndDateInversed,
+      "DD/MM/YYYY"
+    );
   }, [endDate]);
 
   useEffect(() => {
@@ -1207,7 +1242,6 @@ const AddNewActivity = (props) => {
             />
           </Box>
         </Stack>
-      
       </Container>
       <Container style={{ margin: "0px", paddingLeft: "3px" }}>
         <Row>

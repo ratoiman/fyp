@@ -55,7 +55,7 @@ const CreateEvent = () => {
   const [description, setDescription] = useState("");
   const [showEndDate, setShowEndDate] = useState("d-none");
   const [expandDate, setExpandDate] = useState(false);
-  const [displayDescription, setDisplayDescription] = useState(true)
+  const [displayDescription, setDisplayDescription] = useState(true);
   const [currentDate, setCurrentDate] = useState("");
   const [inversedCurrentDate, setInversedCurrentDate] = useState(""); // MM/DD/YYYY to use as minDate bound in <DatePicker startDate>
   const [currentTime, setCurrentTime] = useState("");
@@ -67,6 +67,9 @@ const CreateEvent = () => {
   const [formattedStartDate, setFormattedStartDate] = useState("");
   const [formattedEndTime, setFormattedEndTime] = useState("");
   const [formattedEndDate, setFormattedEndDate] = useState("");
+  const [formattedStartDateInversed, setFormattedStartDateInversed] =
+    useState("");
+  const [formattedEndDateInversed, setFormattedEndDateInversed] = useState("");
 
   // store data from the latest new activity (in case user didn't finish editing, so nothing will be lost)
   const [newActivityPopout, setNewActivityPopout] = useState(false);
@@ -177,8 +180,9 @@ const CreateEvent = () => {
 
   const navigate = useNavigate();
 
-  const formatDate = (date, setter, format) => {
-    let formatted = null;
+  const formatDate = (date, setter, setterInversed, format) => {
+    let formatted = "";
+    let formattedInversed = "";
     if (date) {
       const day = date.toDate().getDate().toString();
       const month = (date.toDate().getMonth() + 1).toString();
@@ -187,15 +191,20 @@ const CreateEvent = () => {
       if (format === "DD/MM/YYYY") {
         formatted =
           day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
+        formattedInversed =
+          month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
       }
 
       if (format === "MM/DD/YYYY") {
         formatted =
           month.padStart(2, "0") + "/" + day.padStart(2, "0") + "/" + year;
+        formattedInversed =
+          day.padStart(2, "0") + "/" + month.padStart(2, "0") + "/" + year;
       }
     }
 
     setter(formatted);
+    setterInversed(formattedInversed)
   };
 
   const formatTime = (time, setter) => {
@@ -241,8 +250,9 @@ const CreateEvent = () => {
       setStartDateErrorMessage("Please select a start date");
     }
 
-    if (formattedStartDate < currentDate) {
+    if (formattedStartDateInversed < inversedCurrentDate) {
       isDateAndTimeValid = false;
+      console.log("date", formattedStartDateInversed, inversedCurrentDate)
       setStartDateError(true);
       setStartDateErrorMessage("Start date can't be in the past");
     }
@@ -250,7 +260,7 @@ const CreateEvent = () => {
     if (formattedStartTime) {
       if (
         formattedStartTime < currentTime &&
-        formattedStartDate === currentDate
+        formattedStartDateInversed === inversedCurrentDate
       ) {
         isDateAndTimeValid = false;
         setStartTimeError(true);
@@ -258,22 +268,22 @@ const CreateEvent = () => {
       }
     }
 
-    if (formattedEndDate) {
-      if (formattedEndDate < formattedStartDate) {
+    if (formattedEndDateInversed) {
+      if (formattedEndDateInversed < formattedStartDateInversed) {
         isDateAndTimeValid = false;
         setEndDateError(true);
         setEndDateErrorMessage("End date can't be before start date");
       }
     }
 
-    if (!formattedEndDate && formattedEndTime) {
+    if (!formattedEndDateInversed && formattedEndTime) {
       isDateAndTimeValid = false;
       setEndDateError(true);
       setEndDateErrorMessage("Please, select a valid end date");
     }
 
     if (
-      formattedEndDate === formattedStartDate &&
+      formattedEndDateInversed === formattedStartDateInversed &&
       formattedStartTime &&
       formattedEndTime &&
       formattedEndTime < formattedStartTime
@@ -395,11 +405,21 @@ const CreateEvent = () => {
   }, [description]);
 
   useEffect(() => {
-    formatDate(startDate, setFormattedStartDate, "DD/MM/YYYY");
+    formatDate(
+      startDate,
+      setFormattedStartDate,
+      setFormattedStartDateInversed,
+      "DD/MM/YYYY"
+    );
   }, [startDate]);
 
   useEffect(() => {
-    formatDate(endDate, setFormattedEndDate, "DD/MM/YYYY");
+    formatDate(
+      endDate,
+      setFormattedEndDate,
+      setFormattedEndDateInversed,
+      "DD/MM/YYYY"
+    );
   }, [endDate]);
 
   useEffect(() => {
@@ -481,17 +501,25 @@ const CreateEvent = () => {
         );
         let end_date_month = "";
         let end_date_day = "";
+        let start_date_month = "";
+        let start_date_day = "";
+
+        if (startDate) {
+          start_date_day = startDate["$d"].toString().split(" ")[0];
+          start_date_month = startDate["$d"].toString().split(" ")[1];
+        }
 
         if (endDate) {
           end_date_day = endDate["$d"].toString().split(" ")[0];
           end_date_month = endDate["$d"].toString().split(" ")[1];
         }
+
         await setDoc(eventDetailsRef, {
           title: title,
           subtitle: subtitle,
           start_date: formattedStartDate,
-          start_date_day: startDate["$d"].toString().split(" ")[0],
-          start_date_month: startDate["$d"].toString().split(" ")[1],
+          start_date_day: start_date_day,
+          start_date_month: start_date_month,
           start_time: formattedStartTime,
           end_date: formattedEndDate,
           end_date_day: end_date_day,
@@ -1590,7 +1618,7 @@ const CreateEvent = () => {
                     display: "flex",
                     justifyContent: "center",
                     marginBottom: 1.5,
-                    transform:"translateX(-4%)"
+                    transform: "translateX(-4%)",
                   }}
                 >
                   <ThemeProvider theme={submitButtonTheme}>
@@ -1598,11 +1626,9 @@ const CreateEvent = () => {
                       size="large"
                       startIcon={
                         displayDescription === false ? (
-                          <ExpandMoreIcon
-                          />
+                          <ExpandMoreIcon />
                         ) : (
-                          <ExpandLessIcon
-                          />
+                          <ExpandLessIcon />
                         )
                       }
                       onClick={() => setDisplayDescription(!displayDescription)}
@@ -1612,7 +1638,7 @@ const CreateEvent = () => {
                     Event description
                   </Typography>
                 </Stack>
-                <Box display={displayDescription ? "" : "none"}> 
+                <Box display={displayDescription ? "" : "none"}>
                   <RichTextEditor
                     description={description}
                     setDescription={setDescription}
