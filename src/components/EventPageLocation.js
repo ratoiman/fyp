@@ -72,7 +72,7 @@ const EventPageLocation = (props) => {
       process.env.REACT_APP_PUBLIC_API_KEY_MAPS
     );
     return (
-      <Box>
+      <Box >
         <Stack
           direction="row"
           sx={

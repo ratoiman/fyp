@@ -21,9 +21,10 @@ import {
 } from "../ui_styles/MuiStyles";
 import GoogleMapsIntegration from "./GoogleMapsIntegration";
 import { isMobile } from "react-device-detect";
+import Loading from "./Loading";
 
 const EventPageActivityLocation = (props) => {
-  const [displayMap, setDisplayMap] = useState(false);
+  const [displayMap, setDisplayMap] = useState(true);
 
   const OnlineEvent = () => {
     return (
@@ -115,14 +116,16 @@ const EventPageActivityLocation = (props) => {
           }
           display={displayMap ? "" : "none"}
         >
-          <iframe
-            src={locationToLink(props.locationString)}
-            width="100%"
-            height="100%"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          />
+          <Box className="box-test">
+            <iframe
+              src={locationToLink(props.locationString)}
+              width="100%"
+              height="100%"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            />
+          </Box>
         </Box>
       </Box>
     );

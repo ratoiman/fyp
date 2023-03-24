@@ -25,7 +25,7 @@ import { isMobile } from "react-device-detect";
 
 const EventPageActivityCard = (activity) => {
   let activityDetails = activity["activity"];
-  const [expand, setExpand] = useState(false);
+  const [expand, setExpand] = useState(true);
   const [expandText, setExpandText] = useState("Details");
 
   const expandDetails = () => {

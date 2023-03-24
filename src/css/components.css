@@ -98,6 +98,13 @@
   /* background-color: "black"; */
   /* transform: translateX(-3%); */
 }
+.box-test {
+  background-image: url("https://media.tenor.com/tEBoZu1ISJ8AAAAC/spinning-loading.gif");
+  background-color: #fcfefc;
+  background-repeat: no-repeat;
+  height: 100%;
+  background-size: contain;
+}
 
 .event-page-card {
   display: flex !important;
@@ -207,6 +214,11 @@
   border-style: solid;
   border-color: #daa520;
   margin-left: 5%;
+  background-image: url("https://media.tenor.com/tEBoZu1ISJ8AAAAC/spinning-loading.gif");
+  background-color: #fcfefc;
+  background-repeat: no-repeat;
+  /* height: 100%; */
+  background-size: contain;
 }
 
 .map-container-event-page-mobile {
@@ -217,6 +229,11 @@
   margin-top: 2%;
   border-style: solid;
   border-color: #daa520;
+  background-image: url("https://media.tenor.com/tEBoZu1ISJ8AAAAC/spinning-loading.gif");
+  background-color: #fcfefc;
+  background-repeat: no-repeat;
+  background-size: contain;
+
   /* margin-left:10% */
 }
 
