@@ -1,43 +1,35 @@
-# Getting Started with Create React App
+# Getting Started with DuckyEvents 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Accessing the project from the web
+If you do not wish to run the code locally, you can access the project at this link:
+[link](https://react-auth-tutorial-ratoiman.web.app/)\
+Please, keep in mind that you will have to create an accoount to use the app. If you do not wish to create one, you can use a dummy one that I created for demonstrating the app.
 
-In the project directory, you can run:
+`email: admin@gmail.com`\
+`password: admin1`
 
-### `npm start`
+## Running the project
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### `1. Installing packages`
+Please run `npm install --force` before running the project.\
+The `--force` flag is necessary because some installed packages were not updated to include react 18.0 in their dependencies, but this doesn't create any problems in running the app.
+<br/><br/>
 
-### `npm test`
+### `1.1 API key`
+If you cloned this project from github, you will need to unzip the zip file provided in the submission and copy the `.env.local` file in the main folder of the project. This file contains the API key and is not pushed to git to avoid any privacy risks.  
+<br/><br/>
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### `2. Starting the project`
+Please run `npm run start`, open your browser and navigate to `http://localhost:3000/`\
+Port number may vary, once you run the console command, npm should print the exact link
+<br/><br/>
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### `3. Enjoy :)`
+Thank you for viewing my project, hope you will enjoy it!
+<br/><br/>
 
 ## Learn More
 
