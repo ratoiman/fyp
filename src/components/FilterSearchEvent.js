@@ -4,14 +4,9 @@ import Autocomplete from "@mui/material/Autocomplete";
 import {
   Box,
   Button,
-  ClickAwayListener,
-  Fade,
-  IconButton,
-  InputAdornment,
   Stack,
   ThemeProvider,
 } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
 import {
   StyledTextField,
   privacyAndCategoryTheme,
@@ -27,7 +22,6 @@ import Menu from "@mui/joy/Menu";
 import MenuItem from "@mui/joy/MenuItem";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import CheckBoxOutlinedIcon from "@mui/icons-material/CheckBoxOutlined";
 import DoneOutlinedIcon from "@mui/icons-material/DoneOutlined";
 import TuneIcon from "@mui/icons-material/Tune";
 import { isMobile } from "react-device-detect";
@@ -38,7 +32,6 @@ const FilterSearchEvent = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   const [selected, setSelected] = useState("");
   const [textValue, setTextValue] = useState("");
-  const [configurePrivacyPopout, setConfigurePrivacyPopout] = useState(false);
   const [open, setOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const [visibility, setVisibility] = useState("Privacy");

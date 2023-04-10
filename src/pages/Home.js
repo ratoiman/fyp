@@ -5,7 +5,7 @@ import GuestLandingPage from "./GuestLandingPage";
 import EventCard2 from "../components/EventCard2";
 import EventPage from "./EventPage";
 import Loading from "../components/Loading";
-import { Alert, Box, Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { getEventsDetails, getEvents } from "../context/DbCallsContext";
 import { isMobile } from "react-device-detect";
 import {
@@ -39,7 +39,6 @@ const Home = () => {
   const { user } = useUserAuth();
 
   const handleEventLink = (id, privacy) => {
-    // navigator("/event")
     console.log(userEvents);
     if (userEvents.has(id) || privacy === "Public") {
       setSelectedEventID(id);
@@ -97,14 +96,10 @@ const Home = () => {
   const refreshSearchResult = () => {
     setRefreshSearch(refreshSearch + 1);
     setFiltered(false);
-    // setEvents(new Set());
     setEventsDetails([]);
-    // getEvents(db, setIsLoading, setEvents);
-    // getEventsDetails(db, events, eventsDetails, setEventsDetails);
   };
 
   const closeEvent = () => {
-    // navigator("/event")
     setSelectedEventID(null);
     setEventPageLoad(false);
     console.log("page load ", eventPageLoad);

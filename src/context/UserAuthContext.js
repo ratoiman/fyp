@@ -14,7 +14,6 @@ import { Navigate } from "react-router-dom";
 
 const userAuthContext = createContext();
 
-const setUserEmail = async (userCredential) => {};
 
 export function UserAuthContextProvider({ children }) {
   const [user, setUser] = useState({});

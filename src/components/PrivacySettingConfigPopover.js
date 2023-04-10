@@ -32,7 +32,7 @@ const PrivacySettingConfigPopover = (props) => {
 
   const handleJoinCode = () => {
     if (code === "") {
-      setCode((uuid().slice(0, 8)).toUpperCase());
+      setCode(uuid().slice(0, 8).toUpperCase());
     }
     setJoinByCode(!joinByCode);
   };
@@ -85,13 +85,11 @@ const PrivacySettingConfigPopover = (props) => {
               </Typography>{" "}
               <StyledTextField
                 label={"Add user manually (work in progress)"}
-                // placeholder="Add user manually(work in progress)"
                 sx={{
                   width: "100%",
                   display: "flex",
                   justifyContent: "center",
                 }}
-                // disabled
               />
             </ThemeProvider>
             <Box>
@@ -101,11 +99,9 @@ const PrivacySettingConfigPopover = (props) => {
                   spacing={4}
                   sx={{
                     display: "flex",
-                    // maxWidth: "50%",
                     borderBottomStyle: "solid",
                     borderColor: "gray",
                     borderWidth: "1px",
-                    // borderRadius: "5px",
                     paddingTop: 2,
                     paddingBottom: 2,
                     marginBottom: 2,
@@ -123,7 +119,6 @@ const PrivacySettingConfigPopover = (props) => {
                   >
                     Join by code{" "}
                   </Typography>
-                  {/* <Button variant="contained">Generate code</Button> */}
 
                   <FormControlLabel
                     sx={{
@@ -154,10 +149,6 @@ const PrivacySettingConfigPopover = (props) => {
                   display={joinByCode ? "" : "none"}
                   sx={{
                     color: "white",
-                    // borderStyle: "solid",
-                    // borderColor: "gray",
-                    // borderWidth: "1px",
-                    // borderRadius: "5px",
                     padding: 2,
                   }}
                 >
@@ -168,8 +159,6 @@ const PrivacySettingConfigPopover = (props) => {
                     sx={{
                       position: "absolute",
                       transform: "translate(190%, -210%)",
-                      // translateX:"30%",
-                      // translateY:"(-450%)"
                     }}
                   >
                     <Alert
@@ -203,9 +192,6 @@ const PrivacySettingConfigPopover = (props) => {
                         />
                       </IconButton>
                     </Link>
-                    {/* <Typography variant="h3" color="#DAA520" marginLeft={3}  sx={{textDecoration: 'underline'}}>
-                      {code}
-                    </Typography> */}
                   </Stack>
                 </Box>
               </ThemeProvider>

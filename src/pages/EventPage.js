@@ -44,7 +44,6 @@ import { Twitter } from "react-bootstrap-icons";
 import { Link, Stack } from "@mui/material";
 import { RichTextDisplay } from "../components/RichTextEditor";
 const EventPage = (props) => {
-  const { user } = useUserAuth();
 
   const [eventData, setEventData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);

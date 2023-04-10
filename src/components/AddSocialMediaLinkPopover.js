@@ -12,7 +12,6 @@ import { IconButton } from "@mui/material";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import { editButtonStyle } from "../ui_styles/MuiStyles";
 import { isMobile } from "react-device-detect";
-import { useEffect } from "react";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 
 const AddSocialMediaLinkPopover = (props) => {

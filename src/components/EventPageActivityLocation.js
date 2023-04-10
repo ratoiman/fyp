@@ -12,16 +12,12 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import {
   event_location_stack_mobile_style,
   event_location_stack_style,
   submitButtonTheme,
 } from "../ui_styles/MuiStyles";
-import GoogleMapsIntegration from "./GoogleMapsIntegration";
 import { isMobile } from "react-device-detect";
-import Loading from "./Loading";
 
 const EventPageActivityLocation = (props) => {
   const [displayMap, setDisplayMap] = useState(true);
@@ -118,6 +114,7 @@ const EventPageActivityLocation = (props) => {
         >
           <Box className="box-test">
             <iframe
+              title="map"
               src={locationToLink(props.locationString)}
               width="100%"
               height="100%"

@@ -20,7 +20,6 @@ import {
   deleteLocationStyle2,
   deleteLocationStyleMobile,
 } from "../ui_styles/MuiStyles";
-import { useEffect, useState } from "react";
 import { useLoadScript } from "@react-google-maps/api";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import IconButton from "@mui/material/IconButton";

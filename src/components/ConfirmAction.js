@@ -2,7 +2,6 @@ import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import { handleUnfollow } from "../context/DbCallsContext";
 
 const ConfirmAction = (props) => {
   return (

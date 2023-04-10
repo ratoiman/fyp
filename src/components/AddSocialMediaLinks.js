@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import { isMobile } from "react-device-detect";
 import { ThemeProvider } from "@mui/material/styles";
-import { Grid, Stack, Typography } from "@mui/material";
+import { Grid} from "@mui/material";
 import { Tiktok } from "react-bootstrap-icons";
 import { Instagram } from "react-bootstrap-icons";
 import { Facebook } from "react-bootstrap-icons";
@@ -15,14 +15,9 @@ import {
   new_event_social_media_inner_box_mobile,
   new_event_social_media_inner_box_disabled,
   new_event_social_media_inner_box_mobile_disabled,
-  submitButtonTheme,
   socialMediaButtonTheme,
-  popupStyle,
-  StyledTextField,
 } from "../ui_styles/MuiStyles";
 import { useState } from "react";
-import { Modal } from "@mui/material";
-import AddSocialMediaLinkPopover from "./AddSocialMediaLinkPopover";
 import { useEffect } from "react";
 
 const AddSocialMediaLinks = (props) => {

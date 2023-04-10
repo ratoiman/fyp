@@ -1,20 +1,14 @@
 import React, { useState } from "react";
-import { Col, Container, Row } from "react-bootstrap";
 import {
   eventActivityCardStyle,
-  editButtonStyle,
   submitButtonTheme,
   eventActivityCardStyleMobile,
 } from "../ui_styles/MuiStyles";
 import Card from "@mui/joy/Card";
-import CardOverflow from "@mui/joy/CardOverflow";
-import CardContent from "@mui/joy/CardContent";
-import CardCover from "@mui/joy/CardCover";
-import Divider from "@mui/joy/Divider";
 import Typography from "@mui/material/Typography";
 // import Box from "@mui/joy/Box";
 import { Box, Stack } from "@mui/material";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import "../css/components.css";
 import Button from "@mui/material/Button";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -26,8 +20,7 @@ import { isMobile } from "react-device-detect";
 const EventPageActivityCard = (activity) => {
   let activityDetails = activity["activity"];
   const [expand, setExpand] = useState(true);
-  const [expandText, setExpandText] = useState("Details");
-
+  
   const expandDetails = () => {
     setExpand(!expand);
   };
@@ -121,9 +114,6 @@ const EventPageActivityCard = (activity) => {
           <DisplayDates />
         </Box>
         <Box>
-          {/* <Typography> {activityDetails.location_display_name}</Typography>
-           */}
-
           <EventPageActivityLocation
             locationType={activityDetails.location_type}
             locationDisplayName={activityDetails.location_display_name}

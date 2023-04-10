@@ -122,7 +122,6 @@ const CreateEvent = () => {
   const titleErrorMessage = "Title can't be empty";
 
   const [descriptionError, setDescriptionError] = useState(false);
-  const descriptionErrorMessage = "Description can't be empty";
 
   const [startDateError, setStartDateError] = useState(false);
   const [startDateErrorMessage, setStartDateErrorMessage] = useState("");

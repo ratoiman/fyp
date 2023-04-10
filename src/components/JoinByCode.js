@@ -74,7 +74,6 @@ const JoinByCode = (props) => {
             setUserCode(event.target.value);
             setError(false);
           }}
-          //   value={userCode}
         />
         <ThemeProvider theme={submitButtonTheme}>
           <Button

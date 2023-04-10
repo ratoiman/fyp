@@ -14,7 +14,6 @@ const Login = () => {
   const [passwordType, setPasswordType] = useState("password");
   const [error, setError] = useState("");
   const { logIn, googleSignIn, user } = useUserAuth();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -143,8 +142,11 @@ const Login = () => {
     } else {
       return (
         <Container className="login-container-mobile">
-          <Stack direction="column" sx={{display:"flex", width:"100%"}}>
-            <Box className="card p-4 box mt-4" sx={{display:"flex", width:"100%"}}>
+          <Stack direction="column" sx={{ display: "flex", width: "100%" }}>
+            <Box
+              className="card p-4 box mt-4"
+              sx={{ display: "flex", width: "100%" }}
+            >
               <h2 className="mb-3 text-body">DuckyEvents Login</h2>
               {error && (
                 <Alert variant="danger">

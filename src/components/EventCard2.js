@@ -10,7 +10,6 @@ import texture from "../resources/texture.jpeg";
 import {
   event_card_style_desktop,
   event_card_style_mobile,
-  submitButtonTheme,
   follow_button,
   following_button,
   popupStyle,
@@ -35,12 +34,10 @@ import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOu
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import JoinByCode from "./JoinByCode";
-import { RichTextDisplay } from "./RichTextEditor";
 
 const EventCard2 = (props) => {
   const [userEvents, setUserEvents] = useState(new Set());
   const [eventPageLoad, setEventPageLoad] = useState(false);
-  const [selectedEventID, setSelectedEventID] = useState(null);
   const [isFollowing, setIsFollowing] = useState(props.isFollowing);
   const [isAdmin, setIsAdmin] = useState(props.isAdmin);
   const [unfollowPopup, setUnfollowPopup] = useState(false);

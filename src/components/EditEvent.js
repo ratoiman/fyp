@@ -1,14 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import { db } from "../utils/firebase";
 import { useUserAuth } from "../context/UserAuthContext";
 import {
-  collection,
-  addDoc,
   setDoc,
   doc,
-  getDoc,
   deleteDoc,
 } from "firebase/firestore";
 import { LocalizationProvider } from "@mui/x-date-pickers";
@@ -130,7 +126,6 @@ const EditEvent = (props) => {
   const titleErrorMessage = "Title can't be empty";
 
   const [descriptionError, setDescriptionError] = useState(false);
-  const descriptionErrorMessage = "Description can't be empty";
 
   const [startDateError, setStartDateError] = useState(false);
   const [startDateErrorMessage, setStartDateErrorMessage] = useState("");

@@ -314,12 +314,6 @@ export const event_page_card_mobile = {
   border: "solid",
   borderWidth: "1px",
   borderColor: "#DAA520",
-
-  // paddingBottom: "100px",
-  // backgroundImage: `url(${cardbg_rotated})`,
-  // backgroundSize: "cover",
-  // backgroundRepeat: "no-repeat",
-  // backgroundPosition: "center center",
 };
 
 export const event_page_card_desktop = {

@@ -12,8 +12,6 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import VideoCameraFrontOutlinedIcon from "@mui/icons-material/VideoCameraFrontOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import {
   event_location_button,
   event_location_button_mobile,
@@ -21,7 +19,6 @@ import {
   event_location_stack_style,
   submitButtonTheme,
 } from "../ui_styles/MuiStyles";
-import GoogleMapsIntegration from "./GoogleMapsIntegration";
 import { isMobile } from "react-device-detect";
 
 const EventPageLocation = (props) => {
@@ -65,14 +62,13 @@ const EventPageLocation = (props) => {
       return locationString;
     };
 
-    // console.log("marker", props.locationString.split(",")[0].replaceAll(" ", "+"));
     console.log(
       "string",
       locationToLink(props.locationString),
       process.env.REACT_APP_PUBLIC_API_KEY_MAPS
     );
     return (
-      <Box >
+      <Box>
         <Stack
           direction="row"
           sx={
@@ -126,7 +122,6 @@ const EventPageLocation = (props) => {
             referrerpolicy="no-referrer-when-downgrade"
           />
         </Box>
-        {/* <GoogleMapsIntegration marker={props.marker} /> */}
       </Box>
     );
   };

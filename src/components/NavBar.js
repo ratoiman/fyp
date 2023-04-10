@@ -1,27 +1,21 @@
 import React from "react";
-import { AppBar, Button, IconButton, Toolbar, Typography } from "@mui/material";
-import { App } from "react-bootstrap-icons";
+import { Button } from "@mui/material";
 import { useState } from "react";
 import {
   topbar_buttons,
   sidebar_buttons,
   submitButtonTheme,
 } from "../ui_styles/MuiStyles";
-import FaceIcon from "@mui/icons-material/Face";
 import Box from "@mui/material/Box";
 import "../css/components.css";
-import Avatar from "@mui/material/Avatar";
 import Stack from "@mui/material/Stack";
-import { GiPlasticDuck, GiTheaterCurtains } from "react-icons/gi";
 import MenuIcon from "@mui/icons-material/Menu";
-import StadiumIcon from "@mui/icons-material/Stadium";
 import EventIcon from "@mui/icons-material/Event";
-import AddTaskOutlinedIcon from "@mui/icons-material/AddTaskOutlined";
 import AddToQueueOutlinedIcon from "@mui/icons-material/AddToQueueOutlined";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import LogoutIcon from "@mui/icons-material/Logout";
 import LoginIcon from "@mui/icons-material/Login";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ThemeProvider } from "@mui/material/styles";
 import { isMobile } from "react-device-detect";
 import { useNavigate } from "react-router-dom";
 import { useUserAuth } from "../context/UserAuthContext";
@@ -74,7 +68,6 @@ const NavBar = () => {
           <Button
             sx={topbar_buttons}
             variant="text"
-            // startIcon={<StadiumIcon />}
             startIcon={<HomeOutlinedIcon />}
             onClick={handleHome}
           >
@@ -98,7 +91,6 @@ const NavBar = () => {
           </Button>
           <Button
             startIcon={user === null ? <LoginIcon /> : <LogoutIcon />}
-            // startIcon={<LoginIcon />}
             variant="text"
             sx={topbar_buttons}
             onClick={user === null ? handleLogin : handleLogout}
@@ -106,7 +98,6 @@ const NavBar = () => {
             {user === null ? "Login" : "Logout"}
           </Button>
         </Stack>
-        {/* </Stack> */}
       </ThemeProvider>
     );
   } else {
@@ -129,7 +120,6 @@ const NavBar = () => {
                   <Button
                     sx={sidebar_buttons}
                     variant="text"
-                    // startIcon={<StadiumIcon />}
                     startIcon={<HomeOutlinedIcon />}
                     onClick={handleHome}
                   >
@@ -155,7 +145,6 @@ const NavBar = () => {
                   <Button
                     className="mb-2"
                     startIcon={user === null ? <LoginIcon /> : <LogoutIcon />}
-                    // startIcon={<LoginIcon />}
                     variant="text"
                     sx={sidebar_buttons}
                     onClick={user === null ? handleLogin : handleLogout}

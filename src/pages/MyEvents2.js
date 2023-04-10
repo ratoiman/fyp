@@ -26,9 +26,7 @@ import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { ThemeProvider } from "@mui/material/styles";
 import { submitButtonTheme } from "../ui_styles/MuiStyles";
 import Button from "@mui/material/Button";
-import { Navigate } from "react-router-dom";
 import EditEvent from "../components/EditEvent";
-import { isEqual } from "lodash";
 import FilterSearchEvent from "../components/FilterSearchEvent";
 
 const MyEvents2 = (props) => {
