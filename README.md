@@ -16,16 +16,13 @@ Please, keep in mind that you will have to create an accoount to use the app. If
 ### `1. Installing packages`
 Please run `npm install --force` before running the project.\
 The `--force` flag is necessary because some installed packages were not updated to include react 18.0 in their dependencies, but this doesn't create any problems in running the app.
-<br/><br/>
 
 ### `1.1 API key`
 If you cloned this project from github, you will need to unzip the zip file provided in the submission and copy the `.env.local` file in the main folder of the project. This file contains the API key and is not pushed to git to avoid any privacy risks.  
-<br/><br/>
 
 ### `2. Starting the project`
 Please run `npm run start`, open your browser and navigate to `http://localhost:3000/`\
 Port number may vary, once you run the console command, npm should print the exact link
-<br/><br/>
 
 ### `3. Enjoy :)`
 Thank you for viewing my project, hope you will enjoy it!
